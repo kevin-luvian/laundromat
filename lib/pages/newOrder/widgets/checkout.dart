@@ -6,24 +6,41 @@ import 'package:laundry/pages/newOrder/widgets/checkoutPayment.dart';
 import 'package:laundry/pages/newOrder/widgets/checkoutPaymentAction.dart';
 
 class Checkout extends StatelessWidget {
-  const Checkout({Key? key, required this.padding}) : super(key: key);
+  const Checkout({Key? key, required this.width, required this.padding}) : super(key: key);
 
+  final double width;
   final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      CheckoutHeader(padding),
-      _buildItems(),
-      CheckoutDrawer(
-        child: Column(
-          children: [
-            CheckoutPayment(padding),
-            CheckoutPaymentAction(padding),
-          ],
-        ),
+    return Container(
+      child: SizedBox(
+        width: width,
+        child: Column(children: [
+          CheckoutHeader(padding),
+          _buildItems(),
+          CheckoutDrawer(
+            child: Column(
+              children: [
+                CheckoutPayment(padding),
+                CheckoutPaymentAction(padding),
+              ],
+            ),
+          ),
+        ]),
       ),
-    ]);
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: const [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, .05),
+            offset: Offset(6, 0),
+            blurRadius: 6,
+            spreadRadius: 0,
+          )
+        ],
+      ),
+    );
   }
 
   Widget _buildItems() {
