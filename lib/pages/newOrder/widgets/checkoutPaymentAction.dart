@@ -31,7 +31,7 @@ class CheckoutPaymentAction extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.secondary,
+        primary: Theme.of(context).colorScheme.primary,
         minimumSize: const Size.fromHeight(45),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
