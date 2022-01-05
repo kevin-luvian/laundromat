@@ -1,8 +1,12 @@
+import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/navigation/bloc.dart';
 import 'package:laundry/common/btnNav.dart';
+import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/pages/newOrder/newOrderPage.dart';
+import 'package:laundry/pages/settings/SettingsPage.dart';
 import 'package:laundry/providers/navButtonProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -20,8 +24,8 @@ class _AuthStaffLayoutState extends State<AuthStaffLayout>
 
   final List<Widget> _tabs = [
     const NewOrderPage(),
-    const Center(child: Text('Do you like trainds?')),
-    const Center(child: Text('Settings'))
+    const Center(child: Text('Do you like trains?')),
+    const SettingsPage(),
   ];
 
   @override
@@ -69,7 +73,7 @@ class _AuthStaffLayoutState extends State<AuthStaffLayout>
             constraints: const BoxConstraints(minWidth: 20),
             child: ChangeNotifierProvider(
               create: (context) => NavButtonProvider(),
-              child: _buildBtnNav(),
+              child: _buildBtnNav(context),
             ),
           ),
           Expanded(child: _tabBarView()),
@@ -78,23 +82,61 @@ class _AuthStaffLayoutState extends State<AuthStaffLayout>
     );
   }
 
-  Widget _buildBtnNav() {
+  Widget _buildBtnNav(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) =>
-          NavigationBloc()..add(NavigationChangeEvent(index: 0)),
+      create: (_) => NavigationBloc()..add(NavigationChangeEvent(index: 0)),
       child: BlocListener<NavigationBloc, int>(
         listener: (_, idx) => _controller.animateTo(idx),
         child: Column(
-          children: const [
+          children: [
             ButtonNavigation(
-                index: 0, icon: Icons.receipt_long, desc: "New Order"),
+                index: 0,
+                icon: Icons.receipt_long,
+                desc: AppLocalizations.of(context)?.new_orders ?? "New Orders"),
             ButtonNavigation(
-                index: 1, icon: Icons.menu_book_outlined, desc: "Orders"),
+                index: 1,
+                icon: Icons.menu_book_outlined,
+                desc: AppLocalizations.of(context)?.orders ?? "Orders"),
             ButtonNavigation(
-                index: 2, icon: Icons.language_outlined, desc: "Languages"),
-            ButtonNavigation(
-                index: 3, icon: Icons.settings_outlined, desc: "Settings"),
+                index: 2,
+                icon: Icons.settings_outlined,
+                desc: AppLocalizations.of(context)?.settings ?? "Settings"),
+            _buildDriftViewer(context),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDriftViewer(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: MaterialButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => DriftDbViewer(DriftDBInstance.getState()),
+          ));
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            children: [
+              const Icon(Icons.data_usage, color: Colors.white70, size: 35),
+              const SizedBox(height: 5),
+              SizeTransition(
+                sizeFactor: _animation,
+                axis: Axis.vertical,
+                axisAlignment: -1,
+                child: const Center(
+                  child: Text(
+                    "view db",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70, fontSize: 10),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

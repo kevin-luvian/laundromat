@@ -28,8 +28,7 @@ class CheckoutOrderItem extends StatelessWidget {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).colorScheme.secondary,
-                  padding: const EdgeInsets.all(5),
-                  minimumSize: const Size.fromWidth(10),
+                  minimumSize: const Size.fromWidth(5),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(7)),
                   ),
@@ -37,7 +36,7 @@ class CheckoutOrderItem extends StatelessWidget {
                 ),
                 child: const Icon(Icons.edit, size: 15),
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 3),
               Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,

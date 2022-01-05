@@ -20,3 +20,7 @@ final ThemeData mainTheme = ThemeData(
     onError: Colors.white,
   ),
 );
+
+class GlobalColor {
+  static const Color dim = Color.fromRGBO(200, 200, 200, 1);
+}

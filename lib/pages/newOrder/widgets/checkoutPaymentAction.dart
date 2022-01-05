@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CheckoutPaymentAction extends StatelessWidget {
   const CheckoutPaymentAction(this.padding) : super(key: null);
@@ -16,15 +17,26 @@ class CheckoutPaymentAction extends StatelessWidget {
           const SizedBox(height: 7),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildActionSubset(context, Icons.delete, Colors.redAccent),
-              _buildActionSubset(
-                  context, Icons.print_outlined, Colors.blueAccent),
-            ],
+            children: _buildButtonActions(context),
           )
         ],
       ),
     );
+  }
+
+  List<Widget> _buildButtonActions(BuildContext context) {
+    return [
+      _buildActionSubset(
+        icon: Icons.delete,
+        color: Colors.redAccent,
+        onPressed: () {},
+      ),
+      _buildActionSubset(
+        icon: Icons.print_outlined,
+        color: Colors.blueAccent,
+        onPressed: () {},
+      ),
+    ];
   }
 
   Widget _buildActionCheckout(BuildContext context) {
@@ -37,14 +49,18 @@ class CheckoutPaymentAction extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
-      child:
-          const Text('Checkout', style: TextStyle(fontWeight: FontWeight.bold)),
+      child: Text(AppLocalizations.of(context)?.checkout ?? "",
+          style: const TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 
-  Widget _buildActionSubset(BuildContext context, IconData icon, Color color) {
+  Widget _buildActionSubset({
+    required IconData icon,
+    required Color color,
+    required void Function() onPressed,
+  }) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         primary: color,
         padding: const EdgeInsets.all(5),

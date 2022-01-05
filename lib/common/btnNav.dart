@@ -31,7 +31,7 @@ class _ButtonNavigationState extends State<ButtonNavigation>
   }
 
   @override
-  Widget build(BuildContext _) {
+  Widget build(BuildContext context) {
     return BlocConsumer<NavigationBloc, int>(
       listener: (_, idx) {
         if (widget.index == idx) {
