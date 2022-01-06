@@ -1,11 +1,11 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'users_dao.dart';
+part of 'user.dart';
 
 // **************************************************************************
 // DaoGenerator
 // **************************************************************************
 
-mixin _$UsersDaoMixin on DatabaseAccessor<DriftDB> {
+mixin _$UserDaoMixin on DatabaseAccessor<DriftDB> {
   $UsersTable get users => attachedDatabase.users;
 }

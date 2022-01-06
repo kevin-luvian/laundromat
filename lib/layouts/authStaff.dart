@@ -1,10 +1,8 @@
-import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/navigation/bloc.dart';
 import 'package:laundry/common/btnNav.dart';
-import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/pages/newOrder/newOrderPage.dart';
 import 'package:laundry/pages/settings/SettingsPage.dart';
 import 'package:laundry/providers/navButtonProvider.dart';
@@ -101,42 +99,7 @@ class _AuthStaffLayoutState extends State<AuthStaffLayout>
                 index: 2,
                 icon: Icons.settings_outlined,
                 desc: AppLocalizations.of(context)?.settings ?? "Settings"),
-            _buildDriftViewer(context),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDriftViewer(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: MaterialButton(
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => DriftDbViewer(DriftDBInstance.getState()),
-          ));
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            children: [
-              const Icon(Icons.data_usage, color: Colors.white70, size: 35),
-              const SizedBox(height: 5),
-              SizeTransition(
-                sizeFactor: _animation,
-                axis: Axis.vertical,
-                axisAlignment: -1,
-                child: const Center(
-                  child: Text(
-                    "view db",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white70, fontSize: 10),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

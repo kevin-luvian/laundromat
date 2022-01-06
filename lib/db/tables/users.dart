@@ -4,7 +4,9 @@ import 'package:drift/drift.dart';
 class Users extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  TextColumn get username => text()();
+  TextColumn get streamID => text()();
+
+  TextColumn get username => text().customConstraint("UNIQUE")();
 
   TextColumn get password => text()();
 
