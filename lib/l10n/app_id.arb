@@ -2,6 +2,6 @@
   "checkout": "Bayar",
   "settings": "Pengaturan",
   "select_language": "Pilih Bahasa",
-  "new_orders": "Order Baru",
+  "new_order": "Order Baru",
   "orders": "Daftar Order"
 }

@@ -90,7 +90,7 @@ class _AuthStaffLayoutState extends State<AuthStaffLayout>
             ButtonNavigation(
                 index: 0,
                 icon: Icons.receipt_long,
-                desc: AppLocalizations.of(context)?.new_orders ?? "New Orders"),
+                desc: AppLocalizations.of(context)?.new_order ?? "New Orders"),
             ButtonNavigation(
                 index: 1,
                 icon: Icons.menu_book_outlined,

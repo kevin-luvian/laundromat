@@ -6,6 +6,6 @@ part of 'event.dart';
 // DaoGenerator
 // **************************************************************************
 
-mixin _$EventDaoMixin on DatabaseAccessor<DriftDB> {
+mixin _$EventDaoMixin on DatabaseAccessor<EventDB> {
   $EventsTable get events => attachedDatabase.events;
 }

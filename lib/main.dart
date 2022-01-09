@@ -4,13 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:laundry/blocs/account/bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/cubits/locale.dart';
+import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/db/event_db.dart';
+import 'package:laundry/helpers/db_connection.dart';
 import 'package:laundry/l10n/supported_locale.dart';
 import 'package:laundry/layouts/authStaff.dart';
 import 'package:laundry/styles/theme.dart';
 
+void _registerGetIt() {
+  GetIt.I.registerSingleton(DriftDB(openReadDBConnection()));
+  GetIt.I.registerSingleton(EventDB(openEventDBConnection()));
+}
+
 void main() {
+  _registerGetIt();
   return runApp(const MyApp());
 }
 
@@ -40,13 +50,12 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _globalStates(Widget child) {
+    final _db = GetIt.I.get<DriftDB>();
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AccountBloc>(
-          create: (_) => AccountBloc(),
-        ),
+        BlocProvider<AuthBloc>(create: (_) => AuthBloc(_db)),
         BlocProvider<LocaleCubit>(
-          create: (_) => LocaleCubit(),
+          create: (_) => LocaleCubit(_db)..setupLocale(),
         ),
       ],
       child: child,

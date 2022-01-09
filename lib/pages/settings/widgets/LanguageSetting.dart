@@ -20,7 +20,7 @@ class LanguageSetting extends StatelessWidget {
               onPressed: () {
                 context.read<LocaleCubit>().setLocale(const dui.Locale("id"));
               }),
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           _buildLanguageButton(
               context: context,
               text: "English",
@@ -39,17 +39,20 @@ class LanguageSetting extends StatelessWidget {
     required bool isActive,
     required void Function() onPressed,
   }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        primary:
-            isActive ? Theme.of(context).colorScheme.primary : GlobalColor.dim,
-        padding: const EdgeInsets.all(80),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(7)),
+    return Flexible(
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          primary: isActive
+              ? Theme.of(context).colorScheme.primary
+              : GlobalColor.dim,
+          minimumSize: const Size.fromHeight(150.0),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(7)),
+          ),
         ),
+        child: Text(text),
       ),
-      child: Text(text),
     );
   }
 }

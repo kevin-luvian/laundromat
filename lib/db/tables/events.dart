@@ -17,13 +17,15 @@ class JsonConverter extends TypeConverter<Map<String, dynamic>, String> {
 class Events extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  TextColumn get streamID => text()();
+  TextColumn get streamId => text()();
 
   TextColumn get streamType => text()();
 
   TextColumn get tag => text()();
 
   IntColumn get version => integer()();
+
+  DateTimeColumn get date => dateTime().withDefault(currentDate)();
 
   TextColumn get data => text().map(const JsonConverter())();
 

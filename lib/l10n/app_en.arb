@@ -2,6 +2,6 @@
   "checkout": "Checkout",
   "settings": "Settings",
   "select_language": "Select Language",
-  "new_orders": "New Orders",
+  "new_order": "New Order",
   "orders": "Orders"
 }
