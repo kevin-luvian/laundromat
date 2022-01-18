@@ -5,15 +5,21 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_io/io.dart';
 
-LazyDatabase openReadDBConnection() => _openConnection("reads");
+LazyDatabase openReadDBConnection() =>
+    LazyDatabase(() => _createDatabase("reads"));
 
-LazyDatabase openEventDBConnection() => _openConnection("events");
+Future<NativeDatabase> openReadDBConnection2() => _createDatabase("reads");
 
-LazyDatabase _openConnection(String filename) => LazyDatabase(() async {
-      // final dbFolder = await getApplicationDocumentsDirectory();
-      final dbFolder = (await getExternalCacheDirectories())![0];
-      final file = File(path.join(dbFolder.path, '$filename.sqlite'));
+LazyDatabase openEventDBConnection() =>
+    LazyDatabase(() => _createDatabase("events"));
 
-      logger.i(dbFolder);
-      return NativeDatabase(file);
-    });
+Future<NativeDatabase> openEventDBConnection2() => _createDatabase("events");
+
+Future<NativeDatabase> _createDatabase(String filename) async {
+  final dbFolder = await getApplicationDocumentsDirectory();
+  // final dbFolder = await getExternalStorageDirectory();
+  final file = File(path.join(dbFolder.path, '$filename.sqlite'));
+
+  logger.i(dbFolder);
+  return NativeDatabase(file);
+}

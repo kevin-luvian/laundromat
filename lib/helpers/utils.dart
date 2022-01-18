@@ -10,3 +10,11 @@ Value<T> wrapAbsentValue<T>(T? value) =>
     value == null ? const Value.absent() : Value(value);
 
 const uuid = Uuid();
+
+String makeStreamId(String streamType) => "$streamType-${uuid.v4()}";
+
+abstract class Serializer<T> {
+  Map<String, dynamic> toJson(T t);
+
+  T fromJson(Map<String, dynamic> data);
+}

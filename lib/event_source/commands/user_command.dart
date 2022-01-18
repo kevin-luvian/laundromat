@@ -14,17 +14,27 @@ class UserCommand {
     required String name,
     required String password,
     required String role,
+    required int pin,
   }) async {
-    password = Crypt.sha256(password).toString();
-    var streamId = UserEvent.streamType + "-" + uuid.v4();
+    if (pin.toString().length != 4) {
+      throw Exception("pin must be a four digit integer");
+    }
 
-    final event = UserCreated(
+    password = Crypt.sha256(password).toString();
+    var streamId = makeStreamId(UserEvent.streamType);
+
+    final event = ProjectionEvent(
       streamId: streamId,
-      name: name,
-      password: password,
-      role: role,
+      streamTag: UserEvent.streamType,
+      streamType: UserCreated.tag,
       date: DateTime.now(),
       version: 1,
+      data: UserCreated(
+        name: name,
+        password: password,
+        role: role,
+        pin: pin,
+      ),
     );
 
     await persistEvent(_eventDao, event);
@@ -39,23 +49,30 @@ class UserCommand {
   }) async {
     password = password != null ? Crypt.sha256(password).toString() : null;
 
-    final event = UserUpdated(
+    final event = ProjectionEvent(
       streamId: streamId,
+      streamTag: UserEvent.streamType,
+      streamType: UserUpdated.tag,
       date: DateTime.now(),
       version: await _eventDao.lastVersion(streamId) + 1,
-      name: name,
-      password: password,
-      role: role,
+      data: UserUpdated(
+        name: name,
+        password: password,
+        role: role,
+      ),
     );
 
     await persistEvent(_eventDao, event);
   }
 
   Future<void> deactivate({required String streamId}) async {
-    final event = UserDeactivated(
+    final event = ProjectionEvent(
       streamId: streamId,
+      streamTag: UserEvent.streamType,
+      streamType: UserDeactivated.tag,
       date: DateTime.now(),
       version: await _eventDao.lastVersion(streamId) + 1,
+      data: UserDeactivated(),
     );
 
     await persistEvent(_eventDao, event);

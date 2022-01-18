@@ -19,8 +19,8 @@ void main() {
 
   test('should be default session', () async {
     final setting = await sessionDao.find();
-    expect(setting.lang, defaultSession.lang.value);
-    expect(setting.theme, defaultSession.theme.value);
+    expect(setting.lang, defaultSession.lang);
+    expect(setting.theme, defaultSession.theme);
   });
 
   test('create one session', () async {

@@ -19,13 +19,14 @@ class UserDao extends DatabaseAccessor<DriftDB> with _$UserDaoMixin {
   }
 
   Future<User?> authenticate(String name, String password) async {
-    final user = await (select(users)..where((user) => user.name.equals(name)))
+    final user = await (select(users)
+          ..where((user) => user.name.equals(name))
+          ..limit(1))
         .getSingleOrNull();
-    if (user != null && Crypt.sha256(password).match(user.password)) {
+    if (user != null && Crypt(user.password).match(password)) {
       return user;
     }
     return null;
-    // password = password != null ? Crypt.sha256(password).toString() : null;
   }
 
   Future<int> createUser(User user) {

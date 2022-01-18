@@ -1,8 +1,8 @@
-import 'dart:ui' as dui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/cubits/locale.dart';
+import 'package:laundry/cubits/session.dart';
+import 'package:laundry/db/dao/session/session.dart';
+import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/styles/theme.dart';
 
 class LanguageSetting extends StatelessWidget {
@@ -10,24 +10,26 @@ class LanguageSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LocaleCubit, dui.Locale>(
-      builder: (_, locale) => Row(
+    return BlocBuilder<SessionCubit, Session?>(
+      builder: (_, session) => Row(
         children: [
           _buildLanguageButton(
-              context: context,
-              text: "Indonesia",
-              isActive: locale.languageCode == "id",
-              onPressed: () {
-                context.read<LocaleCubit>().setLocale(const dui.Locale("id"));
-              }),
+            context: context,
+            text: "Indonesia",
+            isActive: session?.lang == "id",
+            onPressed: () {
+              context.read<SessionCubit>().setLocale(LocaleChoice.id);
+            },
+          ),
           const SizedBox(width: 10),
           _buildLanguageButton(
-              context: context,
-              text: "English",
-              isActive: locale.languageCode == "en",
-              onPressed: () {
-                context.read<LocaleCubit>().setLocale(const dui.Locale("en"));
-              })
+            context: context,
+            text: "English",
+            isActive: session?.lang == "en",
+            onPressed: () {
+              context.read<SessionCubit>().setLocale(LocaleChoice.en);
+            },
+          ),
         ],
       ),
     );

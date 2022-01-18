@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/db/tables/users.dart';
 
 abstract class AuthState extends Equatable {}
 
@@ -19,9 +20,17 @@ class AuthenticationFailed extends AuthState {
 }
 
 class Authenticated extends AuthState {
+  Authenticated(this.user);
+
   final User user;
 
-  Authenticated(this.user);
+  get isAdmin {
+    return user.role == userRoleAdmin;
+  }
+
+  get isStaff {
+    return user.role == userRoleStaff;
+  }
 
   @override
   List<Object?> get props => [user];

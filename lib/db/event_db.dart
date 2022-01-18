@@ -13,6 +13,10 @@ const daos = [EventDao];
 class EventDB extends _$EventDB {
   EventDB(QueryExecutor e) : super(e);
 
+  Future<void> open() async {
+    await (select(events)..where((tbl) => tbl.id.equals(0))).get();
+  }
+
   @override
   int get schemaVersion => 1;
 
@@ -22,13 +26,27 @@ class EventDB extends _$EventDB {
           logger.i("event database connected");
 
           if (details.wasCreated) {
-            // UserCommand(this).create(
-            //   username: "admin",
-            //   password: "password",
-            //   fullName: "the admin",
-            //   role: "admin",
-            // );
+            UserCommand(this).create(
+              name: "admin",
+              password: "password",
+              role: "admin",
+              pin: 1234,
+            );
+            logger.i("Create admin triggered");
           }
         },
       );
+}
+
+class EventDBExecutor extends QueryExecutorUser {
+  @override
+  Future<void> beforeOpen(
+    QueryExecutor executor,
+    OpeningDetails details,
+  ) async {
+    logger.i("Executor Open");
+  }
+
+  @override
+  int get schemaVersion => 1;
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/pages/settings/widgets/DriftViewer.dart';
 import 'package:laundry/pages/settings/widgets/LanguageSetting.dart';
+import 'package:laundry/pages/settings/widgets/LogoutSetting.dart';
+import 'package:laundry/pages/settings/widgets/ThemeSetting.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -15,6 +17,8 @@ class SettingsPage extends StatelessWidget {
           title: AppLocalizations.of(context)?.select_language ??
               "Select Language",
           child: const LanguageSetting()),
+      settingCard(title: "Theme", child: const ThemeSetting()),
+      settingCard(title: "Logout", child: const LogoutSetting()),
       settingCard(title: "View Drift DB Data", child: const DriftViewer()),
     ];
     return ListView.separated(

@@ -2,50 +2,54 @@ import 'dart:async';
 
 import 'package:laundry/db/dao/user/user.dart';
 import 'package:laundry/db/drift_db.dart';
-import 'package:laundry/db/event_db.dart';
+import 'package:laundry/event_source/events/declare.dart';
 import 'package:laundry/event_source/events/user_event.dart';
+import 'package:laundry/event_source/projectors/declare.dart';
 import 'package:laundry/helpers/utils.dart';
 
-class UserProjector {
-  final UserDao userDao;
-
+class UserProjector implements IProjector {
   UserProjector(DriftDB db) : userDao = UserDao(db);
 
-  StreamSubscription<Event> listen(Stream<Event> eventStream) =>
-      eventStream.listen(project);
+  final UserDao userDao;
 
-  Future<void> project(Event event) async {
+  @override
+  project(event) async {
     switch (event.tag) {
-      case "UserCreated":
-        return create(UserCreated.fromEvent(event));
-      case "UserUpdated":
-        return update(UserUpdated.fromEvent(event));
-      case "UserDeactivated":
-        return deactivate(UserDeactivated.fromEvent(event));
+      case UserCreated.tag:
+        return create(
+            ProjectionEvent.fromEvent(event, UserCreatedSerializer()));
+      case UserUpdated.tag:
+        return update(
+            ProjectionEvent.fromEvent(event, UserUpdatedSerializer()));
+      case UserDeactivated.tag:
+        return deactivate(
+            ProjectionEvent.fromEvent(event, UserDeactivatedSerializer()));
     }
   }
 
-  Future<void> create(UserCreated ucEvent) async {
+  Future<void> create(ProjectionEvent<UserCreated> event) async {
     await userDao.createUser(User(
-      id: ucEvent.streamId,
-      name: ucEvent.name,
-      password: ucEvent.password,
-      role: ucEvent.role,
+      id: event.streamId,
+      name: event.data.name,
+      password: event.data.password,
+      role: event.data.role,
+      pin: event.data.pin,
     ));
   }
 
-  Future<void> update(UserUpdated uEvent) async {
+  Future<void> update(ProjectionEvent<UserUpdated> event) async {
     await userDao.updateUser(
-      uEvent.streamId,
+      event.streamId,
       UsersCompanion(
-        name: wrapAbsentValue(uEvent.name),
-        password: wrapAbsentValue(uEvent.password),
-        role: wrapAbsentValue(uEvent.role),
+        name: wrapAbsentValue(event.data.name),
+        password: wrapAbsentValue(event.data.password),
+        role: wrapAbsentValue(event.data.role),
+        pin: wrapAbsentValue(event.data.pin),
       ),
     );
   }
 
-  Future<void> deactivate(UserDeactivated uEvent) async {
-    await userDao.deleteUser(uEvent.streamId);
+  Future<void> deactivate(ProjectionEvent<UserDeactivated> event) async {
+    await userDao.deleteUser(event.streamId);
   }
 }

@@ -4,23 +4,35 @@ import 'package:laundry/db/tables/sessions.dart';
 
 part 'session.g.dart';
 
-const defaultSession =
-    SessionsCompanion(lang: Value("id"), theme: Value("red_velvet"));
+enum ThemeChoice { crimson, ocean }
+enum LocaleChoice { id, en }
+
+const _sessionId = 10;
+final defaultSession = Session(
+  id: _sessionId,
+  lang: LocaleChoice.id.name,
+  theme: ThemeChoice.crimson.name,
+  loggedInDate: DateTime(0),
+  staffId: '',
+);
 
 @DriftAccessor(tables: [Sessions])
 class SessionDao extends DatabaseAccessor<DriftDB> with _$SessionDaoMixin {
   SessionDao(DriftDB db) : super(db);
 
   Future<Session> find() async {
-    final setting = await (select(sessions)..limit(1)).getSingleOrNull();
-    if (setting == null) {
-      return await into(sessions).insertReturning(defaultSession);
+    final session = await (select(sessions)
+          ..where((s) => s.id.equals(_sessionId)))
+        .getSingleOrNull();
+    if (session == null) {
+      await into(sessions).insert(defaultSession);
+      return find();
     }
-    return setting;
+    return session;
   }
 
   Future<void> mutate(SessionsCompanion s) async {
-    final setting = await find();
-    await (update(sessions)..where((s) => s.id.equals(setting.id))).write(s);
+    final session = await find();
+    await (update(sessions)..where((s) => s.id.equals(session.id))).write(s);
   }
 }

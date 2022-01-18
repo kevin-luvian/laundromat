@@ -11,23 +11,24 @@ class CheckoutDrawer extends StatefulWidget {
 
 class _CheckoutDrawerState extends State<CheckoutDrawer>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animation;
+  late AnimationController _controller;
+  late final Animation<double> _animation;
   bool show = true;
 
   @override
   initState() {
-    _animation = AnimationController(
+    _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
-    );
-    _animation.forward();
-
+    )..forward();
+    _animation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn));
     super.initState();
   }
 
   @override
   void dispose() {
-    _animation.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -35,9 +36,9 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
     setState(() {
       show = !show;
       if (show) {
-        _animation.forward();
+        _controller.forward();
       } else {
-        _animation.reverse();
+        _controller.reverse();
       }
     });
   }
@@ -65,7 +66,7 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
                   const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             ),
             child: RotationTransition(
-              turns: Tween(begin: 0.0, end: 0.5).animate(_animation),
+              turns: Tween(begin: 0.0, end: 0.5).animate(_controller),
               child: const Icon(
                 Icons.keyboard_arrow_up,
                 color: Color.fromRGBO(0, 0, 0, 0.5),

@@ -2,22 +2,24 @@ import 'dart:async';
 
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
+import 'package:laundry/event_source/projectors/product_projector.dart';
 import 'package:laundry/event_source/projectors/user_projector.dart';
 import 'package:laundry/event_source/stream.dart';
 
 class ProjectorListeners {
   final DriftDB _db;
-  final List<StreamSubscription<Event>> subs = [];
+  List<StreamSubscription<Event>> subs = [];
 
   ProjectorListeners(this._db);
 
   setup() {
-    subs.add(UserProjector(_db).listen(EventStream.stream));
+    subs = [
+      UserProjector(_db),
+      ProductProjector(_db),
+    ].map((p) => EventStream.stream.listen(p.project)).toList();
   }
 
   Future<void> dispose() async {
-    for (final s in subs) {
-      await s.cancel();
-    }
+    await Future.wait(subs.map((s) => s.cancel()).toList());
   }
 }

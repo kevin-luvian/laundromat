@@ -3,5 +3,10 @@
   "settings": "Settings",
   "select_language": "Select Language",
   "new_order": "New Order",
-  "orders": "Orders"
+  "orders": "Orders",
+  "products": "Products",
+  "logout": "Logout",
+  "change_to_different_account": "change to different account",
+  "authenticating": "authenticating",
+  "loading": "loading"
 }

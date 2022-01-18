@@ -53,12 +53,14 @@ void main() {
       name: "bob",
       password: "bob123",
       role: "fisherman",
+      pin: 1234,
     );
 
     await userCommand.create(
       name: "bob2",
       password: "bob123",
       role: "fisherman",
+      pin: 1235,
     );
 
     final events = await eventDao.allEvents();
@@ -81,6 +83,7 @@ void main() {
       name: "bob",
       password: "bob123",
       role: "fisherman",
+      pin: 1234,
     );
 
     await userCommand.update(streamId: streamId, name: "uber bob");
@@ -104,6 +107,7 @@ void main() {
       name: "bob",
       password: "bob123",
       role: "fisherman",
+      pin: 1234,
     );
 
     await userCommand.deactivate(streamId: streamId);
