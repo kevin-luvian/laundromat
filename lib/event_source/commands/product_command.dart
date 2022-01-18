@@ -19,10 +19,11 @@ class ProductCommand {
 
     final event = ProjectionEvent(
       streamId: streamId,
-      streamTag: PRODUCT_EVENT_TYPE,
-      streamType: ProductCreated.tag,
+      streamTag: ProductCreated.tag,
+      streamType: PRODUCT_EVENT_TYPE,
       date: DateTime.now(),
       version: 1,
+      serializer: ProductCreatedSerializer(),
       data: ProductCreated(
         category: category,
         title: title,

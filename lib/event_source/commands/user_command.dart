@@ -25,10 +25,11 @@ class UserCommand {
 
     final event = ProjectionEvent(
       streamId: streamId,
-      streamTag: UserEvent.streamType,
-      streamType: UserCreated.tag,
+      streamTag: UserCreated.tag,
+      streamType: UserEvent.streamType,
       date: DateTime.now(),
       version: 1,
+      serializer: UserCreatedSerializer(),
       data: UserCreated(
         name: name,
         password: password,
@@ -51,8 +52,8 @@ class UserCommand {
 
     final event = ProjectionEvent(
       streamId: streamId,
-      streamTag: UserEvent.streamType,
-      streamType: UserUpdated.tag,
+      streamTag: UserUpdated.tag,
+      streamType: UserEvent.streamType,
       date: DateTime.now(),
       version: await _eventDao.lastVersion(streamId) + 1,
       data: UserUpdated(
@@ -60,6 +61,7 @@ class UserCommand {
         password: password,
         role: role,
       ),
+      serializer: UserUpdatedSerializer(),
     );
 
     await persistEvent(_eventDao, event);
@@ -68,11 +70,12 @@ class UserCommand {
   Future<void> deactivate({required String streamId}) async {
     final event = ProjectionEvent(
       streamId: streamId,
-      streamTag: UserEvent.streamType,
-      streamType: UserDeactivated.tag,
+      streamTag: UserDeactivated.tag,
+      streamType: UserEvent.streamType,
       date: DateTime.now(),
       version: await _eventDao.lastVersion(streamId) + 1,
       data: UserDeactivated(),
+      serializer: UserDeactivatedSerializer(),
     );
 
     await persistEvent(_eventDao, event);

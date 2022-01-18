@@ -5,7 +5,6 @@ import 'package:laundry/db/dao/user/user.dart';
 import 'package:laundry/db/tables/products.dart';
 import 'package:laundry/db/tables/sessions.dart';
 import 'package:laundry/db/tables/users.dart';
-import 'package:laundry/helpers/logger.dart';
 
 part 'drift_db.g.dart';
 
@@ -25,8 +24,6 @@ class DriftDB extends _$DriftDB {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        beforeOpen: (details) async {
-          logger.i("drift database connected");
-        },
+        beforeOpen: (details) async {},
       );
 }

@@ -6,8 +6,7 @@ import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/helpers/utils.dart';
 
 class ProjectionEvent<T> {
-  Serializer<T>? _serializer;
-
+  final Serializer<T> serializer;
   final String streamId;
   final String streamType;
   final String streamTag;
@@ -15,16 +14,16 @@ class ProjectionEvent<T> {
   final int version;
   final T data;
 
-  ProjectionEvent({
-    required this.streamId,
-    required this.streamType,
-    required this.streamTag,
-    required this.date,
-    required this.version,
-    required this.data,
-  });
+  ProjectionEvent(
+      {required this.streamId,
+      required this.streamType,
+      required this.streamTag,
+      required this.date,
+      required this.version,
+      required this.data,
+      required this.serializer});
 
-  ProjectionEvent.fromEvent(Event event, Serializer<T> serializer)
+  ProjectionEvent.fromEvent(Event event, this.serializer)
       : streamId = event.streamId,
         streamType = event.streamType,
         date = event.date,
@@ -39,7 +38,7 @@ class ProjectionEvent<T> {
       tag: Value(streamTag),
       version: Value(version),
       date: Value(date),
-      data: Value(_serializer?.toJson(data) ?? {}),
+      data: Value(serializer.toJson(data)),
     );
   }
 }

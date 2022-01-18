@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:drift/native.dart';
 import 'package:laundry/db/dao/event/event.dart';
 import 'package:laundry/db/dao/user/user.dart';
@@ -9,7 +7,7 @@ import 'package:laundry/event_source/commands/user_command.dart';
 import 'package:laundry/event_source/events/user_event.dart';
 import 'package:laundry/event_source/projectors/projector_listeners.dart';
 import 'package:laundry/event_source/stream.dart';
-import 'package:laundry/helpers/logger.dart';
+import 'package:laundry/helpers/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -19,7 +17,6 @@ void main() {
   late UserDao userDao;
   late UserCommand userCommand;
   late ProjectorListeners listeners;
-  late StreamSubscription<Event> eventLogger;
 
   setUp(() async {
     db = EventDB(NativeDatabase.memory());
@@ -28,10 +25,9 @@ void main() {
     eventDao = EventDao(db);
     userDao = UserDao(ddb);
     listeners = ProjectorListeners(ddb)..setup();
-    eventLogger = EventStream.stream.listen((event) {
-      logger.i(event);
-    });
 
+    await db.delete(db.events).go();
+    await userDao.truncate();
     expect((await eventDao.allEvents()).length, equals(0));
     expect((await userDao.allUsers()).length, equals(0));
   });
@@ -39,7 +35,6 @@ void main() {
   tearDown(() async {
     await db.close();
     await ddb.close();
-    await eventLogger.cancel();
     await listeners.dispose();
   });
 
@@ -65,12 +60,6 @@ void main() {
 
     final events = await eventDao.allEvents();
     expect(events.length, greaterThan(0));
-
-    final users = await userDao.allUsers();
-    logger.d(users);
-    expect(users.length, greaterThan(0));
-
-    eventLogger.cancel();
   });
 
   test('can update user', () async {
@@ -91,8 +80,8 @@ void main() {
     final events = await eventDao.allEvents();
     expect(events.length, 2);
 
+    await shortDelay();
     final users = await userDao.allUsers();
-    logger.d(users);
     expect(users.length, 1);
     expect(users[0].name, "uber bob");
   });
@@ -115,8 +104,8 @@ void main() {
     final events = await eventDao.allEvents();
     expect(events.length, 2);
 
+    await shortDelay();
     final users = await userDao.allUsers();
-    logger.d(users);
     expect(users.length, 0);
   });
 }

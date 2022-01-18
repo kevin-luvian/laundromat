@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+Future shortDelay() => Future.delayed(const Duration(milliseconds: 50));
+
 formatPrice(double value) {
   return NumberFormat("#,###", "id").format(value);
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:drift/native.dart';
 import 'package:laundry/db/dao/event/event.dart';
 import 'package:laundry/db/dao/product/product.dart';
@@ -9,7 +7,7 @@ import 'package:laundry/event_source/commands/product_command.dart';
 import 'package:laundry/event_source/events/product_event.dart';
 import 'package:laundry/event_source/projectors/projector_listeners.dart';
 import 'package:laundry/event_source/stream.dart';
-import 'package:laundry/helpers/logger.dart';
+import 'package:laundry/helpers/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -19,7 +17,6 @@ void main() {
   late ProductDao productDao;
   late ProductCommand productCommand;
   late ProjectorListeners listeners;
-  late StreamSubscription<Event> eventLogger;
 
   setUp(() async {
     db = EventDB(NativeDatabase.memory());
@@ -32,16 +29,11 @@ void main() {
     await db.delete(db.events).go();
     expect((await eventDao.allEvents()).length, equals(0));
     expect((await productDao.all()).length, equals(0));
-
-    eventLogger = EventStream.stream.listen((event) {
-      logger.i(event);
-    });
   });
 
   tearDown(() async {
     await db.close();
     await ddb.close();
-    await eventLogger.cancel();
     await listeners.dispose();
   });
 
@@ -61,8 +53,8 @@ void main() {
     final events = await eventDao.allEvents();
     expect(events.length, 1);
 
+    await shortDelay();
     final products = await productDao.all();
-    logger.d(products);
     expect(products.length, 1);
     expect(products[0].title, "bwoo");
   });
