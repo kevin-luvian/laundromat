@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/common/left_persistent_drawer.dart';
 import 'package:laundry/common/rect_button.dart';
-import 'package:laundry/cubits/product_drawer.dart';
+import 'package:laundry/cubits/right_drawer.dart';
 import 'package:laundry/l10n/access_locale.dart';
+import 'package:laundry/pages/productsManager/widgets/animated_category_list.dart';
+import 'package:laundry/pages/productsManager/widgets/create_product_form.dart';
 
-class ProductLeftNavigator extends StatelessWidget {
+class ProductLeftNavigator extends StatefulWidget {
   const ProductLeftNavigator({Key? key}) : super(key: key);
 
+  @override
+  _ProductLeftNavigatorState createState() => _ProductLeftNavigatorState();
+}
+
+class _ProductLeftNavigatorState extends State<ProductLeftNavigator> {
   final EdgeInsets _padding = const EdgeInsets.all(10);
   final double _contentGap = 7.0;
 
@@ -18,7 +25,7 @@ class ProductLeftNavigator extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildHeader(context),
-          const Expanded(child: Text("abcd")),
+          _buildCategorySelector(),
           _createProductButton(context),
         ],
       ),
@@ -47,6 +54,13 @@ class ProductLeftNavigator extends StatelessWidget {
     );
   }
 
+  Widget _buildCategorySelector() {
+    return const Flexible(
+      fit: FlexFit.loose,
+      child: AnimatedCategoryList(),
+    );
+  }
+
   Widget _createProductButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -56,9 +70,8 @@ class ProductLeftNavigator extends StatelessWidget {
         _padding.bottom,
       ),
       child: RectButton(
-        onPressed: () => context
-            .read<ProductDrawerCubit>()
-            .openDrawer(ProductDrawerIndex.create),
+        onPressed: () =>
+            context.read<RightDrawerCubit>().showDrawer(CREATE_PRODUCT_INDEX),
         child: const Icon(Icons.add, size: 30),
       ),
     );

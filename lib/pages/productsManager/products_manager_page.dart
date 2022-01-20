@@ -1,39 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:laundry/blocs/products/bloc.dart';
 import 'package:laundry/common/right_drawer.dart';
-import 'package:laundry/cubits/product_drawer.dart';
 import 'package:laundry/cubits/right_drawer.dart';
+import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/pages/productsManager/widgets/create_product_form.dart';
 import 'package:laundry/pages/productsManager/widgets/product_left_navigator.dart';
+import 'package:laundry/pages/productsManager/widgets/products_view.dart';
 
 class ProductsManagerPage extends StatelessWidget {
   const ProductsManagerPage({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _attachProviders({required Widget child}) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<RightDrawerCubit>(create: (_) => RightDrawerCubit()),
-        BlocProvider<ProductDrawerCubit>(
-          create: (ctx) => ProductDrawerCubit(
-            rdc: BlocProvider.of<RightDrawerCubit>(ctx),
-          ),
-        ),
+        BlocProvider<ProductsBloc>(
+            create: (_) => ProductsBloc(GetIt.I.get<DriftDB>())),
       ],
+      child: child,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _attachProviders(
       child: _buildDrawer(
         child: Row(
-          children: [
-            const ProductLeftNavigator(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("products.dart"),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text("content"),
-                ),
-              ],
-            ),
+          children: const [
+            ProductLeftNavigator(),
+            Expanded(child: ProductsView()),
           ],
         ),
       ),
@@ -41,18 +38,18 @@ class ProductsManagerPage extends StatelessWidget {
   }
 
   Widget _buildDrawer({required Widget child}) {
-    return BlocBuilder<ProductDrawerCubit, ProductDrawerIndex>(
+    return BlocBuilder<RightDrawerCubit, RightDrawerState>(
       builder: (_, _state) {
         late RightDrawerContent content;
-        if (_state == ProductDrawerIndex.update) {
-          content = RightDrawerContent(
-            label: "Update Product",
-            child: _buildAddProduct(),
-          );
-        } else {
+        if (_state.index == CREATE_PRODUCT_INDEX) {
           content = const RightDrawerContent(
             label: "Create Product",
             child: CreateProductForm(),
+          );
+        } else {
+          content = RightDrawerContent(
+            label: "Update Product",
+            child: _buildUpdateProduct(),
           );
         }
         return RightDrawer(child: child, content: content);
@@ -60,14 +57,7 @@ class ProductsManagerPage extends StatelessWidget {
     );
   }
 
-  RightDrawerContent whichDrawer(int index) {
-    return RightDrawerContent(
-      label: "Create Product",
-      child: _buildAddProduct(),
-    );
-  }
-
-  static Widget _buildAddProduct() {
+  static Widget _buildUpdateProduct() {
     return const Padding(
       padding: EdgeInsets.all(10),
       child: Text("check"),

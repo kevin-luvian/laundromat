@@ -10,4 +10,6 @@ class Products extends Table {
   IntColumn get price => integer()();
 
   TextColumn get unit => text()();
+
+  TextColumn get imagePath => text().nullable()();
 }

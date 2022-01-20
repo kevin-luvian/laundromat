@@ -3,12 +3,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:laundry/common/inputs/text_auto_complete.dart';
 import 'package:laundry/common/rect_button.dart';
+import 'package:laundry/common/snackbar.dart';
+import 'package:laundry/db/event_db.dart';
+import 'package:laundry/event_source/commands/product_command.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_formatter/currency.dart';
-import 'package:laundry/helpers/logger.dart';
+import 'package:laundry/helpers/utils.dart';
+import 'package:laundry/running_assets/dao_access.dart';
+
+const CREATE_PRODUCT_INDEX = 1;
 
 class CreateProductForm extends StatefulWidget {
   const CreateProductForm({Key? key}) : super(key: key);
@@ -20,7 +27,6 @@ class CreateProductForm extends StatefulWidget {
 class _CreateProductFormState extends State<CreateProductForm> {
   final _picker = ImagePicker();
 
-  var unitVal = "";
   File? productImage;
   final unitCtr = TextEditingController();
   final categoryCtr = TextEditingController();
@@ -38,15 +44,23 @@ class _CreateProductFormState extends State<CreateProductForm> {
   }
 
   submitState() async {
-    logger.i("OnSubmit");
-    logger.i(categoryCtr.text);
-    logger.i(titleCtr.text);
-    logger.i(priceCtr.text);
-    logger.i(unitCtr.text);
+    int price;
+    try {
+      price = priceFormatter.parse(priceCtr.text).toInt();
+    } catch (_) {
+      price = 0;
+    }
+    final productId = await ProductCommand(GetIt.I.get<EventDB>()).create(
+      category: categoryCtr.text,
+      title: titleCtr.text,
+      price: price,
+      unit: unitCtr.text,
+    );
     if (productImage != null) {
       final pathToSave = await saveExtFile(titleCtr.text, productImage!);
-      logger.i(pathToSave);
+      productDao.updateImageAsync(productId, pathToSave);
     }
+    showToast(context: context, text: "Product Created");
   }
 
   @override

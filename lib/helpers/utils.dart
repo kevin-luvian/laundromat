@@ -20,3 +20,11 @@ abstract class Serializer<T> {
 
   T fromJson(Map<String, dynamic> data);
 }
+
+int parseIntOrZero(String text) => int.tryParse(text, radix: 10) ?? 0;
+
+final priceFormatter = NumberFormat.currency(
+  locale: "id",
+  customPattern: 'IDR #,###',
+  decimalDigits: 0,
+);

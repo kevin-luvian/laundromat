@@ -585,12 +585,14 @@ class Product extends DataClass implements Insertable<Product> {
   final String category;
   final int price;
   final String unit;
+  final String? imagePath;
   Product(
       {required this.id,
       required this.title,
       required this.category,
       required this.price,
-      required this.unit});
+      required this.unit,
+      this.imagePath});
   factory Product.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Product(
@@ -604,6 +606,8 @@ class Product extends DataClass implements Insertable<Product> {
           .mapFromDatabaseResponse(data['${effectivePrefix}price'])!,
       unit: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}unit'])!,
+      imagePath: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}image_path']),
     );
   }
   @override
@@ -614,6 +618,9 @@ class Product extends DataClass implements Insertable<Product> {
     map['category'] = Variable<String>(category);
     map['price'] = Variable<int>(price);
     map['unit'] = Variable<String>(unit);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String?>(imagePath);
+    }
     return map;
   }
 
@@ -624,6 +631,9 @@ class Product extends DataClass implements Insertable<Product> {
       category: Value(category),
       price: Value(price),
       unit: Value(unit),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
     );
   }
 
@@ -636,6 +646,7 @@ class Product extends DataClass implements Insertable<Product> {
       category: serializer.fromJson<String>(json['category']),
       price: serializer.fromJson<int>(json['price']),
       unit: serializer.fromJson<String>(json['unit']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
     );
   }
   @override
@@ -647,6 +658,7 @@ class Product extends DataClass implements Insertable<Product> {
       'category': serializer.toJson<String>(category),
       'price': serializer.toJson<int>(price),
       'unit': serializer.toJson<String>(unit),
+      'imagePath': serializer.toJson<String?>(imagePath),
     };
   }
 
@@ -655,13 +667,15 @@ class Product extends DataClass implements Insertable<Product> {
           String? title,
           String? category,
           int? price,
-          String? unit}) =>
+          String? unit,
+          String? imagePath}) =>
       Product(
         id: id ?? this.id,
         title: title ?? this.title,
         category: category ?? this.category,
         price: price ?? this.price,
         unit: unit ?? this.unit,
+        imagePath: imagePath ?? this.imagePath,
       );
   @override
   String toString() {
@@ -670,13 +684,14 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('title: $title, ')
           ..write('category: $category, ')
           ..write('price: $price, ')
-          ..write('unit: $unit')
+          ..write('unit: $unit, ')
+          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, title, category, price, unit);
+  int get hashCode => Object.hash(id, title, category, price, unit, imagePath);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -685,7 +700,8 @@ class Product extends DataClass implements Insertable<Product> {
           other.title == this.title &&
           other.category == this.category &&
           other.price == this.price &&
-          other.unit == this.unit);
+          other.unit == this.unit &&
+          other.imagePath == this.imagePath);
 }
 
 class ProductsCompanion extends UpdateCompanion<Product> {
@@ -694,12 +710,14 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<String> category;
   final Value<int> price;
   final Value<String> unit;
+  final Value<String?> imagePath;
   const ProductsCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.category = const Value.absent(),
     this.price = const Value.absent(),
     this.unit = const Value.absent(),
+    this.imagePath = const Value.absent(),
   });
   ProductsCompanion.insert({
     required String id,
@@ -707,6 +725,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     required String category,
     required int price,
     required String unit,
+    this.imagePath = const Value.absent(),
   })  : id = Value(id),
         title = Value(title),
         category = Value(category),
@@ -718,6 +737,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<String>? category,
     Expression<int>? price,
     Expression<String>? unit,
+    Expression<String?>? imagePath,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -725,6 +745,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (category != null) 'category': category,
       if (price != null) 'price': price,
       if (unit != null) 'unit': unit,
+      if (imagePath != null) 'image_path': imagePath,
     });
   }
 
@@ -733,13 +754,15 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       Value<String>? title,
       Value<String>? category,
       Value<int>? price,
-      Value<String>? unit}) {
+      Value<String>? unit,
+      Value<String?>? imagePath}) {
     return ProductsCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
       category: category ?? this.category,
       price: price ?? this.price,
       unit: unit ?? this.unit,
+      imagePath: imagePath ?? this.imagePath,
     );
   }
 
@@ -761,6 +784,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (unit.present) {
       map['unit'] = Variable<String>(unit.value);
     }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String?>(imagePath.value);
+    }
     return map;
   }
 
@@ -771,7 +797,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('title: $title, ')
           ..write('category: $category, ')
           ..write('price: $price, ')
-          ..write('unit: $unit')
+          ..write('unit: $unit, ')
+          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
@@ -810,8 +837,14 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   late final GeneratedColumn<String?> unit = GeneratedColumn<String?>(
       'unit', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _imagePathMeta = const VerificationMeta('imagePath');
   @override
-  List<GeneratedColumn> get $columns => [id, title, category, price, unit];
+  late final GeneratedColumn<String?> imagePath = GeneratedColumn<String?>(
+      'image_path', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, title, category, price, unit, imagePath];
   @override
   String get aliasedName => _alias ?? 'products';
   @override
@@ -849,6 +882,10 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
           _unitMeta, unit.isAcceptableOrUnknown(data['unit']!, _unitMeta));
     } else if (isInserting) {
       context.missing(_unitMeta);
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(_imagePathMeta,
+          imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta));
     }
     return context;
   }

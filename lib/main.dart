@@ -30,7 +30,6 @@ Future<bool> _registerGetIt() async {
   GetIt.I.registerSingleton(EventDB(await openEventDBConnection2())..open());
   logger.i("Event DB connected");
 
-  GetIt.I.registerSingleton(UserCommand(GetIt.I.get<EventDB>()));
   ProjectorListeners(GetIt.I.get<DriftDB>()).setup();
 
   // session cubit is registered on main

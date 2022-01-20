@@ -23,10 +23,10 @@ class RightDrawer extends StatefulWidget {
   final Widget child;
 
   @override
-  RightDrawerState createState() => RightDrawerState();
+  _RightDrawerState createState() => _RightDrawerState();
 }
 
-class RightDrawerState extends State<RightDrawer>
+class _RightDrawerState extends State<RightDrawer>
     with SingleTickerProviderStateMixin {
   static const Duration _animationDuration = Duration(milliseconds: 500);
   late final AnimationController _controller;
@@ -34,9 +34,9 @@ class RightDrawerState extends State<RightDrawer>
 
   bool _clearBarrier = true;
   bool _show = false;
+  int currIndex = 0;
 
-  openDrawer(BuildContext context) {
-    BlocProvider.of<RightDrawerCubit>(context).showDrawer();
+  openDrawer() {
     setState(() {
       _show = true;
       _clearBarrier = false;
@@ -44,12 +44,15 @@ class RightDrawerState extends State<RightDrawer>
     });
   }
 
-  closeDrawer(BuildContext context) {
-    BlocProvider.of<RightDrawerCubit>(context).closeDrawer();
+  closeDrawer() {
     setState(() {
       _show = false;
       _controller.reverse();
     });
+  }
+
+  emitCloseDrawer(BuildContext context) {
+    BlocProvider.of<RightDrawerCubit>(context).closeDrawer(currIndex);
   }
 
   @override
@@ -75,12 +78,13 @@ class RightDrawerState extends State<RightDrawer>
     final maxHeight = MediaQuery.of(context).size.height;
     final surfaceColor = Theme.of(context).colorScheme.surface;
 
-    return BlocListener<RightDrawerCubit, bool>(
-      listener: (_ctx, _showRightDrawer) {
-        if (_showRightDrawer) {
-          openDrawer(_ctx);
+    return BlocListener<RightDrawerCubit, RightDrawerState>(
+      listener: (_ctx, _state) {
+        currIndex = _state.index;
+        if (_state.show) {
+          openDrawer();
         } else {
-          closeDrawer(_ctx);
+          closeDrawer();
         }
       },
       child: Align(
@@ -123,7 +127,7 @@ class RightDrawerState extends State<RightDrawer>
             SizedBox(
               width: 50,
               child: TextButton(
-                onPressed: () => closeDrawer(context),
+                onPressed: () => emitCloseDrawer(context),
                 style: ButtonStyle(
                   overlayColor:
                       MaterialStateColor.resolveWith((_) => splashColor),
@@ -153,7 +157,7 @@ class RightDrawerState extends State<RightDrawer>
               currentFocus.focusedChild != null) {
             unFocusInput(context);
           } else {
-            closeDrawer(context);
+            emitCloseDrawer(context);
           }
         },
         child: AnimatedOpacity(

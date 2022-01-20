@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'package:laundry/helpers/utils.dart';
 
 class CurrencyInputFormatter extends TextInputFormatter {
   @override
@@ -11,13 +11,7 @@ class CurrencyInputFormatter extends TextInputFormatter {
 
     double value = double.parse(newValue.text);
 
-    final formatter = NumberFormat.currency(
-      locale: "id",
-      customPattern: 'IDR #,###',
-      decimalDigits: 0,
-    );
-
-    String newText = formatter.format(value);
+    String newText = priceFormatter.format(value);
 
     return newValue.copyWith(
       text: newText,

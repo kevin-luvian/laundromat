@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -24,4 +25,8 @@ Future<String> saveExtFile(String prefix, File file) async {
   final pathToSave = await getFilePath(filename);
   file.copySync(pathToSave);
   return pathToSave;
+}
+
+ColorScheme colorScheme(BuildContext context) {
+  return Theme.of(context).colorScheme;
 }
