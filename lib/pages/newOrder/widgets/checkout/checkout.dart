@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/pages/newOrder/widgets/checkoutDrawer.dart';
-import 'package:laundry/pages/newOrder/widgets/checkoutHeader.dart';
-import 'package:laundry/pages/newOrder/widgets/checkoutOrderItem.dart';
-import 'package:laundry/pages/newOrder/widgets/checkoutPayment.dart';
-import 'package:laundry/pages/newOrder/widgets/checkoutPaymentAction.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkoutDrawer.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkoutHeader.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkoutOrderItem.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkoutPayment.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkoutPaymentAction.dart';
 
 class Checkout extends StatelessWidget {
   const Checkout({Key? key, required this.width, required this.padding}) : super(key: key);

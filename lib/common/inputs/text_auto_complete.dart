@@ -7,11 +7,13 @@ class TextAutoComplete extends StatelessWidget {
     required this.label,
     required this.options,
     required this.controller,
+    this.validator,
   }) : super(key: key);
 
   final String label;
   final List<String> options;
   final TextEditingController controller;
+  final String? Function(String?)? validator;
 
   final FocusNode _focusNode = FocusNode();
 
@@ -25,11 +27,12 @@ class TextAutoComplete extends StatelessWidget {
       focusNode: _focusNode,
       textEditingController: controller,
       fieldViewBuilder: (_ctx, _ctrl, _fNode, _f) {
-        return TextField(
+        return TextFormField(
           controller: _ctrl,
           focusNode: _fNode,
           decoration: boxInputDecoration(context: _ctx, label: label),
-          onSubmitted: (_) => _f(),
+          validator: validator,
+          onFieldSubmitted: (_) => _f(),
         );
       },
       optionsBuilder: (TextEditingValue _tVal) {

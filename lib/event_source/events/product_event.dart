@@ -34,6 +34,10 @@ class ProductUpdated {
   });
 }
 
+class ProductDeleted {
+  static const String tag = "ProductDeleted";
+}
+
 class ProductCreatedSerializer implements Serializer<ProductCreated> {
   @override
   ProductCreated fromJson(data) => ProductCreated(
@@ -68,4 +72,8 @@ class ProductUpdatedSerializer implements Serializer<ProductUpdated> {
         "price": t.price,
         "unit": t.unit,
       };
+}
+
+class ProductDeletedSerializer extends EmptySerializer<ProductDeleted> {
+  ProductDeletedSerializer() : super(ProductDeleted());
 }

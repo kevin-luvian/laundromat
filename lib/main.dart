@@ -13,7 +13,6 @@ import 'package:laundry/cubits/session.dart';
 import 'package:laundry/db/dao/session/session.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
-import 'package:laundry/event_source/commands/user_command.dart';
 import 'package:laundry/event_source/projectors/projector_listeners.dart';
 import 'package:laundry/helpers/db_connection.dart';
 import 'package:laundry/helpers/logger.dart';
@@ -89,7 +88,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             title: 'Laundromat',
             theme: _whichTheme(_session?.theme),
-            home: child,
+            home: SafeArea(child: child),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             locale: dui.Locale(lang),
             supportedLocales: L10n.support,

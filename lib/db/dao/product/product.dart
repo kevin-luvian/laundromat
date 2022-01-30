@@ -15,6 +15,9 @@ class ProductDao extends DatabaseAccessor<DriftDB> with _$ProductDaoMixin {
   Future<void> updateById(String id, ProductsCompanion info) =>
       (update(products)..where((p) => p.id.equals(id))).write(info);
 
+  Future<bool> deleteById(String id) async =>
+      await (delete(products)..where((p) => p.id.equals(id))).go() == 1;
+
   Future<List<Product>> all() => select(products).get();
 
   Stream<List<Product>> findAllByCategoryAsStream(String category) =>
@@ -26,20 +29,26 @@ class ProductDao extends DatabaseAccessor<DriftDB> with _$ProductDaoMixin {
   Stream<Product?> streamById(String id) =>
       (select(products)..where((p) => p.id.equals(id))).watchSingleOrNull();
 
-  void updateImageAsync(String id, String path) {
-    final productStream = streamById(id);
-    late StreamSubscription listener;
-    listener = productStream.listen((p) async {
-      if (p != null) {
-        updateById(id, ProductsCompanion(imagePath: Value(path)));
-        listener.cancel();
+  Future<void> updateImageSync(String id, String path) async {
+    await for (final product in streamById(id)) {
+      if (product != null) {
+        await updateById(id, ProductsCompanion(imagePath: Value(path)));
+        return;
       }
-    });
+    }
   }
 
   Stream<List<String>> distinctCategories() {
     final query = selectOnly(products, distinct: true)
-      ..addColumns([products.category]);
+      ..addColumns([products.category])
+      ..orderBy([OrderingTerm(expression: products.category)]);
     return query.map((row) => row.read(products.category) ?? "").watch();
+  }
+
+  Stream<List<String>> distinctUnits() {
+    final query = selectOnly(products, distinct: true)
+      ..addColumns([products.unit])
+      ..orderBy([OrderingTerm(expression: products.unit)]);
+    return query.map((row) => row.read(products.unit) ?? "").watch();
   }
 }

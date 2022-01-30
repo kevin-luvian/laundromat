@@ -37,7 +37,7 @@ void main() {
     await listeners.dispose();
   });
 
-  test('create one product commanded', () async {
+  test('create one product command', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
       emitsAnyOf([equals(ProductCreated.tag)]),
@@ -57,5 +57,70 @@ void main() {
     final products = await productDao.all();
     expect(products.length, 1);
     expect(products[0].title, "bwoo");
+  });
+
+  test('update one product command', () async {
+    expect(
+      EventStream.stream.map((e) => e.tag),
+      emitsInOrder([ProductCreated.tag, ProductUpdated.tag]),
+    );
+
+    final streamId = await productCommand.create(
+      category: "bwaaa",
+      title: "bwoo",
+      price: 10000,
+      unit: "unit",
+    );
+
+    await productCommand.update(streamId: streamId, category: "bwoosh");
+
+    final events = await eventDao.allEvents();
+    expect(events.length, 2);
+
+    await shortDelay();
+    final products = await productDao.all();
+    expect(products.length, 1);
+    expect(products[0].category, "bwoosh");
+  });
+
+  test('should not update null product', () async {
+    expect(
+      EventStream.stream.map((e) => e.tag),
+      emitsInOrder([ProductCreated.tag]),
+    );
+
+    final streamId = await productCommand.create(
+      category: "bwaaa",
+      title: "bwoo",
+      price: 10000,
+      unit: "unit",
+    );
+
+    await productCommand.update(streamId: streamId);
+
+    final events = await eventDao.allEvents();
+    expect(events.length, 1);
+  });
+
+  test('delete product command', () async {
+    expect(
+      EventStream.stream.map((e) => e.tag),
+      emitsInOrder([ProductCreated.tag, ProductDeleted.tag]),
+    );
+
+    final streamId = await productCommand.create(
+      category: "bwaaa",
+      title: "bwoo",
+      price: 10000,
+      unit: "unit",
+    );
+
+    await productCommand.delete(streamId: streamId);
+
+    final events = await eventDao.allEvents();
+    expect(events.length, 2);
+
+    final products = await productDao.all();
+    expect(products.length, 0);
   });
 }

@@ -3,12 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/db/dao/product/product.dart';
 import 'package:laundry/db/drift_db.dart';
 
-class ProductsBloc extends Bloc<CategoryChangedEvent, ProductsState> {
+class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final ProductDao _dao;
 
   ProductsBloc(DriftDB db)
       : _dao = ProductDao(db),
         super(EmptyProductsState()) {
+    on<ClearProductsEvent>((event, emit) {
+      emit(EmptyProductsState());
+    });
     on<CategoryChangedEvent>((event, emit) {
       final stream = _dao.findAllByCategoryAsStream(event.category);
       emit(StreamedProducts(stream));
@@ -28,7 +31,12 @@ class StreamedProducts extends ProductsState {
   StreamedProducts(this.stream);
 }
 
-abstract class ProductsEvent extends Equatable {}
+abstract class ProductsEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
+
+class ClearProductsEvent extends ProductsEvent {}
 
 class CategoryChangedEvent extends ProductsEvent {
   final String category;

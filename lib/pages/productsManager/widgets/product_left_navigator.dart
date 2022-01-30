@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laundry/blocs/products/productEditorBloc.dart';
 import 'package:laundry/common/left_persistent_drawer.dart';
 import 'package:laundry/common/rect_button.dart';
-import 'package:laundry/cubits/right_drawer.dart';
 import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/productsManager/widgets/animated_category_list.dart';
-import 'package:laundry/pages/productsManager/widgets/create_product_form.dart';
 
 class ProductLeftNavigator extends StatefulWidget {
   const ProductLeftNavigator({Key? key}) : super(key: key);
@@ -71,7 +70,7 @@ class _ProductLeftNavigatorState extends State<ProductLeftNavigator> {
       ),
       child: RectButton(
         onPressed: () =>
-            context.read<RightDrawerCubit>().showDrawer(CREATE_PRODUCT_INDEX),
+            context.read<ProductEditorBloc>().add(InitiateCreateProductEvent()),
         child: const Icon(Icons.add, size: 30),
       ),
     );

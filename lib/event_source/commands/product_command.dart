@@ -17,7 +17,7 @@ class ProductCommand {
   }) async {
     var streamId = makeStreamId(PRODUCT_EVENT_TYPE);
 
-    final event = ProjectionEvent(
+    final event = ProjectionEvent<ProductCreated>(
       streamId: streamId,
       streamTag: ProductCreated.tag,
       streamType: PRODUCT_EVENT_TYPE,
@@ -34,5 +34,47 @@ class ProductCommand {
 
     await persistEvent(_eventDao, event);
     return streamId;
+  }
+
+  Future<void> update({
+    required String streamId,
+    String? category,
+    String? title,
+    int? price,
+    String? unit,
+  }) async {
+    if (category == null && title == null && price == null && unit == null) {
+      return;
+    }
+    final event = ProjectionEvent<ProductUpdated>(
+      streamId: streamId,
+      streamTag: ProductUpdated.tag,
+      streamType: PRODUCT_EVENT_TYPE,
+      date: DateTime.now(),
+      version: await _eventDao.lastVersion(streamId) + 1,
+      serializer: ProductUpdatedSerializer(),
+      data: ProductUpdated(
+        category: category,
+        title: title,
+        price: price,
+        unit: unit,
+      ),
+    );
+
+    await persistEvent(_eventDao, event);
+  }
+
+  Future<void> delete({required String streamId}) async {
+    final event = ProjectionEvent<ProductDeleted>(
+      streamId: streamId,
+      streamTag: ProductDeleted.tag,
+      streamType: PRODUCT_EVENT_TYPE,
+      date: DateTime.now(),
+      version: await _eventDao.lastVersion(streamId) + 1,
+      serializer: ProductDeletedSerializer(),
+      data: ProductDeleted(),
+    );
+
+    await persistEvent(_eventDao, event);
   }
 }

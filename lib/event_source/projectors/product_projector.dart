@@ -4,6 +4,7 @@ import 'package:laundry/db/dao/product/product.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/event_source/events/declare.dart';
 import 'package:laundry/event_source/events/product_event.dart';
+import 'package:laundry/helpers/utils.dart';
 
 import 'declare.dart';
 
@@ -16,7 +17,15 @@ class ProductProjector implements IProjector {
   project(event) async {
     switch (event.tag) {
       case ProductCreated.tag:
-        return create(ProjectionEvent.fromEvent(event, ProductCreatedSerializer()));
+        return create(
+          ProjectionEvent.fromEvent(event, ProductCreatedSerializer()),
+        );
+      case ProductUpdated.tag:
+        return update(
+          ProjectionEvent.fromEvent(event, ProductUpdatedSerializer()),
+        );
+      case ProductDeleted.tag:
+        return delete(event.streamId);
     }
   }
 
@@ -28,5 +37,21 @@ class ProductProjector implements IProjector {
       price: event.data.price,
       unit: event.data.unit,
     ));
+  }
+
+  Future<void> update(ProjectionEvent<ProductUpdated> event) async {
+    await _dao.updateById(
+      event.streamId,
+      ProductsCompanion(
+        title: wrapAbsentValue(event.data.title),
+        category: wrapAbsentValue(event.data.category),
+        price: wrapAbsentValue(event.data.price),
+        unit: wrapAbsentValue(event.data.unit),
+      ),
+    );
+  }
+
+  Future<void> delete(String id) async {
+    await _dao.deleteById(id);
   }
 }

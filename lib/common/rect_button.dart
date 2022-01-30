@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/helpers/logger.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
 
 class RectButton extends StatelessWidget {
   const RectButton({
@@ -18,7 +18,7 @@ class RectButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _onPressed = onPressed ?? () {};
-    final _color = color ?? Theme.of(context).colorScheme.primary;
+    final _color = color ?? colorScheme(context).secondary;
     final _size = size ?? const Size.fromHeight(45);
 
     return ElevatedButton(

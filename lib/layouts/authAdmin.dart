@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/blocs/navigation/bloc.dart';
 import 'package:laundry/common/btnNav.dart';
 import 'package:laundry/l10n/access_locale.dart';
-import 'package:laundry/pages/newOrder/newOrderPage.dart';
+import 'package:laundry/pages/newOrder/new_order_page.dart';
 import 'package:laundry/pages/productsManager/products_manager_page.dart';
 import 'package:laundry/pages/settings/SettingsPage.dart';
 import 'package:laundry/providers/navButtonProvider.dart';
