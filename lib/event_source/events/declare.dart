@@ -14,14 +14,15 @@ class ProjectionEvent<T> {
   final int version;
   final T data;
 
-  ProjectionEvent(
-      {required this.streamId,
-      required this.streamType,
-      required this.streamTag,
-      required this.date,
-      required this.version,
-      required this.data,
-      required this.serializer});
+  ProjectionEvent({
+    required this.streamId,
+    required this.streamType,
+    required this.streamTag,
+    required this.date,
+    required this.version,
+    required this.data,
+    required this.serializer,
+  });
 
   ProjectionEvent.fromEvent(Event event, this.serializer)
       : streamId = event.streamId,

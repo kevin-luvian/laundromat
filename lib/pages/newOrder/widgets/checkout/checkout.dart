@@ -6,7 +6,8 @@ import 'package:laundry/pages/newOrder/widgets/checkout/checkoutPayment.dart';
 import 'package:laundry/pages/newOrder/widgets/checkout/checkoutPaymentAction.dart';
 
 class Checkout extends StatelessWidget {
-  const Checkout({Key? key, required this.width, required this.padding}) : super(key: key);
+  const Checkout({Key? key, required this.width, required this.padding})
+      : super(key: key);
 
   final double width;
   final EdgeInsets padding;

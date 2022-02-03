@@ -52,7 +52,7 @@ class _RightDrawerState extends State<RightDrawer>
   }
 
   emitCloseDrawer(BuildContext context) {
-    BlocProvider.of<RightDrawerCubit>(context).closeDrawer(currIndex);
+    BlocProvider.of<RightDrawerCubit>(context).closeDrawer();
   }
 
   @override

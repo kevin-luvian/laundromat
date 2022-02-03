@@ -21,5 +21,5 @@ Future<NativeDatabase> _createDatabase(String filename) async {
   final file = File(path.join(dbFolder.path, '$filename.sqlite'));
 
   logger.i(dbFolder);
-  return NativeDatabase(file);
+  return NativeDatabase(file, logStatements: true);
 }

@@ -30,3 +30,14 @@ Future<String> saveExtFile(String prefix, File file) async {
 ColorScheme colorScheme(BuildContext context) {
   return Theme.of(context).colorScheme;
 }
+
+void showSnackBar(BuildContext context, String text) {
+  final snackBar = SnackBar(
+    content: Text(
+      text,
+      style: TextStyle(color: colorScheme(context).onSurface),
+    ),
+    backgroundColor: colorScheme(context).surface,
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}

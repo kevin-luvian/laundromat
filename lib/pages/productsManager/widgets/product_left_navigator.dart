@@ -71,7 +71,7 @@ class _ProductLeftNavigatorState extends State<ProductLeftNavigator> {
       child: RectButton(
         onPressed: () =>
             context.read<ProductEditorBloc>().add(InitiateCreateProductEvent()),
-        child: const Icon(Icons.add, size: 30),
+        child: const Icon(Icons.add, size: 20),
       ),
     );
   }

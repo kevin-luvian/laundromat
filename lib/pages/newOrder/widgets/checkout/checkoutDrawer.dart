@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class CheckoutDrawer extends StatefulWidget {
   final Widget child;
@@ -11,12 +14,18 @@ class CheckoutDrawer extends StatefulWidget {
 
 class _CheckoutDrawerState extends State<CheckoutDrawer>
     with SingleTickerProviderStateMixin {
+  late StreamSubscription<bool> _keyboardSubscription;
   late AnimationController _controller;
   late final Animation<double> _animation;
   bool show = true;
 
   @override
   initState() {
+    KeyboardVisibilityController _kvc = KeyboardVisibilityController();
+    _keyboardSubscription = _kvc.onChange.listen((isVisible) {
+      if (isVisible) close();
+    });
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -28,19 +37,31 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
 
   @override
   void dispose() {
+    _keyboardSubscription.cancel();
     _controller.dispose();
     super.dispose();
   }
 
-  toggle() {
+  open() {
     setState(() {
-      show = !show;
-      if (show) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
+      show = true;
+      _controller.forward();
     });
+  }
+
+  close() {
+    setState(() {
+      show = false;
+      _controller.reverse();
+    });
+  }
+
+  toggle() {
+    if (show) {
+      close();
+    } else {
+      open();
+    }
   }
 
   @override

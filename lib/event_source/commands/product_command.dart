@@ -9,6 +9,25 @@ class ProductCommand {
 
   ProductCommand(EventDB _db) : _eventDao = EventDao(_db);
 
+  Future<void> generateEvent<T>(
+    String streamId, {
+    required String streamTag,
+    required Serializer<T> serializer,
+    required T data,
+    int? version,
+  }) async {
+    final event = ProjectionEvent<T>(
+      streamType: PRODUCT_EVENT_TYPE,
+      date: DateTime.now(),
+      version: version ?? await _eventDao.lastVersion(streamId) + 1,
+      streamId: streamId,
+      streamTag: streamTag,
+      serializer: serializer,
+      data: data,
+    );
+    await persistEvent(_eventDao, event);
+  }
+
   Future<String> create({
     required String category,
     required String title,
@@ -16,14 +35,11 @@ class ProductCommand {
     required String unit,
   }) async {
     var streamId = makeStreamId(PRODUCT_EVENT_TYPE);
-
-    final event = ProjectionEvent<ProductCreated>(
-      streamId: streamId,
+    await generateEvent(
+      streamId,
       streamTag: ProductCreated.tag,
-      streamType: PRODUCT_EVENT_TYPE,
-      date: DateTime.now(),
-      version: 1,
       serializer: ProductCreatedSerializer(),
+      version: 1,
       data: ProductCreated(
         category: category,
         title: title,
@@ -31,8 +47,6 @@ class ProductCommand {
         unit: unit,
       ),
     );
-
-    await persistEvent(_eventDao, event);
     return streamId;
   }
 
@@ -46,12 +60,9 @@ class ProductCommand {
     if (category == null && title == null && price == null && unit == null) {
       return;
     }
-    final event = ProjectionEvent<ProductUpdated>(
-      streamId: streamId,
+    await generateEvent(
+      streamId,
       streamTag: ProductUpdated.tag,
-      streamType: PRODUCT_EVENT_TYPE,
-      date: DateTime.now(),
-      version: await _eventDao.lastVersion(streamId) + 1,
       serializer: ProductUpdatedSerializer(),
       data: ProductUpdated(
         category: category,
@@ -60,21 +71,14 @@ class ProductCommand {
         unit: unit,
       ),
     );
-
-    await persistEvent(_eventDao, event);
   }
 
   Future<void> delete({required String streamId}) async {
-    final event = ProjectionEvent<ProductDeleted>(
-      streamId: streamId,
+    await generateEvent(
+      streamId,
       streamTag: ProductDeleted.tag,
-      streamType: PRODUCT_EVENT_TYPE,
-      date: DateTime.now(),
-      version: await _eventDao.lastVersion(streamId) + 1,
       serializer: ProductDeletedSerializer(),
       data: ProductDeleted(),
     );
-
-    await persistEvent(_eventDao, event);
   }
 }

@@ -19,7 +19,7 @@ class SettingsPage extends StatelessWidget {
           child: const LanguageSetting()),
       settingCard(title: "Theme", child: const ThemeSetting()),
       settingCard(title: "Logout", child: const LogoutSetting()),
-      settingCard(title: "View Drift DB Data", child: const DriftViewer()),
+      settingCard(title: "View And Access Drift DB", child: const DriftViewer()),
     ];
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 120.0),

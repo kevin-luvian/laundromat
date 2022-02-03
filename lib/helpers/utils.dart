@@ -54,3 +54,6 @@ final decimalPriceFormatter = NumberFormat.currency(
   customPattern: '#,###',
   decimalDigits: 0,
 );
+
+String customPriceFormat(int price) =>
+    "Rp. " + decimalPriceFormatter.format(price);

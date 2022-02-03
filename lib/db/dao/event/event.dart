@@ -19,7 +19,8 @@ class EventDao extends DatabaseAccessor<EventDB> with _$EventDaoMixin {
         .get();
   }
 
-  Future<List<Event>> allEvents() => select(events).get();
+  Future<List<Event>> allEvents() =>
+      (select(events)..orderBy([(e) => OrderingTerm(expression: e.id)])).get();
 
   Future<List<Event>> findEventsByType(String streamType) => (select(events)
         ..where((e) => e.streamType.equals(streamType))

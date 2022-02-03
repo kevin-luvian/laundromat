@@ -29,7 +29,7 @@ class _AnimatedCategoryListState extends State<AnimatedCategoryList> {
   setup() async {
     const gapModifier = 100;
     const animDuration = Duration(milliseconds: 500);
-    categoryListener = productDao.distinctCategories().listen((categories) {
+    categoryListener = productDao.distinctCategories.listen((categories) {
       categories.sort((a, b) => b.compareTo(a));
 
       var counter = 0;

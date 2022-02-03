@@ -904,17 +904,446 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   }
 }
 
+class ProductAddon extends DataClass implements Insertable<ProductAddon> {
+  final String id;
+  final String productId;
+  final String title;
+  final int price;
+  ProductAddon(
+      {required this.id,
+      required this.productId,
+      required this.title,
+      required this.price});
+  factory ProductAddon.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return ProductAddon(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      productId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}product_id'])!,
+      title: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}title'])!,
+      price: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}price'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['product_id'] = Variable<String>(productId);
+    map['title'] = Variable<String>(title);
+    map['price'] = Variable<int>(price);
+    return map;
+  }
+
+  ProductAddonsCompanion toCompanion(bool nullToAbsent) {
+    return ProductAddonsCompanion(
+      id: Value(id),
+      productId: Value(productId),
+      title: Value(title),
+      price: Value(price),
+    );
+  }
+
+  factory ProductAddon.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProductAddon(
+      id: serializer.fromJson<String>(json['id']),
+      productId: serializer.fromJson<String>(json['productId']),
+      title: serializer.fromJson<String>(json['title']),
+      price: serializer.fromJson<int>(json['price']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'productId': serializer.toJson<String>(productId),
+      'title': serializer.toJson<String>(title),
+      'price': serializer.toJson<int>(price),
+    };
+  }
+
+  ProductAddon copyWith(
+          {String? id, String? productId, String? title, int? price}) =>
+      ProductAddon(
+        id: id ?? this.id,
+        productId: productId ?? this.productId,
+        title: title ?? this.title,
+        price: price ?? this.price,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ProductAddon(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('title: $title, ')
+          ..write('price: $price')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, productId, title, price);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProductAddon &&
+          other.id == this.id &&
+          other.productId == this.productId &&
+          other.title == this.title &&
+          other.price == this.price);
+}
+
+class ProductAddonsCompanion extends UpdateCompanion<ProductAddon> {
+  final Value<String> id;
+  final Value<String> productId;
+  final Value<String> title;
+  final Value<int> price;
+  const ProductAddonsCompanion({
+    this.id = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.price = const Value.absent(),
+  });
+  ProductAddonsCompanion.insert({
+    required String id,
+    required String productId,
+    required String title,
+    required int price,
+  })  : id = Value(id),
+        productId = Value(productId),
+        title = Value(title),
+        price = Value(price);
+  static Insertable<ProductAddon> custom({
+    Expression<String>? id,
+    Expression<String>? productId,
+    Expression<String>? title,
+    Expression<int>? price,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (productId != null) 'product_id': productId,
+      if (title != null) 'title': title,
+      if (price != null) 'price': price,
+    });
+  }
+
+  ProductAddonsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? productId,
+      Value<String>? title,
+      Value<int>? price}) {
+    return ProductAddonsCompanion(
+      id: id ?? this.id,
+      productId: productId ?? this.productId,
+      title: title ?? this.title,
+      price: price ?? this.price,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<String>(productId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (price.present) {
+      map['price'] = Variable<int>(price.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProductAddonsCompanion(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('title: $title, ')
+          ..write('price: $price')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProductAddonsTable extends ProductAddons
+    with TableInfo<$ProductAddonsTable, ProductAddon> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $ProductAddonsTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'UNIQUE');
+  final VerificationMeta _productIdMeta = const VerificationMeta('productId');
+  @override
+  late final GeneratedColumn<String?> productId = GeneratedColumn<String?>(
+      'product_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES products (id)');
+  final VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String?> title = GeneratedColumn<String?>(
+      'title', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _priceMeta = const VerificationMeta('price');
+  @override
+  late final GeneratedColumn<int?> price = GeneratedColumn<int?>(
+      'price', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, productId, title, price];
+  @override
+  String get aliasedName => _alias ?? 'product_addons';
+  @override
+  String get actualTableName => 'product_addons';
+  @override
+  VerificationContext validateIntegrity(Insertable<ProductAddon> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(_productIdMeta,
+          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('price')) {
+      context.handle(
+          _priceMeta, price.isAcceptableOrUnknown(data['price']!, _priceMeta));
+    } else if (isInserting) {
+      context.missing(_priceMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  @override
+  ProductAddon map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return ProductAddon.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ProductAddonsTable createAlias(String alias) {
+    return $ProductAddonsTable(_db, alias);
+  }
+}
+
+class NewOrderCache extends DataClass implements Insertable<NewOrderCache> {
+  final String id;
+  final int amount;
+  NewOrderCache({required this.id, required this.amount});
+  factory NewOrderCache.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return NewOrderCache(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      amount: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['amount'] = Variable<int>(amount);
+    return map;
+  }
+
+  NewOrderCachesCompanion toCompanion(bool nullToAbsent) {
+    return NewOrderCachesCompanion(
+      id: Value(id),
+      amount: Value(amount),
+    );
+  }
+
+  factory NewOrderCache.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NewOrderCache(
+      id: serializer.fromJson<String>(json['id']),
+      amount: serializer.fromJson<int>(json['amount']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'amount': serializer.toJson<int>(amount),
+    };
+  }
+
+  NewOrderCache copyWith({String? id, int? amount}) => NewOrderCache(
+        id: id ?? this.id,
+        amount: amount ?? this.amount,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('NewOrderCache(')
+          ..write('id: $id, ')
+          ..write('amount: $amount')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, amount);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NewOrderCache &&
+          other.id == this.id &&
+          other.amount == this.amount);
+}
+
+class NewOrderCachesCompanion extends UpdateCompanion<NewOrderCache> {
+  final Value<String> id;
+  final Value<int> amount;
+  const NewOrderCachesCompanion({
+    this.id = const Value.absent(),
+    this.amount = const Value.absent(),
+  });
+  NewOrderCachesCompanion.insert({
+    required String id,
+    this.amount = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<NewOrderCache> custom({
+    Expression<String>? id,
+    Expression<int>? amount,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (amount != null) 'amount': amount,
+    });
+  }
+
+  NewOrderCachesCompanion copyWith({Value<String>? id, Value<int>? amount}) {
+    return NewOrderCachesCompanion(
+      id: id ?? this.id,
+      amount: amount ?? this.amount,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NewOrderCachesCompanion(')
+          ..write('id: $id, ')
+          ..write('amount: $amount')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NewOrderCachesTable extends NewOrderCaches
+    with TableInfo<$NewOrderCachesTable, NewOrderCache> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $NewOrderCachesTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'UNIQUE');
+  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int?> amount = GeneratedColumn<int?>(
+      'amount', aliasedName, false,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  @override
+  List<GeneratedColumn> get $columns => [id, amount];
+  @override
+  String get aliasedName => _alias ?? 'new_order_caches';
+  @override
+  String get actualTableName => 'new_order_caches';
+  @override
+  VerificationContext validateIntegrity(Insertable<NewOrderCache> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  @override
+  NewOrderCache map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return NewOrderCache.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $NewOrderCachesTable createAlias(String alias) {
+    return $NewOrderCachesTable(_db, alias);
+  }
+}
+
 abstract class _$DriftDB extends GeneratedDatabase {
   _$DriftDB(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $UsersTable users = $UsersTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $ProductsTable products = $ProductsTable(this);
+  late final $ProductAddonsTable productAddons = $ProductAddonsTable(this);
+  late final $NewOrderCachesTable newOrderCaches = $NewOrderCachesTable(this);
   late final UserDao userDao = UserDao(this as DriftDB);
   late final SessionDao sessionDao = SessionDao(this as DriftDB);
   late final ProductDao productDao = ProductDao(this as DriftDB);
+  late final NewOrderCacheDao newOrderCacheDao =
+      NewOrderCacheDao(this as DriftDB);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [users, sessions, products];
+      [users, sessions, products, productAddons, newOrderCaches];
 }

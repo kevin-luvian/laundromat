@@ -4,13 +4,13 @@ import 'package:drift/drift.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/tables/products.dart';
 
-part 'product.g.dart';
-
 @DriftAccessor(tables: [Products])
-class ProductDao extends DatabaseAccessor<DriftDB> with _$ProductDaoMixin {
+class ProductDao extends DatabaseAccessor<DriftDB> {
   ProductDao(DriftDB db) : super(db);
 
-  Future<int> create(Product product) => into(products).insert(product);
+  $ProductsTable get products => attachedDatabase.products;
+
+  Future<void> create(Product product) => into(products).insert(product);
 
   Future<void> updateById(String id, ProductsCompanion info) =>
       (update(products)..where((p) => p.id.equals(id))).write(info);
@@ -38,14 +38,14 @@ class ProductDao extends DatabaseAccessor<DriftDB> with _$ProductDaoMixin {
     }
   }
 
-  Stream<List<String>> distinctCategories() {
+  Stream<List<String>> get distinctCategories {
     final query = selectOnly(products, distinct: true)
       ..addColumns([products.category])
       ..orderBy([OrderingTerm(expression: products.category)]);
     return query.map((row) => row.read(products.category) ?? "").watch();
   }
 
-  Stream<List<String>> distinctUnits() {
+  Stream<List<String>> get distinctUnits {
     final query = selectOnly(products, distinct: true)
       ..addColumns([products.unit])
       ..orderBy([OrderingTerm(expression: products.unit)]);

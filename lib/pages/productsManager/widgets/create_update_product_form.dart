@@ -11,6 +11,7 @@ import 'package:laundry/common/inputs/text_auto_complete.dart';
 import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/helpers/input_decoration.dart';
 import 'package:laundry/helpers/input_formatter/currency.dart';
 import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/helpers/validators.dart';
@@ -33,13 +34,21 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
 
   Product? productToUpdate;
   File? productImage;
+  List<Addon> addons = [];
   final _formKey = GlobalKey<FormState>();
   final unitCtr = TextEditingController();
   final categoryCtr = TextEditingController();
   final titleCtr = TextEditingController();
   final priceCtr = TextEditingController(text: "0");
 
+  @override
+  void dispose() {
+    super.dispose();
+    _formKey.currentState?.dispose();
+  }
+
   clearState() {
+    _formKey.currentState?.reset();
     categoryCtr.clear();
     titleCtr.clear();
     priceCtr.clear();
@@ -47,6 +56,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
     setState(() {
       productToUpdate = null;
       productImage = null;
+      addons = [];
     });
   }
 
@@ -63,6 +73,8 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
         productImage = null;
       }
     });
+    productAddonDao.findAllByProductId(product.id).then((pAddons) =>
+        setState(() => addons = pAddons.map(Addon.fromProductAddon).toList()));
   }
 
   handleDelete(ProductEditorBloc bloc) {
@@ -101,6 +113,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
         price: price,
         unit: unitCtr.text,
         imagePath: pathToSave,
+        addons: addons,
       ));
     } else {
       String? pathToSave;
@@ -113,6 +126,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
         price: price,
         unit: unitCtr.text,
         imagePath: pathToSave,
+        addons: addons,
       ));
     }
   }
@@ -134,9 +148,6 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
             final product = (_state as InitiateUpdateProductState).product;
             fillUpdateState(product);
             break;
-          case SuccessState:
-            clearState();
-            break;
         }
       },
       child: Column(children: [_buildInputs(context), _buildActions(context)]),
@@ -155,7 +166,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                   _buildImagePicker(),
                   const SizedBox(height: 15),
                   StreamBuilder(
-                    stream: productDao.distinctCategories(),
+                    stream: productDao.distinctCategories,
                     builder: (_ctx, AsyncSnapshot<List<String>> snapshot) =>
                         TextAutoComplete(
                             controller: categoryCtr,
@@ -168,12 +179,14 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                     focusNode: FocusNode(),
                     controller: titleCtr,
                     validator: notEmptyText,
-                    decoration: _decor(context: context, label: "title"),
+                    decoration:
+                        inputDecoration(context: context, label: "title"),
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
                     controller: priceCtr,
-                    decoration: _decor(context: context, label: "price"),
+                    decoration:
+                        inputDecoration(context: context, label: "price"),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -182,7 +195,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                   ),
                   const SizedBox(height: 15),
                   StreamBuilder(
-                    stream: productDao.distinctUnits(),
+                    stream: productDao.distinctUnits,
                     builder: (_ctx, AsyncSnapshot<List<String>> snapshot) =>
                         TextAutoComplete(
                             controller: unitCtr,
@@ -190,6 +203,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                             options: snapshot.hasData ? snapshot.data! : [],
                             validator: notEmptyText),
                   ),
+                  _buildAddonsInput(),
                   KeyboardVisibilityBuilder(
                     builder: (_, _visible) {
                       final height =
@@ -203,6 +217,76 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
           ),
         ),
       );
+
+  Widget _buildAddonsInput() {
+    final color = colorScheme(context).secondary;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 17),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Addons",
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => CreateAddonForm(
+                  onSubmit: (title, price) =>
+                      setState(() => addons.add(Addon(title, price))),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(0),
+                minimumSize: const Size(30, 30),
+                primary: color,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Icon(Icons.add, size: 17),
+            ),
+          ],
+        ),
+        Divider(thickness: 2, color: color),
+        for (int i = 0; i < addons.length; i++) _buildAddonPreview(i)
+      ],
+    );
+  }
+
+  Widget _buildAddonPreview(int index) {
+    final addon = addons.elementAt(index);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            ElevatedButton(
+              onPressed: () => setState(() => addons.removeAt(index)),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(0),
+                minimumSize: const Size(30, 30),
+                primary: colorScheme(context).secondary,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Icon(Icons.remove, size: 17),
+            ),
+            const SizedBox(width: 10),
+            Text(addon.title),
+          ]),
+          Text(priceFormatter.format(addon.price)),
+        ],
+      ),
+    );
+  }
 
   Widget _buildActions(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -223,19 +307,6 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
               ),
             ),
           ],
-        ),
-      );
-
-  InputDecoration _decor({
-    required BuildContext context,
-    required String label,
-  }) =>
-      InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
-          ),
         ),
       );
 
@@ -273,6 +344,92 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
             style: TextStyle(fontSize: 14),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class CreateAddonForm extends StatelessWidget {
+  CreateAddonForm({Key? key, required this.onSubmit}) : super(key: key);
+
+  final void Function(String title, int price) onSubmit;
+  final _formKey = GlobalKey<FormState>();
+  final titleCtr = TextEditingController();
+  final priceCtr = TextEditingController(text: "0");
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(
+        'Create New Addon',
+        style: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Form(
+        key: _formKey,
+        child: IntrinsicHeight(
+          child: SingleChildScrollView(
+            child: SizedBox(
+              width: 350,
+              child: Column(
+                children: [
+                  const SizedBox(height: 3),
+                  TextFormField(
+                    focusNode: FocusNode(),
+                    controller: titleCtr,
+                    validator: notEmptyText,
+                    decoration:
+                        inputDecoration(context: context, label: "title"),
+                  ),
+                  const SizedBox(height: 15),
+                  TextFormField(
+                    controller: priceCtr,
+                    decoration:
+                        inputDecoration(context: context, label: "price"),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      CurrencyInputFormatter(),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  _actions(context),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      actions: null,
+    );
+  }
+
+  Widget _actions(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: () {
+            if (cnord(_formKey.currentState?.validate(), false)) {
+              onSubmit(
+                titleCtr.text,
+                priceFormatter.parse(priceCtr.text).toInt(),
+              );
+              Navigator.of(context).pop();
+            }
+          },
+          child: const Text('Save'),
+        ),
+        TextButton(
+          onPressed: () {
+            titleCtr.clear();
+            priceCtr.clear();
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        )
       ],
     );
   }

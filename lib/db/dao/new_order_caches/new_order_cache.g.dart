@@ -1,11 +1,11 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'product.dart';
+part of 'new_order_cache.dart';
 
 // **************************************************************************
 // DaoGenerator
 // **************************************************************************
 
-mixin _$ProductDaoMixin on DatabaseAccessor<DriftDB> {
-  $ProductsTable get products => attachedDatabase.products;
+mixin _$NewOrderCacheDaoMixin on DatabaseAccessor<DriftDB> {
+  $NewOrderCachesTable get newOrderCaches => attachedDatabase.newOrderCaches;
 }

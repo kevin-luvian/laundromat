@@ -22,11 +22,6 @@ class ProductsView extends StatefulWidget {
 
 class _ProductsViewState extends State<ProductsView> {
   final _key = GlobalKey();
-
-  final animatedListKey = GlobalKey<AnimatedListState>();
-  late StreamSubscription<List<String>> categoriesListener;
-  List<String> previousCategories = [];
-  List<String> currentCategories = [];
   Size? _size;
 
   @override
@@ -35,21 +30,6 @@ class _ProductsViewState extends State<ProductsView> {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() => _size = _key.currentContext?.size);
     });
-  }
-
-  setup() async {
-    const gapModifier = 100;
-    const animDuration = Duration(milliseconds: 500);
-    categoriesListener = productDao.distinctCategories().listen((categories) {
-      categories.sort((a, b) => b.compareTo(a));
-
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    categoriesListener.cancel();
   }
 
   @override

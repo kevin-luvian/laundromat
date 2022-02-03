@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:laundry/blocs/newOrder/newOrderBloc.dart';
 import 'package:laundry/blocs/products/productsViewBloc.dart';
 import 'package:laundry/common/products/products_view.dart';
 import 'package:laundry/common/rect_button.dart';
@@ -37,7 +37,11 @@ class _ProductsViewSelectorState extends State<ProductsViewSelector> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: ProductsView(onProductTap: (_) {})),
+            Expanded(
+                child: ProductsView(
+                    onProductTap: (product) => context
+                        .read<NewOrderBloc>()
+                        .add(OpenProductEvent(product)))),
             _buildCategorySelector(),
             const SizedBox(height: 20),
           ],
@@ -48,7 +52,7 @@ class _ProductsViewSelectorState extends State<ProductsViewSelector> {
 
   Widget _buildCategorySelector() {
     return StreamBuilder(
-      stream: productDao.distinctCategories(),
+      stream: productDao.distinctCategories,
       builder: (_context, AsyncSnapshot<List<String>> snapshot) {
         final categories = snapshot.data ?? [];
 
