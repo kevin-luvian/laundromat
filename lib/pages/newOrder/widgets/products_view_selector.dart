@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:laundry/blocs/newOrder/newOrderBloc.dart';
+import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
 import 'package:laundry/blocs/products/productsViewBloc.dart';
 import 'package:laundry/common/products/products_view.dart';
 import 'package:laundry/common/rect_button.dart';

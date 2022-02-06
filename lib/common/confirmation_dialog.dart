@@ -4,17 +4,18 @@ class ConfirmationDialog extends StatelessWidget {
   const ConfirmationDialog({
     Key? key,
     required this.onContinue,
+    required this.content,
   }) : super(key: key);
 
   final void Function() onContinue;
+  final String content;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Please Confirm'),
-      content: const Text('Are you sure to remove the box?'),
+      content: Text(content),
       actions: [
-        // The "Yes" button
         TextButton(
             onPressed: () async {
               Navigator.of(context).pop();

@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 
 Future shortDelay() => Future.delayed(const Duration(milliseconds: 50));
 
-formatPrice(double value) {
+formatPrice(dynamic value) {
   return NumberFormat("#,###", "id").format(value);
 }
 
@@ -55,5 +55,17 @@ final decimalPriceFormatter = NumberFormat.currency(
   decimalDigits: 0,
 );
 
-String customPriceFormat(int price) =>
+String customPriceFormat(dynamic price) =>
     "Rp. " + decimalPriceFormatter.format(price);
+
+String doubleToString(double val) {
+  String result;
+  if (val % 1 == 0) {
+    result = val.toStringAsFixed(0);
+  } else {
+    result = val.toString().replaceAll(RegExp(r'([.]*0)(?!.*\d)'), '');
+  }
+  return result;
+}
+
+int sumInt(int a, int b) => a + b;

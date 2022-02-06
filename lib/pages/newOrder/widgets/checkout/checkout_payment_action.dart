@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:laundry/blocs/bluetooth/bluetooth_bloc.dart';
+import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
+import 'package:laundry/common/confirmation_dialog.dart';
+import 'package:laundry/running_assets/asset_access.dart';
 
 class CheckoutPaymentAction extends StatelessWidget {
   const CheckoutPaymentAction(this.padding) : super(key: null);
@@ -29,12 +34,21 @@ class CheckoutPaymentAction extends StatelessWidget {
       _buildActionSubset(
         icon: Icons.delete,
         color: Colors.redAccent,
-        onPressed: () {},
+        onPressed: () => showDialog(
+          context: context,
+          builder: (_) => ConfirmationDialog(
+            content: "Remove current orders?",
+            onContinue: () =>
+                context.read<NewOrderBloc>().add(ClearCachesEvent()),
+          ),
+        ),
       ),
       _buildActionSubset(
         icon: Icons.print_outlined,
         color: Colors.blueAccent,
-        onPressed: () {},
+        onPressed: () {
+          bluetoothBloc.add(PrintEvent());
+        },
       ),
     ];
   }
@@ -64,7 +78,7 @@ class CheckoutPaymentAction extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         primary: color,
         padding: const EdgeInsets.all(5),
-        minimumSize: const Size.fromRadius(23),
+        minimumSize: const Size.fromRadius(25),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(7)),
         ),

@@ -22,6 +22,8 @@ import 'package:laundry/screen_controller.dart';
 import 'package:laundry/styles/ocean_theme.dart';
 import 'package:laundry/styles/theme.dart';
 
+import 'blocs/bluetooth/bluetooth_bloc.dart';
+
 Future<bool> _registerGetIt() async {
   GetIt.I.registerSingleton(DriftDB(await openReadDBConnection2())..open());
   logger.i("Drift DB connected");
@@ -30,9 +32,11 @@ Future<bool> _registerGetIt() async {
   logger.i("Event DB connected");
 
   ProjectorListeners(GetIt.I.get<DriftDB>()).setup();
+  GetIt.I.registerSingleton(BluetoothBloc(GetIt.I.get<DriftDB>()));
 
   // session cubit is registered on main
   GetIt.I.get<SessionCubit>().setup(GetIt.I.get<DriftDB>());
+
   await Future.delayed(const Duration(milliseconds: 500));
   return true;
 }

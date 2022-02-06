@@ -23,6 +23,8 @@ class ProductDao extends DatabaseAccessor<DriftDB> {
   Stream<List<Product>> findAllByCategoryAsStream(String category) =>
       (select(products)..where((p) => p.category.equals(category))).watch();
 
+  Future<List<Product>> findAll() => select(products).get();
+
   Future<Product?> findById(String id) =>
       (select(products)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 

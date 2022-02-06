@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/navigation/bloc.dart';
-import 'package:laundry/common/btnNav.dart';
+import 'package:laundry/common/button_navigation.dart';
 import 'package:laundry/pages/newOrder/new_order_page.dart';
-import 'package:laundry/pages/settings/SettingsPage.dart';
+import 'package:laundry/pages/settings/settings_page.dart';
 import 'package:laundry/providers/navButtonProvider.dart';
 import 'package:provider/provider.dart';
 

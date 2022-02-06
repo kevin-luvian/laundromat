@@ -5,7 +5,7 @@ import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/blocs/auth/event.dart';
 import 'package:laundry/blocs/auth/state.dart';
 import 'package:laundry/common/PageLoader.dart';
-import 'package:laundry/layouts/authAdmin.dart';
+import 'package:laundry/layouts/auth_admin.dart';
 import 'package:laundry/pages/login/login.dart';
 
 class ScreenController extends StatelessWidget {

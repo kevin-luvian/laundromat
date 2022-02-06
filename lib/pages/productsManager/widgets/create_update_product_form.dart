@@ -82,6 +82,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
       bloc.add(ClearProductEvent());
     } else {
       widget.deleteConfirmation(ConfirmationDialog(
+        content: "Delete product permanently?",
         onContinue: () => bloc.add(DeleteProductEvent(productToUpdate!)),
       ));
     }
@@ -255,13 +256,16 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
           ],
         ),
         Divider(thickness: 2, color: color),
-        for (int i = 0; i < addons.length; i++) _buildAddonPreview(i)
+        for (int i = 0; i < addons.length; i++)
+          _buildAddonPreview(
+            addons.elementAt(i),
+            () => setState(() => addons.removeAt(i)),
+          )
       ],
     );
   }
 
-  Widget _buildAddonPreview(int index) {
-    final addon = addons.elementAt(index);
+  Widget _buildAddonPreview(Addon addon, void Function() handleDelete) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -270,7 +274,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
         children: [
           Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
             ElevatedButton(
-              onPressed: () => setState(() => addons.removeAt(index)),
+              onPressed: handleDelete,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(0),
                 minimumSize: const Size(30, 30),

@@ -23,7 +23,11 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
   initState() {
     KeyboardVisibilityController _kvc = KeyboardVisibilityController();
     _keyboardSubscription = _kvc.onChange.listen((isVisible) {
-      if (isVisible) close();
+      if (isVisible) {
+        close();
+      } else {
+        open();
+      }
     });
 
     _controller = AnimationController(
@@ -71,10 +75,7 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
         Container(
           decoration: const BoxDecoration(
             border: Border(
-              top: BorderSide(
-                color: Colors.black12,
-                width: 1.7,
-              ),
+              top: BorderSide(color: Colors.black12),
             ),
           ),
           child: TextButton(

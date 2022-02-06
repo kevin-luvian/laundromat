@@ -7,7 +7,7 @@ class NewOrderCaches extends Table {
   TextColumn get id =>
       text().customConstraint("UNIQUE").references(Products, #id)();
 
-  IntColumn get amount => integer().withDefault(const Constant(1))();
+  RealColumn get amount => real().withDefault(const Constant(1))();
 }
 
 class NewOrderCacheAddons extends Table {

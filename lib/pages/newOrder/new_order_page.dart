@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/blocs/newOrder/newOrderBloc.dart';
+import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
 import 'package:laundry/common/right_drawer.dart';
 import 'package:laundry/cubits/right_drawer.dart';
 import 'package:laundry/pages/newOrder/widgets/checkout/checkout.dart';
 import 'package:laundry/pages/newOrder/widgets/product_details.dart';
 import 'package:laundry/pages/newOrder/widgets/products_view_selector.dart';
+import 'package:laundry/running_assets/db_access.dart';
 
 class NewOrderPage extends StatelessWidget {
   const NewOrderPage({Key? key}) : super(key: key);
@@ -16,7 +17,8 @@ class NewOrderPage extends StatelessWidget {
       providers: [
         BlocProvider<RightDrawerCubit>(create: (_) => RightDrawerCubit()),
         BlocProvider<NewOrderBloc>(
-          create: (_ctx) => NewOrderBloc(_ctx.read<RightDrawerCubit>()),
+          create: (_ctx) =>
+              NewOrderBloc(driftDB, _ctx.read<RightDrawerCubit>()),
         ),
       ],
       child: child,

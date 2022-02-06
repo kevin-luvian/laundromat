@@ -1093,7 +1093,8 @@ class $ProductAddonsTable extends ProductAddons
       'product_id', aliasedName, false,
       type: const StringType(),
       requiredDuringInsert: true,
-      defaultConstraints: 'REFERENCES products (id)');
+      $customConstraints:
+          'NOT NULL REFERENCES products (id) ON DELETE CASCADE ON UPDATE CASCADE');
   final VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String?> title = GeneratedColumn<String?>(
@@ -1157,14 +1158,14 @@ class $ProductAddonsTable extends ProductAddons
 
 class NewOrderCache extends DataClass implements Insertable<NewOrderCache> {
   final String id;
-  final int amount;
+  final double amount;
   NewOrderCache({required this.id, required this.amount});
   factory NewOrderCache.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return NewOrderCache(
       id: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      amount: const IntType()
+      amount: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
     );
   }
@@ -1172,7 +1173,7 @@ class NewOrderCache extends DataClass implements Insertable<NewOrderCache> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['amount'] = Variable<int>(amount);
+    map['amount'] = Variable<double>(amount);
     return map;
   }
 
@@ -1188,7 +1189,7 @@ class NewOrderCache extends DataClass implements Insertable<NewOrderCache> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return NewOrderCache(
       id: serializer.fromJson<String>(json['id']),
-      amount: serializer.fromJson<int>(json['amount']),
+      amount: serializer.fromJson<double>(json['amount']),
     );
   }
   @override
@@ -1196,11 +1197,11 @@ class NewOrderCache extends DataClass implements Insertable<NewOrderCache> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'amount': serializer.toJson<int>(amount),
+      'amount': serializer.toJson<double>(amount),
     };
   }
 
-  NewOrderCache copyWith({String? id, int? amount}) => NewOrderCache(
+  NewOrderCache copyWith({String? id, double? amount}) => NewOrderCache(
         id: id ?? this.id,
         amount: amount ?? this.amount,
       );
@@ -1225,7 +1226,7 @@ class NewOrderCache extends DataClass implements Insertable<NewOrderCache> {
 
 class NewOrderCachesCompanion extends UpdateCompanion<NewOrderCache> {
   final Value<String> id;
-  final Value<int> amount;
+  final Value<double> amount;
   const NewOrderCachesCompanion({
     this.id = const Value.absent(),
     this.amount = const Value.absent(),
@@ -1236,7 +1237,7 @@ class NewOrderCachesCompanion extends UpdateCompanion<NewOrderCache> {
   }) : id = Value(id);
   static Insertable<NewOrderCache> custom({
     Expression<String>? id,
-    Expression<int>? amount,
+    Expression<double>? amount,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1244,7 +1245,7 @@ class NewOrderCachesCompanion extends UpdateCompanion<NewOrderCache> {
     });
   }
 
-  NewOrderCachesCompanion copyWith({Value<String>? id, Value<int>? amount}) {
+  NewOrderCachesCompanion copyWith({Value<String>? id, Value<double>? amount}) {
     return NewOrderCachesCompanion(
       id: id ?? this.id,
       amount: amount ?? this.amount,
@@ -1258,7 +1259,7 @@ class NewOrderCachesCompanion extends UpdateCompanion<NewOrderCache> {
       map['id'] = Variable<String>(id.value);
     }
     if (amount.present) {
-      map['amount'] = Variable<int>(amount.value);
+      map['amount'] = Variable<double>(amount.value);
     }
     return map;
   }
@@ -1287,9 +1288,9 @@ class $NewOrderCachesTable extends NewOrderCaches
       $customConstraints: 'UNIQUE');
   final VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<int?> amount = GeneratedColumn<int?>(
+  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
       'amount', aliasedName, false,
-      type: const IntType(),
+      type: const RealType(),
       requiredDuringInsert: false,
       defaultValue: const Constant(1));
   @override
@@ -1329,6 +1330,190 @@ class $NewOrderCachesTable extends NewOrderCaches
   }
 }
 
+class NewOrderCacheAddon extends DataClass
+    implements Insertable<NewOrderCacheAddon> {
+  final String newOrderId;
+  final String addonId;
+  NewOrderCacheAddon({required this.newOrderId, required this.addonId});
+  factory NewOrderCacheAddon.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return NewOrderCacheAddon(
+      newOrderId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}new_order_id'])!,
+      addonId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}addon_id'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['new_order_id'] = Variable<String>(newOrderId);
+    map['addon_id'] = Variable<String>(addonId);
+    return map;
+  }
+
+  NewOrderCacheAddonsCompanion toCompanion(bool nullToAbsent) {
+    return NewOrderCacheAddonsCompanion(
+      newOrderId: Value(newOrderId),
+      addonId: Value(addonId),
+    );
+  }
+
+  factory NewOrderCacheAddon.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NewOrderCacheAddon(
+      newOrderId: serializer.fromJson<String>(json['newOrderId']),
+      addonId: serializer.fromJson<String>(json['addonId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'newOrderId': serializer.toJson<String>(newOrderId),
+      'addonId': serializer.toJson<String>(addonId),
+    };
+  }
+
+  NewOrderCacheAddon copyWith({String? newOrderId, String? addonId}) =>
+      NewOrderCacheAddon(
+        newOrderId: newOrderId ?? this.newOrderId,
+        addonId: addonId ?? this.addonId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('NewOrderCacheAddon(')
+          ..write('newOrderId: $newOrderId, ')
+          ..write('addonId: $addonId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(newOrderId, addonId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NewOrderCacheAddon &&
+          other.newOrderId == this.newOrderId &&
+          other.addonId == this.addonId);
+}
+
+class NewOrderCacheAddonsCompanion extends UpdateCompanion<NewOrderCacheAddon> {
+  final Value<String> newOrderId;
+  final Value<String> addonId;
+  const NewOrderCacheAddonsCompanion({
+    this.newOrderId = const Value.absent(),
+    this.addonId = const Value.absent(),
+  });
+  NewOrderCacheAddonsCompanion.insert({
+    required String newOrderId,
+    required String addonId,
+  })  : newOrderId = Value(newOrderId),
+        addonId = Value(addonId);
+  static Insertable<NewOrderCacheAddon> custom({
+    Expression<String>? newOrderId,
+    Expression<String>? addonId,
+  }) {
+    return RawValuesInsertable({
+      if (newOrderId != null) 'new_order_id': newOrderId,
+      if (addonId != null) 'addon_id': addonId,
+    });
+  }
+
+  NewOrderCacheAddonsCompanion copyWith(
+      {Value<String>? newOrderId, Value<String>? addonId}) {
+    return NewOrderCacheAddonsCompanion(
+      newOrderId: newOrderId ?? this.newOrderId,
+      addonId: addonId ?? this.addonId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (newOrderId.present) {
+      map['new_order_id'] = Variable<String>(newOrderId.value);
+    }
+    if (addonId.present) {
+      map['addon_id'] = Variable<String>(addonId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NewOrderCacheAddonsCompanion(')
+          ..write('newOrderId: $newOrderId, ')
+          ..write('addonId: $addonId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NewOrderCacheAddonsTable extends NewOrderCacheAddons
+    with TableInfo<$NewOrderCacheAddonsTable, NewOrderCacheAddon> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $NewOrderCacheAddonsTable(this._db, [this._alias]);
+  final VerificationMeta _newOrderIdMeta = const VerificationMeta('newOrderId');
+  @override
+  late final GeneratedColumn<String?> newOrderId = GeneratedColumn<String?>(
+      'new_order_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES new_order_caches (id)');
+  final VerificationMeta _addonIdMeta = const VerificationMeta('addonId');
+  @override
+  late final GeneratedColumn<String?> addonId = GeneratedColumn<String?>(
+      'addon_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'UNIQUE');
+  @override
+  List<GeneratedColumn> get $columns => [newOrderId, addonId];
+  @override
+  String get aliasedName => _alias ?? 'new_order_cache_addons';
+  @override
+  String get actualTableName => 'new_order_cache_addons';
+  @override
+  VerificationContext validateIntegrity(Insertable<NewOrderCacheAddon> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('new_order_id')) {
+      context.handle(
+          _newOrderIdMeta,
+          newOrderId.isAcceptableOrUnknown(
+              data['new_order_id']!, _newOrderIdMeta));
+    } else if (isInserting) {
+      context.missing(_newOrderIdMeta);
+    }
+    if (data.containsKey('addon_id')) {
+      context.handle(_addonIdMeta,
+          addonId.isAcceptableOrUnknown(data['addon_id']!, _addonIdMeta));
+    } else if (isInserting) {
+      context.missing(_addonIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  @override
+  NewOrderCacheAddon map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return NewOrderCacheAddon.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $NewOrderCacheAddonsTable createAlias(String alias) {
+    return $NewOrderCacheAddonsTable(_db, alias);
+  }
+}
+
 abstract class _$DriftDB extends GeneratedDatabase {
   _$DriftDB(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $UsersTable users = $UsersTable(this);
@@ -1336,6 +1521,8 @@ abstract class _$DriftDB extends GeneratedDatabase {
   late final $ProductsTable products = $ProductsTable(this);
   late final $ProductAddonsTable productAddons = $ProductAddonsTable(this);
   late final $NewOrderCachesTable newOrderCaches = $NewOrderCachesTable(this);
+  late final $NewOrderCacheAddonsTable newOrderCacheAddons =
+      $NewOrderCacheAddonsTable(this);
   late final UserDao userDao = UserDao(this as DriftDB);
   late final SessionDao sessionDao = SessionDao(this as DriftDB);
   late final ProductDao productDao = ProductDao(this as DriftDB);
@@ -1344,6 +1531,12 @@ abstract class _$DriftDB extends GeneratedDatabase {
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [users, sessions, products, productAddons, newOrderCaches];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        users,
+        sessions,
+        products,
+        productAddons,
+        newOrderCaches,
+        newOrderCacheAddons
+      ];
 }

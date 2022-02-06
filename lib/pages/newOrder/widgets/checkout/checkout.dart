@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkoutDrawer.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkoutHeader.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkoutOrderItem.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkoutPayment.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkoutPaymentAction.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
+import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkout_drawer.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkout_header.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkout_order_item.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkout_payment.dart';
+import 'package:laundry/pages/newOrder/widgets/checkout/checkout_payment_action.dart';
+import 'package:laundry/running_assets/dao_access.dart';
 
 class Checkout extends StatelessWidget {
   const Checkout({Key? key, required this.width, required this.padding})
@@ -13,7 +17,7 @@ class Checkout extends StatelessWidget {
   final EdgeInsets padding;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Container(
       child: SizedBox(
         width: width,
@@ -25,6 +29,7 @@ class Checkout extends StatelessWidget {
               children: [
                 CheckoutPayment(padding),
                 CheckoutPaymentAction(padding),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -45,31 +50,26 @@ class Checkout extends StatelessWidget {
   }
 
   Widget _buildItems() {
-    List<MockOrderItem> orderItemList =
-        List.generate(20, (index) => MockOrderItem());
-    return Expanded(
-      child: ListView.builder(
-        itemCount: orderItemList.length,
-        itemBuilder: (context, index) => Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 7,
+    return StreamBuilder(
+      stream: newOrderCacheDao.streamOrderDetails(),
+      builder: (_ctx, AsyncSnapshot<List<OrderDetail>> snapshot) {
+        if (!snapshot.hasData) return const Spacer();
+        final orderDetails = snapshot.data!;
+        return Expanded(
+          child: ListView.builder(
+            itemCount: orderDetails.length,
+            itemBuilder: (context, index) => CheckoutOrderItem(
+              title: orderDetails[index].product.title,
+              amount: orderDetails[index].amount,
+              totalPrice: orderDetails[index].totalPrice,
+              unit: orderDetails[index].product.unit,
+              onTap: () => context
+                  .read<NewOrderBloc>()
+                  .add(OpenProductEvent(orderDetails[index].product)),
+            ),
           ),
-          child: CheckoutOrderItem(
-            title: orderItemList[index].title,
-            amount: orderItemList[index].amount,
-            price: orderItemList[index].price,
-            unit: orderItemList[index].unit,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
-}
-
-class MockOrderItem {
-  String title = "regular wash";
-  int amount = 10;
-  double price = 1000.0;
-  String unit = "Kg";
 }

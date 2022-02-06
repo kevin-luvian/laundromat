@@ -8,4 +8,8 @@ part of 'new_order_cache.dart';
 
 mixin _$NewOrderCacheDaoMixin on DatabaseAccessor<DriftDB> {
   $NewOrderCachesTable get newOrderCaches => attachedDatabase.newOrderCaches;
+  $NewOrderCacheAddonsTable get newOrderCacheAddons =>
+      attachedDatabase.newOrderCacheAddons;
+  $ProductsTable get products => attachedDatabase.products;
+  $ProductAddonsTable get productAddons => attachedDatabase.productAddons;
 }

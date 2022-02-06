@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/blocs/newOrder/newOrderBloc.dart';
+import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
 import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/helpers/input_decoration.dart';
+import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/helpers/utils.dart';
 
 class ProductDetails extends StatefulWidget {
@@ -14,24 +19,42 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
+  Product? product;
   List<ProductAddon> addons = [];
+  File? productImage;
   String title = "";
   String unit = "";
   int price = 0;
 
+  double amount = 1;
+
   List<ProductAddon> selectedAddons = [];
-  int amount = 1;
 
   fromProductState(OpenedProductState state) {
     setState(() {
+      product = state.product;
       addons = state.addons;
       title = state.product.title;
       unit = state.product.unit;
       price = state.product.price;
+      if (state.product.imagePath != null) {
+        productImage = File(state.product.imagePath!);
+      } else {
+        productImage = null;
+      }
 
-      selectedAddons = [];
-      amount = 1;
+      selectedAddons = state.selectedAddons;
+      amount = state.amount;
     });
+  }
+
+  void handleSubmit() {
+    if (product == null) return;
+    logger.i(product);
+    logger.i(selectedAddons);
+    context
+        .read<NewOrderBloc>()
+        .add(ModifyProductEvent(product!, selectedAddons, amount));
   }
 
   void toggleAddon(ProductAddon addon) {
@@ -44,18 +67,24 @@ class _ProductDetailsState extends State<ProductDetails> {
     });
   }
 
-  get totalPrice {
-    int totalPrice = price;
+  void modifyAmount(double val) {
+    if (val < 0) val = 0;
+    setState(() => amount = val);
+  }
+
+  String get amountStr => doubleToString(amount);
+
+  double get totalPrice {
+    double totalPrice = price.toDouble();
     if (selectedAddons.isNotEmpty) {
       totalPrice +=
           selectedAddons.map((a) => a.price).reduce((val, sum) => sum + val);
     }
-    totalPrice *= amount;
-    return totalPrice;
+    return totalPrice * amount;
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return BlocListener<NewOrderBloc, NewOrderState>(
       listener: (_, state) {
         switch (state.runtimeType) {
@@ -65,59 +94,51 @@ class _ProductDetailsState extends State<ProductDetails> {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(30, 0, 30, 10),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [const Spacer(), _buildContent(), _buildActions()],
+          children: [_buildContents(), const Spacer(), _buildActions()],
         ),
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContents() {
     return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _addons(),
-          _buildDetailElement(
-            label: "Price",
-            content: Text(customPriceFormat(price) + "/" + unit),
-          ),
-          const SizedBox(height: 5),
-          _buildDetailElement(
-            label: "Total",
-            content: Text(
-              customPriceFormat(totalPrice),
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(height: 20)
-        ],
-      ),
+      child: Column(children: [
+        _buildImage(),
+        const SizedBox(height: 15),
+        _buildDetailElement(
+          label: "Price",
+          content: Text(customPriceFormat(price) + "/" + unit),
+        ),
+        const SizedBox(height: 15),
+        _addons(),
+      ]),
     );
   }
 
   Widget _addons() {
     if (addons.isEmpty) return Container();
     final color = colorScheme(context).primary;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Addons",
-          style: TextStyle(
-            color: color,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Addons",
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
           ),
-        ),
-        Divider(thickness: 2, color: color),
-        for (final addon in addons) _buildAddonElement(addon),
-        const SizedBox(height: 10),
-      ],
+          const SizedBox(height: 5),
+          for (final addon in addons) _buildAddonElement(addon),
+          const SizedBox(height: 10),
+        ],
+      ),
     );
   }
 
@@ -146,7 +167,6 @@ class _ProductDetailsState extends State<ProductDetails> {
     return Row(
       children: [
         Checkbox(
-          // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: VisualDensity.compact,
           checkColor: onColor,
           fillColor: MaterialStateProperty.all(color),
@@ -159,41 +179,129 @@ class _ProductDetailsState extends State<ProductDetails> {
           child: Text(addon.title, style: const TextStyle(height: 1)),
         ),
         const Spacer(),
-        Text(priceFormatter.format(addon.price)),
+        Text(customPriceFormat(addon.price)),
       ],
     );
   }
 
   Widget _buildActions() => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: Column(
           children: [
-            RectButton(
-              size: const Size(0, 40),
-              child: const Icon(Icons.arrow_back_ios_rounded),
-              onPressed: () => setState(() {
-                if (amount == 0) return;
-                amount -= 1;
-              }),
-            ),
-            InkWell(
-              onTap: () => showSnackBar(context, "clicked"),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                child: Text(
-                  amount.toString() + " " + unit,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RectButton(
+                  size: const Size(0, 40),
+                  child: const Icon(Icons.arrow_back_ios_rounded),
+                  onPressed: () => modifyAmount(amount - 1),
                 ),
-              ),
+                InkWell(
+                  onTap: () async {
+                    final amountCtr = TextEditingController(text: amountStr);
+                    await showDialog(
+                      context: context,
+                      builder: (_) => AdjustAmountForm(amountCtr),
+                    );
+                    final val = double.tryParse(amountCtr.text);
+                    if (val != null) modifyAmount(val);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                    child: Text(
+                      amountStr + " " + unit,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationColor: colorScheme(context).secondary,
+                        decorationThickness: 2,
+                      ),
+                    ),
+                  ),
+                ),
+                RectButton(
+                  size: const Size(0, 40),
+                  child: const Icon(Icons.arrow_forward_ios_rounded),
+                  onPressed: () => modifyAmount(amount + 1),
+                ),
+              ],
             ),
+            const SizedBox(height: 10),
             RectButton(
-              size: const Size(0, 40),
-              child: const Icon(Icons.arrow_forward_ios_rounded),
-              onPressed: () => setState(() => amount += 1),
+              onPressed: handleSubmit,
+              size: const Size.fromHeight(50),
+              child: Text(
+                totalPrice == 0
+                    ? "Remove Order"
+                    : "Add to Order - " +
+                        decimalPriceFormatter.format(totalPrice),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
       );
+
+  Widget _buildImage() => productImage == null
+      ? Image.asset(
+          'assets/images/placeholder.png',
+          fit: BoxFit.fitWidth,
+          height: 170,
+          width: double.infinity,
+        )
+      : Image.file(
+          productImage!,
+          fit: BoxFit.fitWidth,
+          height: 170,
+          width: double.infinity,
+        );
+}
+
+class AdjustAmountForm extends StatelessWidget {
+  const AdjustAmountForm(this.amountCtr, {Key? key}) : super(key: key);
+
+  final TextEditingController amountCtr;
+
+  @override
+  Widget build(context) {
+    return AlertDialog(
+      title: const Text(
+        'Change Amount',
+        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+      ),
+      content: SizedBox(
+        width: 350,
+        child: TextFormField(
+          controller: amountCtr,
+          keyboardType: TextInputType.number,
+          decoration: inputDecoration(context: context, label: "amount"),
+          autofocus: true,
+          inputFormatters: [
+            // no - whitespace and operator
+            FilteringTextInputFormatter.deny(
+              RegExp("[\\s\\/+*#(),=]"),
+              replacementString: "",
+            ),
+            // no - behind
+            FilteringTextInputFormatter.deny(
+              RegExp("(?<!^)-"),
+              replacementString: "",
+            ),
+            // only one . (dot)
+            FilteringTextInputFormatter.deny(
+              RegExp('[\\.]+'),
+              replacementString: '.',
+            ),
+            FilteringTextInputFormatter(
+              RegExp('^[-]?[0-9]+\\.?[0-9]*\$'),
+              allow: true,
+              replacementString: amountCtr.text,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
