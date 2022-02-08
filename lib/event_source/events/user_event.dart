@@ -1,12 +1,8 @@
 import 'package:laundry/helpers/utils.dart';
 
-class UserEvent {
-  static const streamType = "USER";
-}
+const userEventType = "USER";
 
-class UserCreated {
-  static const String tag = "UserCreated";
-
+class UserCreated extends EventData<UserCreated> {
   String name;
   String password;
   String role;
@@ -18,11 +14,16 @@ class UserCreated {
     required this.role,
     required this.pin,
   });
+
+  @override
+  get tag => staticTag;
+  static const staticTag = "UserCreated";
+
+  @override
+  get serializer => UserCreatedSerializer();
 }
 
-class UserUpdated {
-  static const String tag = "UserUpdated";
-
+class UserUpdated extends EventData<UserUpdated> {
   String? name;
   String? password;
   String? role;
@@ -34,10 +35,23 @@ class UserUpdated {
     this.role,
     this.pin,
   });
+
+  static const staticTag = "UserUpdated";
+
+  @override
+  get serializer => UserUpdatedSerializer();
+
+  @override
+  get tag => staticTag;
 }
 
-class UserDeactivated {
-  static const String tag = "UserDeactivated";
+class UserDeactivated extends EventData<UserDeactivated> {
+  @override
+  get serializer => UserDeactivatedSerializer();
+
+  @override
+  get tag => staticTag;
+  static const String staticTag = "UserDeactivated";
 }
 
 class UserCreatedSerializer implements Serializer<UserCreated> {

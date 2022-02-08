@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+const roleSuperAdmin = "SUPER_ADMIN";
 const roleAdmin = "ADMIN";
 const roleStaff = "STAFF";
 

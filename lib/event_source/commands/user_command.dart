@@ -1,14 +1,13 @@
 import 'package:crypt/crypt.dart';
 import 'package:laundry/db/dao/event/event.dart';
 import 'package:laundry/db/event_db.dart';
+import 'package:laundry/event_source/commands/full_command.dart';
 import 'package:laundry/event_source/events/declare.dart';
 import 'package:laundry/event_source/events/user_event.dart';
 import 'package:laundry/helpers/utils.dart';
 
-class UserCommand {
-  final EventDao _eventDao;
-
-  UserCommand(EventDB _db) : _eventDao = EventDao(_db);
+class UserCommand extends Command {
+  UserCommand(EventDB _db) : super(_db, userEventType);
 
   Future<String> create({
     required String name,
@@ -21,24 +20,18 @@ class UserCommand {
     }
 
     password = Crypt.sha256(password).toString();
-    var streamId = makeStreamId(UserEvent.streamType);
+    var streamId = makeStreamId(userEventType);
 
-    final event = ProjectionEvent(
-      streamId: streamId,
-      streamTag: UserCreated.tag,
-      streamType: UserEvent.streamType,
-      date: DateTime.now(),
-      version: 1,
-      serializer: UserCreatedSerializer(),
-      data: UserCreated(
-        name: name,
-        password: password,
-        role: role,
-        pin: pin,
-      ),
-    );
+    await generateEvent(
+        streamId: streamId,
+        version: 1,
+        data: UserCreated(
+          name: name,
+          password: password,
+          role: role,
+          pin: pin,
+        ));
 
-    await persistEvent(_eventDao, event);
     return streamId;
   }
 
@@ -50,34 +43,16 @@ class UserCommand {
   }) async {
     password = password != null ? Crypt.sha256(password).toString() : null;
 
-    final event = ProjectionEvent(
-      streamId: streamId,
-      streamTag: UserUpdated.tag,
-      streamType: UserEvent.streamType,
-      date: DateTime.now(),
-      version: await _eventDao.lastVersion(streamId) + 1,
-      data: UserUpdated(
-        name: name,
-        password: password,
-        role: role,
-      ),
-      serializer: UserUpdatedSerializer(),
-    );
-
-    await persistEvent(_eventDao, event);
+    await generateEvent(
+        streamId: streamId,
+        data: UserUpdated(
+          name: name,
+          password: password,
+          role: role,
+        ));
   }
 
   Future<void> deactivate({required String streamId}) async {
-    final event = ProjectionEvent(
-      streamId: streamId,
-      streamTag: UserDeactivated.tag,
-      streamType: UserEvent.streamType,
-      date: DateTime.now(),
-      version: await _eventDao.lastVersion(streamId) + 1,
-      data: UserDeactivated(),
-      serializer: UserDeactivatedSerializer(),
-    );
-
-    await persistEvent(_eventDao, event);
+    await generateEvent(streamId: streamId, data: UserDeactivated());
   }
 }

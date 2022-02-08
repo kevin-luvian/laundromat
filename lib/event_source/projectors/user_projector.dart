@@ -15,13 +15,13 @@ class UserProjector implements IProjector {
   @override
   project(event) async {
     switch (event.tag) {
-      case UserCreated.tag:
+      case UserCreated.staticTag:
         return create(
             ProjectionEvent.fromEvent(event, UserCreatedSerializer()));
-      case UserUpdated.tag:
+      case UserUpdated.staticTag:
         return update(
             ProjectionEvent.fromEvent(event, UserUpdatedSerializer()));
-      case UserDeactivated.tag:
+      case UserDeactivated.staticTag:
         return deactivate(
             ProjectionEvent.fromEvent(event, UserDeactivatedSerializer()));
     }
