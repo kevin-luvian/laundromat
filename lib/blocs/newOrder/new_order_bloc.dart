@@ -50,7 +50,7 @@ class NewOrderBloc extends Bloc<NewOrderEvent, NewOrderState> {
     });
   }
 
-  deleteOrderCache(String id) {
+  void deleteOrderCache(String id) {
     _newOrderCacheDao.deleteById(id);
   }
 }

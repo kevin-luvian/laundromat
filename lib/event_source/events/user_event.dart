@@ -43,14 +43,14 @@ class UserDeactivated {
 class UserCreatedSerializer implements Serializer<UserCreated> {
   @override
   UserCreated fromJson(data) => UserCreated(
-        name: data["name"],
-        password: data["password"],
-        role: data["role"],
-        pin: data["pin"],
+        name: data["name"] as String,
+        password: data["password"] as String,
+        role: data["role"] as String,
+        pin: data["pin"] as int,
       );
 
   @override
-  Map<String, dynamic> toJson(t) => {
+  toJson(t) => <String, dynamic>{
         "name": t.name,
         "password": t.password,
         "role": t.role,
@@ -61,14 +61,14 @@ class UserCreatedSerializer implements Serializer<UserCreated> {
 class UserUpdatedSerializer implements Serializer<UserUpdated> {
   @override
   UserUpdated fromJson(data) => UserUpdated(
-        name: data["name"],
-        password: data["password"],
-        role: data["role"],
-        pin: data["pin"],
+        name: data["name"] as String?,
+        password: data["password"] as String?,
+        role: data["role"] as String?,
+        pin: data["pin"] as int?,
       );
 
   @override
-  Map<String, dynamic> toJson(t) => {
+  toJson(t) => <String, dynamic>{
         "name": t.name,
         "password": t.password,
         "role": t.role,
@@ -76,10 +76,6 @@ class UserUpdatedSerializer implements Serializer<UserUpdated> {
       };
 }
 
-class UserDeactivatedSerializer implements Serializer<UserDeactivated> {
-  @override
-  UserDeactivated fromJson(_) => UserDeactivated();
-
-  @override
-  Map<String, dynamic> toJson(_) => {};
+class UserDeactivatedSerializer extends EmptySerializer<UserDeactivated> {
+  UserDeactivatedSerializer() : super(UserDeactivated());
 }

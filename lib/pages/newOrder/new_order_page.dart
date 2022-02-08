@@ -48,7 +48,7 @@ class NewOrderPage extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: const [
-            Checkout(width: 250, padding: EdgeInsets.all(10)),
+            Checkout(width: 300, padding: EdgeInsets.all(10)),
             ProductsViewSelector(),
           ],
         ),

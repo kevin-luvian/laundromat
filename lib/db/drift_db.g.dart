@@ -282,7 +282,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   User map(Map<String, dynamic> data, {String? tablePrefix}) {
     return User.fromData(data,
@@ -292,6 +292,182 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   @override
   $UsersTable createAlias(String alias) {
     return $UsersTable(_db, alias);
+  }
+}
+
+class Customer extends DataClass implements Insertable<Customer> {
+  final String phone;
+  final String name;
+  Customer({required this.phone, required this.name});
+  factory Customer.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Customer(
+      phone: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}phone'])!,
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['phone'] = Variable<String>(phone);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  CustomersCompanion toCompanion(bool nullToAbsent) {
+    return CustomersCompanion(
+      phone: Value(phone),
+      name: Value(name),
+    );
+  }
+
+  factory Customer.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Customer(
+      phone: serializer.fromJson<String>(json['phone']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'phone': serializer.toJson<String>(phone),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  Customer copyWith({String? phone, String? name}) => Customer(
+        phone: phone ?? this.phone,
+        name: name ?? this.name,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Customer(')
+          ..write('phone: $phone, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(phone, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Customer &&
+          other.phone == this.phone &&
+          other.name == this.name);
+}
+
+class CustomersCompanion extends UpdateCompanion<Customer> {
+  final Value<String> phone;
+  final Value<String> name;
+  const CustomersCompanion({
+    this.phone = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  CustomersCompanion.insert({
+    required String phone,
+    required String name,
+  })  : phone = Value(phone),
+        name = Value(name);
+  static Insertable<Customer> custom({
+    Expression<String>? phone,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (phone != null) 'phone': phone,
+      if (name != null) 'name': name,
+    });
+  }
+
+  CustomersCompanion copyWith({Value<String>? phone, Value<String>? name}) {
+    return CustomersCompanion(
+      phone: phone ?? this.phone,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomersCompanion(')
+          ..write('phone: $phone, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CustomersTable extends Customers
+    with TableInfo<$CustomersTable, Customer> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $CustomersTable(this._db, [this._alias]);
+  final VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String?> phone = GeneratedColumn<String?>(
+      'phone', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'UNIQUE');
+  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+      'name', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [phone, name];
+  @override
+  String get aliasedName => _alias ?? 'customers';
+  @override
+  String get actualTableName => 'customers';
+  @override
+  VerificationContext validateIntegrity(Insertable<Customer> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('phone')) {
+      context.handle(
+          _phoneMeta, phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta));
+    } else if (isInserting) {
+      context.missing(_phoneMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {phone};
+  @override
+  Customer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Customer.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $CustomersTable createAlias(String alias) {
+    return $CustomersTable(_db, alias);
   }
 }
 
@@ -1517,6 +1693,7 @@ class $NewOrderCacheAddonsTable extends NewOrderCacheAddons
 abstract class _$DriftDB extends GeneratedDatabase {
   _$DriftDB(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $UsersTable users = $UsersTable(this);
+  late final $CustomersTable customers = $CustomersTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $ProductsTable products = $ProductsTable(this);
   late final $ProductAddonsTable productAddons = $ProductAddonsTable(this);
@@ -1524,6 +1701,7 @@ abstract class _$DriftDB extends GeneratedDatabase {
   late final $NewOrderCacheAddonsTable newOrderCacheAddons =
       $NewOrderCacheAddonsTable(this);
   late final UserDao userDao = UserDao(this as DriftDB);
+  late final CustomerDao customerDao = CustomerDao(this as DriftDB);
   late final SessionDao sessionDao = SessionDao(this as DriftDB);
   late final ProductDao productDao = ProductDao(this as DriftDB);
   late final NewOrderCacheDao newOrderCacheDao =
@@ -1533,6 +1711,7 @@ abstract class _$DriftDB extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         users,
+        customers,
         sessions,
         products,
         productAddons,

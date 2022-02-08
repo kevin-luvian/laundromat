@@ -5,6 +5,7 @@ import 'package:laundry/blocs/auth/state.dart';
 import 'package:laundry/db/dao/session/session.dart';
 import 'package:laundry/db/dao/user/user.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/helpers/utils.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserDao _userDao;
@@ -33,7 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<Login>((evt, emit) async {
       emit(Authenticating());
       final user = await _userDao.authenticate(evt.name, evt.password);
-      await Future.delayed(const Duration(milliseconds: 500));
+      await waitMilliseconds(500);
       if (user == null) {
         emit(AuthenticationFailed());
       } else {
@@ -45,12 +46,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<Logout>((_, emit) async {
       emit(Authenticating());
       logoutStaff();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await waitMilliseconds(500);
       emit(UnAuthenticated());
     });
   }
 
-  logoutStaff() async {
+  Future<void> logoutStaff() async {
     await _sessionDao.mutate(const SessionsCompanion(staffId: Value("")));
   }
 }

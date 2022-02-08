@@ -44,12 +44,12 @@ class ProjectionEvent<T> {
   }
 }
 
-class NanEvent implements Serializer {
+class NanEvent implements Serializer<void> {
   @override
-  void fromJson(_) {}
+  fromJson(_) {}
 
   @override
-  Map<String, dynamic> toJson(_) => {};
+  toJson(_) => <String, dynamic>{};
 }
 
 Future<Event?> persistEvent(EventDao dao, ProjectionEvent e) async {

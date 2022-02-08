@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/blocs/auth/event.dart';
 import 'package:laundry/blocs/auth/state.dart';
-import 'package:laundry/styles/theme.dart';
 
 class LogoutSetting extends StatelessWidget {
   const LogoutSetting({Key? key}) : super(key: key);

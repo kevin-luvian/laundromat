@@ -9,6 +9,7 @@ class CheckoutOrderItem extends StatelessWidget {
     required this.amount,
     required this.totalPrice,
     required this.unit,
+    required this.addons,
     this.onTap,
   }) : super(key: key);
 
@@ -16,6 +17,7 @@ class CheckoutOrderItem extends StatelessWidget {
   final double amount;
   final int totalPrice;
   final String unit;
+  final List<String> addons;
   final void Function()? onTap;
 
   String get amountStr => doubleToString(amount);
@@ -30,7 +32,7 @@ class CheckoutOrderItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -41,18 +43,25 @@ class CheckoutOrderItem extends StatelessWidget {
                     children: [
                       Text(title),
                       const SizedBox(height: 2),
-                      Text(
-                        "$amountStr $unit",
-                        style: const TextStyle(
-                          color: Color.fromRGBO(109, 109, 109, 1),
-                          fontSize: 12,
-                        ),
-                      ),
+                      for (final addon in addons) Text("- " + addon),
                     ],
                   ),
                 ],
               ),
-              Text("Rp. " + formatPrice(totalPrice)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text("Rp. " + formatPrice(totalPrice)),
+                  const SizedBox(height: 2),
+                  Text(
+                    "$amountStr $unit",
+                    style: const TextStyle(
+                      color: Color.fromRGBO(109, 109, 109, 1),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

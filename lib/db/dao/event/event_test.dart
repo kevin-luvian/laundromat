@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:laundry/db/event_db.dart';
-
 import 'package:test/test.dart';
 
 import 'event.dart';
@@ -28,7 +27,7 @@ void main() {
         tag: const Value("abc"),
         version: const Value(1),
         date: Value(DateTime(2021)),
-        data: const Value({}),
+        data: const Value(<String, dynamic>{}),
       );
       await eventDao.createEvent(event);
       final eventFromDB = await eventDao.findEventStream(streamId);

@@ -4,7 +4,7 @@ import 'package:laundry/db/dao/product/product.dart';
 import 'package:laundry/db/dao/product/product_addon.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/logger.dart';
-import 'package:test/expect.dart';
+import 'package:laundry/helpers/utils.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {
@@ -40,24 +40,13 @@ void main() {
     await ddb.close();
   });
 
-  Future<void> createBlankOrder(String id) async {
-    await _pDao.create(
-      Product(id: id, title: "", category: "", price: 0, unit: ""),
-    );
-    await _nocDao.create(NewOrderCache(id: id, amount: 5), []);
-  }
-
   test('get new order cache', () async {
     final noc = NewOrderCache(id: productId, amount: 5);
     await _nocDao.create(noc, []);
 
     final stream = _nocDao.streamOrderDetails();
     stream.listen(logger.d);
-    // expect(
-    //   stream.map((o) => o.length),
-    //   emitsInOrder([2, 2, 3]),
-    // );
 
-    await Future.delayed(const Duration(milliseconds: 200));
+    await waitMilliseconds(200);
   });
 }

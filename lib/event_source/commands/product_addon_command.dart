@@ -17,7 +17,7 @@ class ProductAddonCommand {
     int? version,
   }) async {
     final event = ProjectionEvent<T>(
-      streamType: PRODUCT_ADDON_EVENT_TYPE,
+      streamType: productAddonEventType,
       date: DateTime.now(),
       version: version ?? await _eventDao.lastVersion(streamId) + 1,
       streamId: streamId,
@@ -33,7 +33,7 @@ class ProductAddonCommand {
     required String title,
     required int price,
   }) async {
-    var streamId = makeStreamId(PRODUCT_ADDON_EVENT_TYPE);
+    var streamId = makeStreamId(productAddonEventType);
     await _generateEvent(
       streamId: streamId,
       streamTag: AddonAdded.tag,

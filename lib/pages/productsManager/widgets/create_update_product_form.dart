@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:laundry/blocs/products/productEditorBloc.dart';
+import 'package:laundry/blocs/products/product_editor_bloc.dart';
 import 'package:laundry/common/confirmation_dialog.dart';
 import 'package:laundry/common/inputs/text_auto_complete.dart';
 import 'package:laundry/common/rect_button.dart';
@@ -47,7 +47,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
     _formKey.currentState?.dispose();
   }
 
-  clearState() {
+  void clearState() {
     _formKey.currentState?.reset();
     categoryCtr.clear();
     titleCtr.clear();
@@ -60,7 +60,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
     });
   }
 
-  fillUpdateState(Product product) {
+  void fillUpdateState(Product product) {
     categoryCtr.text = product.category;
     titleCtr.text = product.title;
     priceCtr.text = product.price.toString();
@@ -77,7 +77,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
         setState(() => addons = pAddons.map(Addon.fromProductAddon).toList()));
   }
 
-  handleDelete(ProductEditorBloc bloc) {
+  void handleDelete(ProductEditorBloc bloc) {
     if (productToUpdate == null) {
       bloc.add(ClearProductEvent());
     } else {
@@ -88,7 +88,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
     }
   }
 
-  submitState(ProductEditorBloc bloc) async {
+  void submitState(ProductEditorBloc bloc) async {
     if (!cnord(_formKey.currentState?.validate(), false)) {
       return;
     }
@@ -238,7 +238,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
               ),
             ),
             ElevatedButton(
-              onPressed: () => showDialog(
+              onPressed: () => showDialog<void>(
                 context: context,
                 builder: (_) => CreateAddonForm(
                   onSubmit: (title, price) =>
@@ -246,7 +246,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(0),
+                padding: EdgeInsets.zero,
                 minimumSize: const Size(30, 30),
                 primary: color,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -276,7 +276,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
             ElevatedButton(
               onPressed: handleDelete,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(0),
+                padding: EdgeInsets.zero,
                 minimumSize: const Size(30, 30),
                 primary: colorScheme(context).secondary,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,

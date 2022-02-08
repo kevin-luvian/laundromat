@@ -1,6 +1,6 @@
 import 'package:laundry/helpers/utils.dart';
 
-const PRODUCT_ADDON_EVENT_TYPE = "PRODUCT_ADDON";
+const productAddonEventType = "PRODUCT_ADDON";
 
 class AddonAdded {
   static const String tag = "AddonAdded";
@@ -16,10 +16,17 @@ class AddonAdded {
 class AddonAddedSerializer implements Serializer<AddonAdded> {
   @override
   fromJson(data) => AddonAdded(
-      productId: data["productId"], title: data["title"], price: data["price"]);
+        productId: data["productId"] as String,
+        title: data["title"] as String,
+        price: data["price"] as int,
+      );
 
   @override
-  toJson(t) => {"productId": t.productId, "title": t.title, "price": t.price};
+  toJson(t) => <String, dynamic>{
+        "productId": t.productId,
+        "title": t.title,
+        "price": t.price,
+      };
 }
 
 class AddonRemoved {

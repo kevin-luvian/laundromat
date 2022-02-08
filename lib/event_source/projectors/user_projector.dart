@@ -5,7 +5,6 @@ import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/event_source/events/declare.dart';
 import 'package:laundry/event_source/events/user_event.dart';
 import 'package:laundry/event_source/projectors/declare.dart';
-import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/helpers/utils.dart';
 
 class UserProjector implements IProjector {

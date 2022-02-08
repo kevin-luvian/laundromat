@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/print_handlers/print_orders.dart';
 
 class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
@@ -32,7 +33,11 @@ class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
 
     on<PrintEvent>((_, _e) async {
       final orders = await _nocDao.allOrderDetails();
-      printOrders(bluetooth, orders);
+      logger.i("printing orders");
+      final mDevice = device;
+      if (mDevice != null) {
+        printOrders(bluetooth, mDevice, orders);
+      }
     });
     on<_ConnectionChangedEvent>(
       (event, emit) => emit(BluetoothConnectionState(event.conn)),
@@ -40,10 +45,11 @@ class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
     on<ConnectEvent>((event, emit) async {
       emit(LoadingState());
 
-      final conn = await connect(event.device);
-      if (conn.runtimeType == bool) {
-        final isConnected = conn as bool;
-        if (isConnected) device = event.device;
+      try {
+        device = event.device;
+        await connect(event.device);
+      } catch (_) {
+        emit(BluetoothConnectionState(false));
       }
     });
     on<DisconnectEvent>((event, emit) async {

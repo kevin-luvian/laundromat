@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/helpers/utils.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   const ConfirmationDialog({
@@ -19,7 +20,7 @@ class ConfirmationDialog extends StatelessWidget {
         TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              await Future.delayed(const Duration(milliseconds: 100));
+              await waitMilliseconds(100);
               onContinue();
             },
             child: const Text('Yes')),

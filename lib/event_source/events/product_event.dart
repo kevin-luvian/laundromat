@@ -1,6 +1,6 @@
 import 'package:laundry/helpers/utils.dart';
 
-const PRODUCT_EVENT_TYPE = "PRODUCT";
+const productEventType = "PRODUCT";
 
 class ProductCreated {
   static const String tag = "ProductCreated";
@@ -41,14 +41,14 @@ class ProductDeleted {
 class ProductCreatedSerializer implements Serializer<ProductCreated> {
   @override
   ProductCreated fromJson(data) => ProductCreated(
-        category: data["category"],
-        title: data["title"],
-        price: data["price"],
-        unit: data["unit"],
+        category: data["category"] as String,
+        title: data["title"] as String,
+        price: data["price"] as int,
+        unit: data["unit"] as String,
       );
 
   @override
-  Map<String, dynamic> toJson(t) => {
+  toJson(t) => <String, dynamic>{
         "category": t.category,
         "title": t.title,
         "price": t.price,
@@ -59,14 +59,14 @@ class ProductCreatedSerializer implements Serializer<ProductCreated> {
 class ProductUpdatedSerializer implements Serializer<ProductUpdated> {
   @override
   ProductUpdated fromJson(data) => ProductUpdated(
-        category: data["category"],
-        title: data["title"],
-        price: data["price"],
-        unit: data["unit"],
+        category: data["category"] as String?,
+        title: data["title"] as String?,
+        price: data["price"] as int?,
+        unit: data["unit"] as String?,
       );
 
   @override
-  Map<String, dynamic> toJson(t) => {
+  toJson(t) => <String, dynamic>{
         "category": t.category,
         "title": t.title,
         "price": t.price,

@@ -5,7 +5,7 @@ import 'package:laundry/blocs/navigation/bloc.dart';
 import 'package:laundry/common/button_navigation.dart';
 import 'package:laundry/pages/newOrder/new_order_page.dart';
 import 'package:laundry/pages/settings/settings_page.dart';
-import 'package:laundry/providers/navButtonProvider.dart';
+import 'package:laundry/providers/nav_button_provider.dart';
 import 'package:provider/provider.dart';
 
 class AuthStaffLayout extends StatefulWidget {
@@ -52,7 +52,7 @@ class _AuthStaffLayoutState extends State<AuthStaffLayout>
     super.dispose();
   }
 
-  _tabBarView() {
+  Widget _tabBarView() {
     return FadeTransition(
       opacity: _animation,
       child: _tabs[_controller.index],

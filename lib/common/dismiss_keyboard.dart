@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-unFocusInput(BuildContext context) {
+void unFocusInput(BuildContext context) {
   FocusScopeNode currentFocus = FocusScope.of(context);
   if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
     FocusManager.instance.primaryFocus?.unfocus();

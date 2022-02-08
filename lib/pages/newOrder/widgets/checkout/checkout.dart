@@ -59,6 +59,10 @@ class Checkout extends StatelessWidget {
           child: ListView.builder(
             itemCount: orderDetails.length,
             itemBuilder: (context, index) => CheckoutOrderItem(
+              addons: orderDetails[index]
+                  .addons
+                  .map((a) => a.title)
+                  .toList(growable: false),
               title: orderDetails[index].product.title,
               amount: orderDetails[index].amount,
               totalPrice: orderDetails[index].totalPrice,

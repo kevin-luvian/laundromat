@@ -6,7 +6,7 @@ import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
 import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
-const double TAX = 10 / 100;
+const double taxRate = 10 / 100;
 
 class CheckoutPayment extends StatefulWidget {
   const CheckoutPayment(this.padding) : super(key: null);
@@ -33,7 +33,7 @@ class _CheckoutPaymentState extends State<CheckoutPayment> {
     super.initState();
   }
 
-  int get taxes => (subtotal * TAX).toInt();
+  int get taxes => (subtotal * taxRate).toInt();
 
   int get total => subtotal + taxes;
 

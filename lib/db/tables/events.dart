@@ -6,8 +6,10 @@ class JsonConverter extends TypeConverter<Map<String, dynamic>, String> {
   const JsonConverter();
 
   @override
-  Map<String, dynamic>? mapToDart(String? fromDb) =>
-      fromDb == null ? null : json.decode(fromDb);
+  Map<String, dynamic>? mapToDart(String? fromDb) {
+    if (fromDb == null) return null;
+    return json.decode(fromDb) as Map<String, dynamic>?;
+  }
 
   @override
   String? mapToSql(Map<String, dynamic>? value) => json.encode(value);

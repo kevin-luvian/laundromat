@@ -52,7 +52,7 @@ class DriftViewer extends StatelessWidget {
         _button(
           context: context,
           text: "View Drift DB Data",
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+          onPressed: () => Navigator.of(context).push<void>(MaterialPageRoute(
             builder: (_) => DriftDbViewer(driftDB),
           )),
         ),
@@ -60,7 +60,7 @@ class DriftViewer extends StatelessWidget {
         _button(
           context: context,
           text: "View Event DB Data",
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+          onPressed: () => Navigator.of(context).push<void>(MaterialPageRoute(
             builder: (_) => DriftDbViewer(eventDB),
           )),
         ),

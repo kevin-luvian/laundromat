@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:laundry/blocs/products/productEditorBloc.dart';
-import 'package:laundry/blocs/products/productsViewBloc.dart';
+import 'package:laundry/blocs/products/product_editor_bloc.dart';
+import 'package:laundry/blocs/products/products_view_bloc.dart';
 import 'package:laundry/common/products/products_view.dart';
 import 'package:laundry/common/right_drawer.dart';
 import 'package:laundry/cubits/right_drawer.dart';
@@ -61,7 +61,7 @@ class ProductsManagerPage extends StatelessWidget {
   Widget _buildDrawer({required BuildContext context, required Widget child}) {
     return BlocBuilder<RightDrawerCubit, RightDrawerState>(
       builder: (_, _state) {
-        final label = _state.index == CREATE_PRODUCT_INDEX
+        final label = _state.index == createProductIndex
             ? "Create Product"
             : "Update Product";
         return RightDrawer(
@@ -69,7 +69,7 @@ class ProductsManagerPage extends StatelessWidget {
             label: label,
             child: CreateUpdateProductForm(
               deleteConfirmation: (dialog) =>
-                  showDialog(context: context, builder: (_) => dialog),
+                  showDialog<void>(context: context, builder: (_) => dialog),
             ),
           ),
           child: child,

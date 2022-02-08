@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-boxInputDecoration({required BuildContext context, required String label}) =>
+InputDecoration boxInputDecoration({
+  required BuildContext context,
+  required String label,
+}) =>
     InputDecoration(
       labelText: label,
       border: OutlineInputBorder(

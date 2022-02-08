@@ -13,7 +13,7 @@ class ProjectorListeners {
 
   ProjectorListeners(this._db);
 
-  setup() {
+  void setup() {
     subs = [
       UserProjector(_db),
       ProductProjector(_db),

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/blocs/products/productsViewBloc.dart';
+import 'package:laundry/blocs/products/products_view_bloc.dart';
 import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
@@ -26,7 +26,7 @@ class _AnimatedCategoryListState extends State<AnimatedCategoryList> {
     setup();
   }
 
-  setup() async {
+  void setup() async {
     const gapModifier = 100;
     const animDuration = Duration(milliseconds: 500);
     categoryListener = productDao.distinctCategories.listen((categories) {
@@ -36,7 +36,8 @@ class _AnimatedCategoryListState extends State<AnimatedCategoryList> {
       final categoriesToAdd =
           categories.where((x) => !distinctCategories.contains(x));
       final addFutures = categoriesToAdd.map((c) async {
-        await Future.delayed(Duration(milliseconds: ++counter * gapModifier));
+        await Future<void>.delayed(
+            Duration(milliseconds: ++counter * gapModifier));
         final i = categories.indexOf(c);
         listKey.currentState?.insertItem(i, duration: animDuration);
       }).toList();
@@ -44,7 +45,7 @@ class _AnimatedCategoryListState extends State<AnimatedCategoryList> {
       final categoriesToDelete =
           distinctCategories.where((x) => !categories.contains(x));
       final delFutures = categoriesToDelete.map((c) async {
-        await Future.delayed(const Duration(milliseconds: gapModifier));
+        await Future<void>.delayed(const Duration(milliseconds: gapModifier));
         listKey.currentState?.removeItem(
           distinctCategories.indexOf(c),
           (_ctx, animation) => _animRow(_ctx, c, animation),
@@ -96,7 +97,7 @@ class _AnimatedCategoryListState extends State<AnimatedCategoryList> {
       child: SlideTransition(
         position: Tween(
           begin: const Offset(0, 0.2),
-          end: const Offset(0, 0),
+          end: Offset.zero,
         ).animate(animation),
         child: _buildCategoryView(category),
       ),

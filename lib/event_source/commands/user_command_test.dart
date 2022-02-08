@@ -41,7 +41,7 @@ void main() {
   test('create user successfully', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
-      emitsAnyOf([equals(UserCreated.tag)]),
+      emitsAnyOf(<Matcher>[equals(UserCreated.tag)]),
     );
 
     await userCommand.create(
@@ -65,7 +65,7 @@ void main() {
   test('can update user', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
-      emitsInOrder([UserCreated.tag, UserUpdated.tag]),
+      emitsInOrder(<String>[UserCreated.tag, UserUpdated.tag]),
     );
 
     final streamId = await userCommand.create(
@@ -89,7 +89,7 @@ void main() {
   test('can deactivate user', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
-      emitsInOrder([UserCreated.tag, UserDeactivated.tag]),
+      emitsInOrder(<String>[UserCreated.tag, UserDeactivated.tag]),
     );
 
     final streamId = await userCommand.create(

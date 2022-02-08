@@ -2,9 +2,12 @@ import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
-Future shortDelay() => Future.delayed(const Duration(milliseconds: 50));
+Future shortDelay() => Future<void>.delayed(const Duration(milliseconds: 50));
 
-formatPrice(dynamic value) {
+Future waitMilliseconds(int num) =>
+    Future<void>.delayed(Duration(milliseconds: num));
+
+String formatPrice(dynamic value) {
   return NumberFormat("#,###", "id").format(value);
 }
 
@@ -30,13 +33,19 @@ abstract class Serializer<T> {
   T fromJson(Map<String, dynamic> data);
 }
 
+abstract class EventData<T> {
+  String get tag;
+
+  Serializer<T> get serializer;
+}
+
 class EmptySerializer<T> extends Serializer<T> {
   T t;
 
   EmptySerializer(this.t);
 
   @override
-  toJson(T t) => {};
+  toJson(T t) => <String, dynamic>{};
 
   @override
   fromJson(data) => t;

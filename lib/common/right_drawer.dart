@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/common/DismissKeyboard.dart';
+import 'package:laundry/common/dismiss_keyboard.dart';
 import 'package:laundry/cubits/right_drawer.dart';
 
 class RightDrawerContent {
@@ -36,7 +36,7 @@ class _RightDrawerState extends State<RightDrawer>
   bool _show = false;
   int currIndex = 0;
 
-  openDrawer() {
+  void openDrawer() {
     setState(() {
       _show = true;
       _clearBarrier = false;
@@ -44,14 +44,14 @@ class _RightDrawerState extends State<RightDrawer>
     });
   }
 
-  closeDrawer() {
+  void closeDrawer() {
     setState(() {
       _show = false;
       _controller.reverse();
     });
   }
 
-  emitCloseDrawer(BuildContext context) {
+  void emitCloseDrawer(BuildContext context) {
     BlocProvider.of<RightDrawerCubit>(context).closeDrawer();
   }
 

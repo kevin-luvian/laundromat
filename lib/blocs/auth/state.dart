@@ -24,12 +24,12 @@ class Authenticated extends AuthState {
 
   final User user;
 
-  get isAdmin {
-    return user.role == userRoleAdmin;
+  bool get isAdmin {
+    return user.role == roleAdmin;
   }
 
-  get isStaff {
-    return user.role == userRoleStaff;
+  bool get isStaff {
+    return user.role == roleStaff;
   }
 
   @override

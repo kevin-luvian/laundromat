@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:laundry/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
 import 'package:laundry/common/confirmation_dialog.dart';
-import 'package:laundry/running_assets/asset_access.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/print_handlers/print_orders.dart';
+import 'package:laundry/running_assets/dao_access.dart';
 
 class CheckoutPaymentAction extends StatelessWidget {
   const CheckoutPaymentAction(this.padding) : super(key: null);
@@ -34,7 +35,7 @@ class CheckoutPaymentAction extends StatelessWidget {
       _buildActionSubset(
         icon: Icons.delete,
         color: Colors.redAccent,
-        onPressed: () => showDialog(
+        onPressed: () => showDialog<void>(
           context: context,
           builder: (_) => ConfirmationDialog(
             content: "Remove current orders?",
@@ -46,8 +47,31 @@ class CheckoutPaymentAction extends StatelessWidget {
       _buildActionSubset(
         icon: Icons.print_outlined,
         color: Colors.blueAccent,
-        onPressed: () {
-          bluetoothBloc.add(PrintEvent());
+        onPressed: () async {
+          // bluetoothBloc.add(PrintEvent());
+
+          final orders = await newOrderCacheDao.allOrderDetails();
+          final file = await buildOrdersAsFile(orders);
+          if (file == null) return;
+          var decodedImage = await decodeImageFromList(file.readAsBytesSync());
+          await showDialog<void>(
+            context: context,
+            builder: (_ctx) => AlertDialog(
+              backgroundColor: colorScheme(context).primary,
+              content: Card(
+                child: SingleChildScrollView(
+                  child: IntrinsicHeight(
+                    child: Image.file(
+                      file,
+                      height: decodedImage.height.toDouble(),
+                      width: decodedImage.width.toDouble(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+          await file.delete();
         },
       ),
     ];

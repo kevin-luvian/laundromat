@@ -7,8 +7,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/blocs/auth/event.dart';
-import 'package:laundry/common/DismissKeyboard.dart';
-import 'package:laundry/common/PageLoader.dart';
+import 'package:laundry/common/dismiss_keyboard.dart';
+import 'package:laundry/common/page_loader.dart';
 import 'package:laundry/cubits/session.dart';
 import 'package:laundry/db/dao/session/session.dart';
 import 'package:laundry/db/drift_db.dart';
@@ -37,7 +37,7 @@ Future<bool> _registerGetIt() async {
   // session cubit is registered on main
   GetIt.I.get<SessionCubit>().setup(GetIt.I.get<DriftDB>());
 
-  await Future.delayed(const Duration(milliseconds: 500));
+  await Future<void>.delayed(const Duration(milliseconds: 500));
   return true;
 }
 

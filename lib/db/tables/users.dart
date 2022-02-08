@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-const userRoleAdmin = "admin";
-const userRoleStaff = "staff";
+const roleAdmin = "ADMIN";
+const roleStaff = "STAFF";
 
 @DataClassName("User")
 class Users extends Table {
@@ -14,7 +14,4 @@ class Users extends Table {
   TextColumn get password => text()();
 
   TextColumn get role => text()();
-
-  @override
-  Set<Column> get primaryKey => {id};
 }

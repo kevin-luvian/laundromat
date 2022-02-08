@@ -46,21 +46,21 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
     super.dispose();
   }
 
-  open() {
+  void open() {
     setState(() {
       show = true;
       _controller.forward();
     });
   }
 
-  close() {
+  void close() {
     setState(() {
       show = false;
       _controller.reverse();
     });
   }
 
-  toggle() {
+  void toggle() {
     if (show) {
       close();
     } else {

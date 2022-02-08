@@ -4,7 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/blocs/auth/event.dart';
 import 'package:laundry/blocs/auth/state.dart';
-import 'package:laundry/common/PageLoader.dart';
+import 'package:laundry/common/page_loader.dart';
 import 'package:laundry/layouts/auth_admin.dart';
 import 'package:laundry/pages/login/login.dart';
 

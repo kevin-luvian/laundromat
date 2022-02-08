@@ -10,7 +10,7 @@ final Event defaultEvent = Event(
   tag: "",
   version: 0,
   date: DateTime(10),
-  data: {},
+  data: <String, dynamic>{},
 );
 
 class EventStream {

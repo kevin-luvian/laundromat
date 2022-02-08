@@ -17,7 +17,7 @@ class ProductCommand {
     int? version,
   }) async {
     final event = ProjectionEvent<T>(
-      streamType: PRODUCT_EVENT_TYPE,
+      streamType: productEventType,
       date: DateTime.now(),
       version: version ?? await _eventDao.lastVersion(streamId) + 1,
       streamId: streamId,
@@ -34,7 +34,7 @@ class ProductCommand {
     required int price,
     required String unit,
   }) async {
-    var streamId = makeStreamId(PRODUCT_EVENT_TYPE);
+    var streamId = makeStreamId(productEventType);
     await generateEvent(
       streamId,
       streamTag: ProductCreated.tag,

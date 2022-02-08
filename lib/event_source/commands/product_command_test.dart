@@ -40,7 +40,7 @@ void main() {
   test('create one product command', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
-      emitsAnyOf([equals(ProductCreated.tag)]),
+      emitsAnyOf(<Matcher>[equals(ProductCreated.tag)]),
     );
 
     await productCommand.create(
@@ -62,7 +62,7 @@ void main() {
   test('update one product command', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
-      emitsInOrder([ProductCreated.tag, ProductUpdated.tag]),
+      emitsInOrder(<String>[ProductCreated.tag, ProductUpdated.tag]),
     );
 
     final streamId = await productCommand.create(
@@ -86,7 +86,7 @@ void main() {
   test('should not update null product', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
-      emitsInOrder([ProductCreated.tag]),
+      emitsInOrder(<String>[ProductCreated.tag]),
     );
 
     final streamId = await productCommand.create(
@@ -105,7 +105,7 @@ void main() {
   test('delete product command', () async {
     expect(
       EventStream.stream.map((e) => e.tag),
-      emitsInOrder([ProductCreated.tag, ProductDeleted.tag]),
+      emitsInOrder(<String>[ProductCreated.tag, ProductDeleted.tag]),
     );
 
     final streamId = await productCommand.create(

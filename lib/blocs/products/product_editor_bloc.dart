@@ -9,8 +9,8 @@ import 'package:laundry/event_source/commands/product_addon_command.dart';
 import 'package:laundry/event_source/commands/product_command.dart';
 import 'package:laundry/helpers/utils.dart';
 
-const CREATE_PRODUCT_INDEX = 1;
-const UPDATE_PRODUCT_INDEX = 2;
+const createProductIndex = 1;
+const updateProductIndex = 2;
 
 class Addon {
   Addon(this.title, this.price, {this.id});
@@ -40,12 +40,12 @@ class ProductEditorBloc extends Bloc<ProductEditorEvent, ProductEditorState> {
         super(ClearProductState()) {
     on<ClearProductEvent>((_, emit) => emit(ClearProductState()));
     on<InitiateCreateProductEvent>((_, emit) {
-      _rCubit.showDrawer(index: CREATE_PRODUCT_INDEX);
+      _rCubit.showDrawer(index: createProductIndex);
       emit(InitiateCreateProductState());
     });
     on<InitiateUpdateProductEvent>((event, emit) {
       emit(InitiateUpdateProductState(event.product));
-      _rCubit.showDrawer(index: UPDATE_PRODUCT_INDEX);
+      _rCubit.showDrawer(index: updateProductIndex);
     });
     on<CreateProductEvent>((event, emit) async {
       try {
@@ -87,7 +87,7 @@ class ProductEditorBloc extends Bloc<ProductEditorEvent, ProductEditorState> {
       futures.add(_addonCommand.create(
           productId: productId, title: addon.title, price: addon.price));
     }
-    await Future.wait(futures);
+    await Future.wait<void>(futures);
   }
 
   Future<void> _updateProduct(UpdateProductEvent event) async {
@@ -117,7 +117,7 @@ class ProductEditorBloc extends Bloc<ProductEditorEvent, ProductEditorState> {
     if (event.imagePath != null) {
       futures.add(_dao.updateImageSync(productId, event.imagePath!));
     }
-    await Future.wait(futures);
+    await Future.wait<void>(futures);
   }
 }
 

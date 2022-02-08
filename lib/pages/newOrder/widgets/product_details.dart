@@ -30,7 +30,7 @@ class _ProductDetailsState extends State<ProductDetails> {
 
   List<ProductAddon> selectedAddons = [];
 
-  fromProductState(OpenedProductState state) {
+  void fromProductState(OpenedProductState state) {
     setState(() {
       product = state.product;
       addons = state.addons;
@@ -199,7 +199,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                 InkWell(
                   onTap: () async {
                     final amountCtr = TextEditingController(text: amountStr);
-                    await showDialog(
+                    await showDialog<void>(
                       context: context,
                       builder: (_) => AdjustAmountForm(amountCtr),
                     );

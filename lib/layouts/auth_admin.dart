@@ -8,7 +8,7 @@ import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/newOrder/new_order_page.dart';
 import 'package:laundry/pages/productsManager/products_manager_page.dart';
 import 'package:laundry/pages/settings/settings_page.dart';
-import 'package:laundry/providers/navButtonProvider.dart';
+import 'package:laundry/providers/nav_button_provider.dart';
 import 'package:laundry/running_assets/asset_access.dart';
 import 'package:laundry/styles/theme.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +60,7 @@ class _AuthAdminLayoutState extends State<AuthAdminLayout>
     super.dispose();
   }
 
-  _tabBarView() {
+  Widget _tabBarView() {
     return FadeTransition(
       opacity: _animation,
       child: _tabs[_controller.index],

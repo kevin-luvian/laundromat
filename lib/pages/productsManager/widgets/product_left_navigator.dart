@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/blocs/products/productEditorBloc.dart';
+import 'package:laundry/blocs/products/product_editor_bloc.dart';
 import 'package:laundry/common/left_persistent_drawer.dart';
 import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/l10n/access_locale.dart';

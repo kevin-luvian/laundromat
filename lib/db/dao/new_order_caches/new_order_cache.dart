@@ -3,6 +3,7 @@ import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/tables/new_order_caches.dart';
 import 'package:laundry/db/tables/product_addons.dart';
 import 'package:laundry/db/tables/products.dart';
+import 'package:laundry/helpers/utils.dart';
 
 part 'new_order_cache.g.dart';
 
@@ -125,6 +126,8 @@ class OrderDetail {
     total *= amount;
     return total.toInt();
   }
+
+  String get amountStr => doubleToString(amount);
 
   @override
   toString() {

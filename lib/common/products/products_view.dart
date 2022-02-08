@@ -1,15 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/blocs/products/productsViewBloc.dart';
+import 'package:laundry/blocs/products/products_view_bloc.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/utils.dart';
-import 'package:laundry/running_assets/dao_access.dart';
 import 'package:universal_io/io.dart';
 
-const CARD_PER_ROW = 3;
-const IMAGE_HEIGHT = 100.0;
+const cardPerRow = 3;
+const imageHeight = 100.0;
 
 class ProductsView extends StatefulWidget {
   const ProductsView({Key? key, required this.onProductTap}) : super(key: key);
@@ -46,7 +43,7 @@ class _ProductsViewState extends State<ProductsView> {
                 const padding = EdgeInsets.all(7);
                 final width = _size == null
                     ? null
-                    : (_size!.width - padding.horizontal) / CARD_PER_ROW;
+                    : (_size!.width - padding.horizontal) / cardPerRow;
                 return SingleChildScrollView(
                   child: Padding(
                     padding: padding,
@@ -120,13 +117,13 @@ class _ProductView extends StatelessWidget {
         ? Image.file(
             File(imagePath),
             fit: BoxFit.fitWidth,
-            height: IMAGE_HEIGHT,
+            height: imageHeight,
             width: double.infinity,
           )
         : Image.asset(
             'assets/images/placeholder.png',
             fit: BoxFit.fitHeight,
-            height: IMAGE_HEIGHT,
+            height: imageHeight,
             width: double.infinity,
           );
   }
