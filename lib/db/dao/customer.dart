@@ -17,4 +17,12 @@ class CustomerDao extends DatabaseAccessor<DriftDB> {
   }
 
   Future<List<Customer>> all() => select(customers).get();
+
+  Stream<List<Customer>> streamAll() => (select(customers)
+        ..orderBy([(tbl) => OrderingTerm(expression: tbl.name)]))
+      .watch();
+
+  Future<Customer?> findByPhone(String phone) =>
+      (select(customers)..where((tbl) => tbl.phone.equals(phone)))
+          .getSingleOrNull();
 }

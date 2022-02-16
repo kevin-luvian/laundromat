@@ -32,7 +32,3 @@ class AddonAddedSerializer implements Serializer<AddonAdded> {
 class AddonRemoved {
   static const String tag = "AddonRemoved";
 }
-
-class AddonRemovedSerializer extends EmptySerializer<AddonRemoved> {
-  AddonRemovedSerializer() : super(AddonRemoved());
-}

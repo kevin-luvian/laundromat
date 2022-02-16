@@ -22,5 +22,6 @@ final ThemeData mainTheme = ThemeData(
 );
 
 class GlobalColor {
+  static const Color light = Color.fromRGBO(200, 200, 200, 0.4);
   static const Color dim = Color.fromRGBO(200, 200, 200, 1);
 }

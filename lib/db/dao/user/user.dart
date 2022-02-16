@@ -3,10 +3,10 @@ import 'package:drift/drift.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/tables/users.dart';
 
-part 'user.g.dart';
-
 @DriftAccessor(tables: [Users])
-class UserDao extends DatabaseAccessor<DriftDB> with _$UserDaoMixin {
+class UserDao extends DatabaseAccessor<DriftDB> {
+  $UsersTable get users => attachedDatabase.users;
+
   UserDao(DriftDB db) : super(db);
 
   Future<List<User>> allUsers() {
@@ -21,6 +21,7 @@ class UserDao extends DatabaseAccessor<DriftDB> with _$UserDaoMixin {
   Future<User?> authenticate(String name, String password) async {
     final user = await (select(users)
           ..where((user) => user.name.equals(name))
+          ..where((user) => user.active)
           ..limit(1))
         .getSingleOrNull();
     if (user != null && Crypt(user.password).match(password)) {
@@ -43,5 +44,24 @@ class UserDao extends DatabaseAccessor<DriftDB> with _$UserDaoMixin {
 
   Future<void> truncate() async {
     await delete(users).go();
+  }
+
+  Future<void> deleteAllExceptSuperAdmin() async {
+    await (delete(users)..where((tbl) => tbl.role.equals(roleSuperAdmin).not()))
+        .go();
+  }
+
+  Stream<List<User>> activeUsers() {
+    final query = select(users)
+      ..where((user) => user.active.equals(true))
+      ..orderBy([(e) => OrderingTerm(expression: e.name)]);
+    return query.watch();
+  }
+
+  Stream<List<User>> inactiveUsers() {
+    final query = select(users)
+      ..where((user) => user.active.equals(false))
+      ..orderBy([(e) => OrderingTerm(expression: e.name)]);
+    return query.watch();
   }
 }

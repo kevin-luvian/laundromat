@@ -1,9 +1,10 @@
+import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/utils.dart';
 
 const productEventType = "PRODUCT";
 
-class ProductCreated {
-  static const String tag = "ProductCreated";
+class ProductCreated implements EventData<ProductCreated> {
+  static const String staticTag = "ProductCreated";
 
   String category;
   String title;
@@ -16,6 +17,12 @@ class ProductCreated {
     required this.price,
     required this.unit,
   });
+
+  @override
+  get serializer => ProductCreatedSerializer();
+
+  @override
+  get tag => staticTag;
 }
 
 class ProductUpdated {
@@ -32,6 +39,13 @@ class ProductUpdated {
     this.price,
     this.unit,
   });
+
+  ProductsCompanion toCompanion() => ProductsCompanion(
+        category: wrapAbsentValue(category),
+        title: wrapAbsentValue(title),
+        price: wrapAbsentValue(price),
+        unit: wrapAbsentValue(unit),
+      );
 }
 
 class ProductDeleted {
@@ -72,8 +86,4 @@ class ProductUpdatedSerializer implements Serializer<ProductUpdated> {
         "price": t.price,
         "unit": t.unit,
       };
-}
-
-class ProductDeletedSerializer extends EmptySerializer<ProductDeleted> {
-  ProductDeletedSerializer() : super(ProductDeleted());
 }

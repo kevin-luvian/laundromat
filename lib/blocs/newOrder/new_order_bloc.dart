@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/cubits/right_drawer.dart';
 import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/db/event_db.dart';
 import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
@@ -10,7 +11,7 @@ class NewOrderBloc extends Bloc<NewOrderEvent, NewOrderState> {
   final RightDrawerCubit _rCubit;
   final NewOrderCacheDao _newOrderCacheDao;
 
-  NewOrderBloc(DriftDB db, this._rCubit)
+  NewOrderBloc(DriftDB db, EventDB edb, this._rCubit)
       : _newOrderCacheDao = NewOrderCacheDao(db),
         super(InitialOrderState()) {
     on<OpenProductEvent>((event, emit) async {
@@ -33,7 +34,6 @@ class NewOrderBloc extends Bloc<NewOrderEvent, NewOrderState> {
       }
     });
     on<ModifyProductEvent>((event, emit) async {
-      logger.i("product modified");
       final addonIds = event.addons.map((a) => a.id).toList(growable: false);
       final productId = event.product.id;
       final amount = event.amount;

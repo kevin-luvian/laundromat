@@ -14,6 +14,8 @@ String formatPrice(dynamic value) {
 Value<T> wrapAbsentValue<T>(T? value) =>
     value == null ? const Value.absent() : Value(value);
 
+T updateValue<T>(Value<T> value, T data) => value.present ? value.value : data;
+
 const uuid = Uuid();
 
 String makeStreamId(String streamType) => "$streamType-${uuid.v4()}";
@@ -39,16 +41,14 @@ abstract class EventData<T> {
   Serializer<T> get serializer;
 }
 
-class EmptySerializer<T> extends Serializer<T> {
-  T t;
-
-  EmptySerializer(this.t);
+class EmptySerializer extends Serializer<void> {
+  EmptySerializer();
 
   @override
-  toJson(T t) => <String, dynamic>{};
+  toJson(t) => <String, dynamic>{};
 
   @override
-  fromJson(data) => t;
+  fromJson(data) {}
 }
 
 int parseIntOrZero(String text) => int.tryParse(text, radix: 10) ?? 0;

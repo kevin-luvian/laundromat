@@ -21,9 +21,9 @@ void main() {
   setUp(() async {
     db = EventDB(NativeDatabase.memory());
     ddb = DriftDB(NativeDatabase.memory());
-    customerCommand = CustomerCommand(db);
-    eventDao = EventDao(db);
     customerDao = CustomerDao(ddb);
+    customerCommand = CustomerCommand(db, customerDao);
+    eventDao = EventDao(db);
     listeners = ProjectorListeners(ddb)..setup();
 
     await db.delete(db.events).go();
@@ -42,10 +42,10 @@ void main() {
       emitsAnyOf(<Matcher>[equals(CustomerCreated.staticTag)]),
     );
 
-    await customerCommand.create("bob", "1234");
+    await customerCommand.create("", "bob", "1234");
 
     final events = await eventDao.allEvents();
-    expect(events.length, greaterThan(0));
+    expect(events.length, 1);
 
     final customers = await customerDao.all();
     expect(customers.length, 1);

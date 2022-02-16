@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
+import 'package:laundry/db/aggregates/product_order_details.dart';
 import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/running_assets/dao_access.dart';
-
-const double taxRate = 10 / 100;
 
 class CheckoutPayment extends StatefulWidget {
   const CheckoutPayment(this.padding) : super(key: null);
@@ -17,7 +15,7 @@ class CheckoutPayment extends StatefulWidget {
 }
 
 class _CheckoutPaymentState extends State<CheckoutPayment> {
-  late final StreamSubscription<List<OrderDetail>> orderListener;
+  late final StreamSubscription<List<ProductOrderDetail>> orderListener;
   int subtotal = 0;
 
   @override
@@ -33,7 +31,8 @@ class _CheckoutPaymentState extends State<CheckoutPayment> {
     super.initState();
   }
 
-  int get taxes => (subtotal * taxRate).toInt();
+  // TODO: change tax rate
+  int get taxes => (subtotal * (10 / 100)).toInt();
 
   int get total => subtotal + taxes;
 

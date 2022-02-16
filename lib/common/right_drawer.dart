@@ -15,9 +15,16 @@ class RightDrawerContent {
   final String label;
 }
 
+const _noRightDrawerContent = RightDrawerContent(
+  child: Text("no handler"),
+  label: "no handler",
+);
+
 class RightDrawer extends StatefulWidget {
-  const RightDrawer({Key? key, required this.child, required this.content})
-      : super(key: key);
+  const RightDrawer(
+      {Key? key, required this.child, RightDrawerContent? content})
+      : content = content ?? _noRightDrawerContent,
+        super(key: key);
 
   final RightDrawerContent content;
   final Widget child;
@@ -122,26 +129,32 @@ class _RightDrawerState extends State<RightDrawer>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            SizedBox(
-              width: 50,
-              child: TextButton(
-                onPressed: () => emitCloseDrawer(context),
-                style: ButtonStyle(
-                  overlayColor:
-                      MaterialStateColor.resolveWith((_) => splashColor),
-                  alignment: Alignment.topLeft,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 50,
+                child: TextButton(
+                  onPressed: () => emitCloseDrawer(context),
+                  style: ButtonStyle(
+                    overlayColor:
+                        MaterialStateColor.resolveWith((_) => splashColor),
+                    alignment: Alignment.topLeft,
+                  ),
+                  child: Icon(icon, color: onSurfaceColor, size: 30),
                 ),
-                child: Icon(icon, color: onSurfaceColor, size: 30),
               ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              widget.content.label,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-          ],
+              const SizedBox(width: 10),
+              Text(
+                widget.content.label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
         ),
         Expanded(child: widget.content.child),
       ],
@@ -155,7 +168,7 @@ class _RightDrawerState extends State<RightDrawer>
           final currentFocus = FocusScope.of(context);
           if (!currentFocus.hasPrimaryFocus &&
               currentFocus.focusedChild != null) {
-            unFocusInput(context);
+            DismissKeyboard.unFocusInput(context);
           } else {
             emitCloseDrawer(context);
           }

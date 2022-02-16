@@ -1,22 +1,43 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
 import 'package:laundry/common/confirmation_dialog.dart';
+import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/l10n/access_locale.dart';
+import 'package:laundry/pages/new_order/widgets/checkout_dialog/checkout_dialog.dart';
 import 'package:laundry/print_handlers/print_orders.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
-class CheckoutPaymentAction extends StatelessWidget {
+class CheckoutPaymentAction extends StatefulWidget {
   const CheckoutPaymentAction(this.padding) : super(key: null);
 
   final EdgeInsets padding;
 
   @override
-  Widget build(BuildContext context) {
+  _CheckoutPaymentActionState createState() => _CheckoutPaymentActionState();
+}
+
+class _CheckoutPaymentActionState extends State<CheckoutPaymentAction> {
+  late StreamSubscription _listener;
+  int ordersLength = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _listener = newOrderCacheDao
+        .streamOrdersLength()
+        .listen((length) => setState(() => ordersLength = length));
+  }
+
+  @override
+  build(context) {
     return Padding(
-      padding:
-          EdgeInsets.fromLTRB(padding.left, 0, padding.right, padding.bottom),
+      padding: EdgeInsets.fromLTRB(
+          widget.padding.left, 0, widget.padding.right, widget.padding.bottom),
       child: Column(
         children: [
           _buildActionCheckout(context),
@@ -45,13 +66,21 @@ class CheckoutPaymentAction extends StatelessWidget {
         ),
       ),
       _buildActionSubset(
+        icon: CupertinoIcons.profile_circled,
+        color: Colors.orangeAccent,
+        onPressed: () {},
+      ),
+      _buildActionSubset(
         icon: Icons.print_outlined,
         color: Colors.blueAccent,
         onPressed: () async {
           // bluetoothBloc.add(PrintEvent());
 
           final orders = await newOrderCacheDao.allOrderDetails();
-          final file = await buildOrdersAsFile(orders);
+          final staff = await sessionDao.currentUser;
+          final customer = await newOrderCacheDao.currentCustomer;
+          final file = await buildOrdersAsFile(
+              orders: orders, staff: staff!, customer: customer);
           if (file == null) return;
           var decodedImage = await decodeImageFromList(file.readAsBytesSync());
           await showDialog<void>(
@@ -78,17 +107,15 @@ class CheckoutPaymentAction extends StatelessWidget {
   }
 
   Widget _buildActionCheckout(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).colorScheme.primary,
-        minimumSize: const Size.fromHeight(45),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
+    return RectButton(
+      disabled: ordersLength <= 0,
+      onPressed: () =>
+          showCheckoutDialog(context, context.read<NewOrderBloc>()),
+      size: const Size.fromHeight(45),
+      child: Text(
+        l10n(context)?.checkout ?? "",
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      child: Text(AppLocalizations.of(context)?.checkout ?? "",
-          style: const TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 

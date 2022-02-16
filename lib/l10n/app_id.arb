@@ -8,5 +8,20 @@
   "logout": "Logout",
   "change_to_different_account": "ubah ke akun lain",
   "authenticating": "mengotentikasi",
-  "loading": "memuat"
+  "loading": "memuat",
+  "active_user": "pengguna aktif",
+  "deleted_user": "pengguna terhapus",
+  "inactive_user": "pengguna tidak aktif",
+  "january": "januari",
+  "february": "febuari",
+  "march": "maret",
+  "april": "april",
+  "may": "mei",
+  "june": "juni",
+  "july": "juli",
+  "august": "agustus",
+  "september": "september",
+  "october": "oktober",
+  "november": "november",
+  "december": "desember"
 }

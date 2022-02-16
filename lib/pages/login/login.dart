@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/blocs/auth/event.dart';
 import 'package:laundry/blocs/auth/state.dart';
@@ -100,26 +101,28 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _cardWrapper({required BuildContext context, required Widget child}) {
-    return Container(
-      alignment: Alignment.center,
-      child: Wrap(
-        children: [
-          SizedBox(
-            width: 500,
-            child: Card(
-              elevation: 3.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20.0,
-                  horizontal: 50,
+    return KeyboardVisibilityBuilder(builder: (_ctx, visible) {
+      return Container(
+        alignment: visible ? Alignment.topCenter : Alignment.center,
+        child: Wrap(
+          children: [
+            SizedBox(
+              width: 500,
+              child: Card(
+                elevation: 3.0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20.0,
+                    horizontal: 50,
+                  ),
+                  child: child,
                 ),
-                child: child,
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   List<TextInputFormatter> get _noWhiteSpacesInput => [noWhitespacesFormatter];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,9 +28,9 @@ Future<String> saveExtFile(String prefix, File file) async {
   return pathToSave;
 }
 
-ColorScheme colorScheme(BuildContext context) {
-  return Theme.of(context).colorScheme;
-}
+Size screenSize(BuildContext context) => MediaQuery.of(context).size;
+
+ColorScheme colorScheme(BuildContext context) => Theme.of(context).colorScheme;
 
 void showSnackBar(BuildContext context, String text) {
   final snackBar = SnackBar(
@@ -40,4 +41,39 @@ void showSnackBar(BuildContext context, String text) {
     backgroundColor: colorScheme(context).surface,
   );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
+String dateToStringLocale(DateTime date, AppLocalizations? locale) {
+  return "${date.day} ${monthToString(date.month, locale)} ${date.year}";
+}
+
+String monthToString(int month, AppLocalizations? locale) {
+  switch (month) {
+    case DateTime.january:
+      return locale?.january ?? "-";
+    case DateTime.february:
+      return locale?.february ?? "-";
+    case DateTime.march:
+      return locale?.march ?? "-";
+    case DateTime.april:
+      return locale?.april ?? "-";
+    case DateTime.may:
+      return locale?.may ?? "-";
+    case DateTime.june:
+      return locale?.june ?? "-";
+    case DateTime.july:
+      return locale?.july ?? "-";
+    case DateTime.august:
+      return locale?.august ?? "-";
+    case DateTime.september:
+      return locale?.september ?? "-";
+    case DateTime.october:
+      return locale?.october ?? "-";
+    case DateTime.november:
+      return locale?.november ?? "-";
+    case DateTime.december:
+      return locale?.december ?? "-";
+    default:
+      return "-";
+  }
 }

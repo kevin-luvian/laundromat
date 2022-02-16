@@ -16,7 +16,7 @@ class ProductProjector implements IProjector {
   @override
   project(event) async {
     switch (event.tag) {
-      case ProductCreated.tag:
+      case ProductCreated.staticTag:
         return create(
           ProjectionEvent.fromEvent(event, ProductCreatedSerializer()),
         );

@@ -1,31 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
 
 class RectButton extends StatelessWidget {
   const RectButton({
     Key? key,
+    bool? disabled,
+    Size? size,
+    EdgeInsets? padding,
+    this.elevation,
     this.color,
-    this.size,
     this.onPressed,
     required this.child,
-  }) : super(key: key);
+  })  : disabled = disabled ?? false,
+        size = size ?? const Size.fromHeight(45),
+        padding = padding ?? EdgeInsets.zero,
+        super(key: key);
 
-  final Size? size;
+  final bool disabled;
+  final Size size;
+  final EdgeInsets padding;
   final Color? color;
-  final Function? onPressed;
+  final double? elevation;
+  final void Function()? onPressed;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final _onPressed = onPressed ?? () {};
-    final _color = color ?? colorScheme(context).secondary;
-    final _size = size ?? const Size.fromHeight(45);
+  build(context) {
+    Color _color = color ?? colorScheme(context).secondary;
 
     return ElevatedButton(
-      onPressed: () => _onPressed(),
+      onPressed: disabled ? null : onPressed,
       style: ElevatedButton.styleFrom(
+        elevation: elevation,
+        padding: padding,
         primary: _color,
-        minimumSize: _size,
+        minimumSize: size,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),

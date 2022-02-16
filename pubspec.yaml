@@ -44,12 +44,15 @@ dependencies:
   drift: ^1.2.0
   sqlite3_flutter_libs: ^0.5.0
   path_provider: ^2.0.0
-  path: 1.8.0
+  path: ^1.8.0
   image_picker: ^0.8.4+4
 
+  flutter_slidable: ^1.2.0
+  flutter_hooks: ^0.18.2+1
   flutter_keyboard_visibility: ^5.1.1
-  drift_db_viewer: ^1.0.0
   flutter_spinkit: ^5.1.0
+  flutter_switch: ^0.3.2
+  drift_db_viewer: ^1.0.0
   logger: ^1.1.0
   blue_thermal_printer: ^1.2.0
   pdf: ^3.7.1

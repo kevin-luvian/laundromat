@@ -52,8 +52,8 @@ class ProductAddonCommand {
     await _generateEvent(
       streamId: streamId,
       streamTag: AddonRemoved.tag,
-      serializer: AddonRemovedSerializer(),
-      data: AddonRemoved(),
+      serializer: EmptySerializer(),
+      data: null,
     );
   }
 }

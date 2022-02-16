@@ -8,6 +8,7 @@ import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/print_handlers/print_orders.dart';
+import 'package:laundry/running_assets/dao_access.dart';
 
 class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
   BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
@@ -32,11 +33,22 @@ class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
     });
 
     on<PrintEvent>((_, _e) async {
-      final orders = await _nocDao.allOrderDetails();
-      logger.i("printing orders");
-      final mDevice = device;
-      if (mDevice != null) {
-        printOrders(bluetooth, mDevice, orders);
+      try {
+        final mDevice = device;
+        if (mDevice != null) {
+          final orders = await _nocDao.allOrderDetails();
+          final staff = await sessionDao.currentUser;
+          final customer = await _nocDao.currentCustomer;
+          await printOrders(
+            bluetooth,
+            mDevice,
+            orders: orders,
+            staff: staff!,
+            customer: customer,
+          );
+        }
+      } catch (err) {
+        logger.e(err);
       }
     });
     on<_ConnectionChangedEvent>(
@@ -54,8 +66,10 @@ class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
     });
     on<DisconnectEvent>((event, emit) async {
       emit(LoadingState());
-      final disconnected = await disconnect();
-      if (disconnected) device = null;
+      final isDisconnected = await disconnect();
+      if (isDisconnected) {
+        device = null;
+      }
     });
   }
 

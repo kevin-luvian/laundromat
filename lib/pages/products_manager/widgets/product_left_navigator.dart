@@ -4,7 +4,7 @@ import 'package:laundry/blocs/products/product_editor_bloc.dart';
 import 'package:laundry/common/left_persistent_drawer.dart';
 import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/l10n/access_locale.dart';
-import 'package:laundry/pages/productsManager/widgets/animated_category_list.dart';
+import 'package:laundry/pages/products_manager/widgets/animated_category_list.dart';
 
 class ProductLeftNavigator extends StatefulWidget {
   const ProductLeftNavigator({Key? key}) : super(key: key);

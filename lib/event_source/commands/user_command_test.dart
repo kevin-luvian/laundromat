@@ -48,14 +48,14 @@ void main() {
       name: "bob",
       password: "bob123",
       role: "fisherman",
-      pin: 1234,
+      pin: "1234",
     );
 
     await userCommand.create(
       name: "bob2",
       password: "bob123",
       role: "fisherman",
-      pin: 1235,
+      pin: "1235",
     );
 
     final events = await eventDao.allEvents();
@@ -72,10 +72,14 @@ void main() {
       name: "bob",
       password: "bob123",
       role: "fisherman",
-      pin: 1234,
+      pin: "1234",
     );
 
-    await userCommand.update(streamId: streamId, name: "uber bob");
+    await userCommand.update(
+      streamId: streamId,
+      updatedBy: "",
+      name: "uber bob",
+    );
 
     final events = await eventDao.allEvents();
     expect(events.length, 2);
@@ -96,10 +100,10 @@ void main() {
       name: "bob",
       password: "bob123",
       role: "fisherman",
-      pin: 1234,
+      pin: "1234",
     );
 
-    await userCommand.deactivate(streamId: streamId);
+    await userCommand.deactivate(streamId, "123");
 
     final events = await eventDao.allEvents();
     expect(events.length, 2);

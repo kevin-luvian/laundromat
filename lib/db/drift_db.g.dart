@@ -10,15 +10,19 @@ part of 'drift_db.dart';
 class User extends DataClass implements Insertable<User> {
   final String id;
   final String name;
-  final int pin;
+  final String pin;
   final String password;
   final String role;
+  final bool active;
+  final DateTime? lastLogin;
   User(
       {required this.id,
       required this.name,
       required this.pin,
       required this.password,
-      required this.role});
+      required this.role,
+      required this.active,
+      this.lastLogin});
   factory User.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return User(
@@ -26,12 +30,16 @@ class User extends DataClass implements Insertable<User> {
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      pin: const IntType()
+      pin: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}pin'])!,
       password: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}password'])!,
       role: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}role'])!,
+      active: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}active'])!,
+      lastLogin: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}last_login']),
     );
   }
   @override
@@ -39,9 +47,13 @@ class User extends DataClass implements Insertable<User> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
-    map['pin'] = Variable<int>(pin);
+    map['pin'] = Variable<String>(pin);
     map['password'] = Variable<String>(password);
     map['role'] = Variable<String>(role);
+    map['active'] = Variable<bool>(active);
+    if (!nullToAbsent || lastLogin != null) {
+      map['last_login'] = Variable<DateTime?>(lastLogin);
+    }
     return map;
   }
 
@@ -52,6 +64,10 @@ class User extends DataClass implements Insertable<User> {
       pin: Value(pin),
       password: Value(password),
       role: Value(role),
+      active: Value(active),
+      lastLogin: lastLogin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastLogin),
     );
   }
 
@@ -61,9 +77,11 @@ class User extends DataClass implements Insertable<User> {
     return User(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      pin: serializer.fromJson<int>(json['pin']),
+      pin: serializer.fromJson<String>(json['pin']),
       password: serializer.fromJson<String>(json['password']),
       role: serializer.fromJson<String>(json['role']),
+      active: serializer.fromJson<bool>(json['active']),
+      lastLogin: serializer.fromJson<DateTime?>(json['lastLogin']),
     );
   }
   @override
@@ -72,24 +90,30 @@ class User extends DataClass implements Insertable<User> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
-      'pin': serializer.toJson<int>(pin),
+      'pin': serializer.toJson<String>(pin),
       'password': serializer.toJson<String>(password),
       'role': serializer.toJson<String>(role),
+      'active': serializer.toJson<bool>(active),
+      'lastLogin': serializer.toJson<DateTime?>(lastLogin),
     };
   }
 
   User copyWith(
           {String? id,
           String? name,
-          int? pin,
+          String? pin,
           String? password,
-          String? role}) =>
+          String? role,
+          bool? active,
+          DateTime? lastLogin}) =>
       User(
         id: id ?? this.id,
         name: name ?? this.name,
         pin: pin ?? this.pin,
         password: password ?? this.password,
         role: role ?? this.role,
+        active: active ?? this.active,
+        lastLogin: lastLogin ?? this.lastLogin,
       );
   @override
   String toString() {
@@ -98,13 +122,16 @@ class User extends DataClass implements Insertable<User> {
           ..write('name: $name, ')
           ..write('pin: $pin, ')
           ..write('password: $password, ')
-          ..write('role: $role')
+          ..write('role: $role, ')
+          ..write('active: $active, ')
+          ..write('lastLogin: $lastLogin')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, pin, password, role);
+  int get hashCode =>
+      Object.hash(id, name, pin, password, role, active, lastLogin);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -113,28 +140,36 @@ class User extends DataClass implements Insertable<User> {
           other.name == this.name &&
           other.pin == this.pin &&
           other.password == this.password &&
-          other.role == this.role);
+          other.role == this.role &&
+          other.active == this.active &&
+          other.lastLogin == this.lastLogin);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> id;
   final Value<String> name;
-  final Value<int> pin;
+  final Value<String> pin;
   final Value<String> password;
   final Value<String> role;
+  final Value<bool> active;
+  final Value<DateTime?> lastLogin;
   const UsersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.pin = const Value.absent(),
     this.password = const Value.absent(),
     this.role = const Value.absent(),
+    this.active = const Value.absent(),
+    this.lastLogin = const Value.absent(),
   });
   UsersCompanion.insert({
     required String id,
     required String name,
-    required int pin,
+    required String pin,
     required String password,
     required String role,
+    this.active = const Value.absent(),
+    this.lastLogin = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
         pin = Value(pin),
@@ -143,9 +178,11 @@ class UsersCompanion extends UpdateCompanion<User> {
   static Insertable<User> custom({
     Expression<String>? id,
     Expression<String>? name,
-    Expression<int>? pin,
+    Expression<String>? pin,
     Expression<String>? password,
     Expression<String>? role,
+    Expression<bool>? active,
+    Expression<DateTime?>? lastLogin,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -153,21 +190,27 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (pin != null) 'pin': pin,
       if (password != null) 'password': password,
       if (role != null) 'role': role,
+      if (active != null) 'active': active,
+      if (lastLogin != null) 'last_login': lastLogin,
     });
   }
 
   UsersCompanion copyWith(
       {Value<String>? id,
       Value<String>? name,
-      Value<int>? pin,
+      Value<String>? pin,
       Value<String>? password,
-      Value<String>? role}) {
+      Value<String>? role,
+      Value<bool>? active,
+      Value<DateTime?>? lastLogin}) {
     return UsersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       pin: pin ?? this.pin,
       password: password ?? this.password,
       role: role ?? this.role,
+      active: active ?? this.active,
+      lastLogin: lastLogin ?? this.lastLogin,
     );
   }
 
@@ -181,13 +224,19 @@ class UsersCompanion extends UpdateCompanion<User> {
       map['name'] = Variable<String>(name.value);
     }
     if (pin.present) {
-      map['pin'] = Variable<int>(pin.value);
+      map['pin'] = Variable<String>(pin.value);
     }
     if (password.present) {
       map['password'] = Variable<String>(password.value);
     }
     if (role.present) {
       map['role'] = Variable<String>(role.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    if (lastLogin.present) {
+      map['last_login'] = Variable<DateTime?>(lastLogin.value);
     }
     return map;
   }
@@ -199,16 +248,19 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('name: $name, ')
           ..write('pin: $pin, ')
           ..write('password: $password, ')
-          ..write('role: $role')
+          ..write('role: $role, ')
+          ..write('active: $active, ')
+          ..write('lastLogin: $lastLogin')
           ..write(')'))
         .toString();
   }
 }
 
 class $UsersTable extends Users with TableInfo<$UsersTable, User> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $UsersTable(this._db, [this._alias]);
+  $UsersTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
@@ -225,9 +277,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       $customConstraints: 'UNIQUE');
   final VerificationMeta _pinMeta = const VerificationMeta('pin');
   @override
-  late final GeneratedColumn<int?> pin = GeneratedColumn<int?>(
+  late final GeneratedColumn<String?> pin = GeneratedColumn<String?>(
       'pin', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 4, maxTextLength: 4),
+      type: const StringType(),
+      requiredDuringInsert: true);
   final VerificationMeta _passwordMeta = const VerificationMeta('password');
   @override
   late final GeneratedColumn<String?> password = GeneratedColumn<String?>(
@@ -238,8 +293,22 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   late final GeneratedColumn<String?> role = GeneratedColumn<String?>(
       'role', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _activeMeta = const VerificationMeta('active');
   @override
-  List<GeneratedColumn> get $columns => [id, name, pin, password, role];
+  late final GeneratedColumn<bool?> active = GeneratedColumn<bool?>(
+      'active', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (active IN (0, 1))',
+      defaultValue: const Constant(true));
+  final VerificationMeta _lastLoginMeta = const VerificationMeta('lastLogin');
+  @override
+  late final GeneratedColumn<DateTime?> lastLogin = GeneratedColumn<DateTime?>(
+      'last_login', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, pin, password, role, active, lastLogin];
   @override
   String get aliasedName => _alias ?? 'users';
   @override
@@ -278,6 +347,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_roleMeta);
     }
+    if (data.containsKey('active')) {
+      context.handle(_activeMeta,
+          active.isAcceptableOrUnknown(data['active']!, _activeMeta));
+    }
+    if (data.containsKey('last_login')) {
+      context.handle(_lastLoginMeta,
+          lastLogin.isAcceptableOrUnknown(data['last_login']!, _lastLoginMeta));
+    }
     return context;
   }
 
@@ -291,35 +368,49 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
 
   @override
   $UsersTable createAlias(String alias) {
-    return $UsersTable(_db, alias);
+    return $UsersTable(attachedDatabase, alias);
   }
 }
 
 class Customer extends DataClass implements Insertable<Customer> {
+  final String id;
   final String phone;
   final String name;
-  Customer({required this.phone, required this.name});
+  final String lastEditorId;
+  Customer(
+      {required this.id,
+      required this.phone,
+      required this.name,
+      required this.lastEditorId});
   factory Customer.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Customer(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       phone: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}phone'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      lastEditorId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}last_editor_id'])!,
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
     map['phone'] = Variable<String>(phone);
     map['name'] = Variable<String>(name);
+    map['last_editor_id'] = Variable<String>(lastEditorId);
     return map;
   }
 
   CustomersCompanion toCompanion(bool nullToAbsent) {
     return CustomersCompanion(
+      id: Value(id),
       phone: Value(phone),
       name: Value(name),
+      lastEditorId: Value(lastEditorId),
     );
   }
 
@@ -327,79 +418,115 @@ class Customer extends DataClass implements Insertable<Customer> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Customer(
+      id: serializer.fromJson<String>(json['id']),
       phone: serializer.fromJson<String>(json['phone']),
       name: serializer.fromJson<String>(json['name']),
+      lastEditorId: serializer.fromJson<String>(json['lastEditorId']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
       'phone': serializer.toJson<String>(phone),
       'name': serializer.toJson<String>(name),
+      'lastEditorId': serializer.toJson<String>(lastEditorId),
     };
   }
 
-  Customer copyWith({String? phone, String? name}) => Customer(
+  Customer copyWith(
+          {String? id, String? phone, String? name, String? lastEditorId}) =>
+      Customer(
+        id: id ?? this.id,
         phone: phone ?? this.phone,
         name: name ?? this.name,
+        lastEditorId: lastEditorId ?? this.lastEditorId,
       );
   @override
   String toString() {
     return (StringBuffer('Customer(')
+          ..write('id: $id, ')
           ..write('phone: $phone, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('lastEditorId: $lastEditorId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(phone, name);
+  int get hashCode => Object.hash(id, phone, name, lastEditorId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Customer &&
+          other.id == this.id &&
           other.phone == this.phone &&
-          other.name == this.name);
+          other.name == this.name &&
+          other.lastEditorId == this.lastEditorId);
 }
 
 class CustomersCompanion extends UpdateCompanion<Customer> {
+  final Value<String> id;
   final Value<String> phone;
   final Value<String> name;
+  final Value<String> lastEditorId;
   const CustomersCompanion({
+    this.id = const Value.absent(),
     this.phone = const Value.absent(),
     this.name = const Value.absent(),
+    this.lastEditorId = const Value.absent(),
   });
   CustomersCompanion.insert({
+    required String id,
     required String phone,
     required String name,
-  })  : phone = Value(phone),
-        name = Value(name);
+    required String lastEditorId,
+  })  : id = Value(id),
+        phone = Value(phone),
+        name = Value(name),
+        lastEditorId = Value(lastEditorId);
   static Insertable<Customer> custom({
+    Expression<String>? id,
     Expression<String>? phone,
     Expression<String>? name,
+    Expression<String>? lastEditorId,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
       if (phone != null) 'phone': phone,
       if (name != null) 'name': name,
+      if (lastEditorId != null) 'last_editor_id': lastEditorId,
     });
   }
 
-  CustomersCompanion copyWith({Value<String>? phone, Value<String>? name}) {
+  CustomersCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? phone,
+      Value<String>? name,
+      Value<String>? lastEditorId}) {
     return CustomersCompanion(
+      id: id ?? this.id,
       phone: phone ?? this.phone,
       name: name ?? this.name,
+      lastEditorId: lastEditorId ?? this.lastEditorId,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
     if (phone.present) {
       map['phone'] = Variable<String>(phone.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (lastEditorId.present) {
+      map['last_editor_id'] = Variable<String>(lastEditorId.value);
     }
     return map;
   }
@@ -407,8 +534,10 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
   @override
   String toString() {
     return (StringBuffer('CustomersCompanion(')
+          ..write('id: $id, ')
           ..write('phone: $phone, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('lastEditorId: $lastEditorId')
           ..write(')'))
         .toString();
   }
@@ -416,23 +545,37 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
 
 class $CustomersTable extends Customers
     with TableInfo<$CustomersTable, Customer> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CustomersTable(this._db, [this._alias]);
+  $CustomersTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'UNIQUE');
   final VerificationMeta _phoneMeta = const VerificationMeta('phone');
   @override
   late final GeneratedColumn<String?> phone = GeneratedColumn<String?>(
       'phone', aliasedName, false,
-      type: const StringType(),
-      requiredDuringInsert: true,
-      $customConstraints: 'UNIQUE');
+      type: const StringType(), requiredDuringInsert: true);
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _lastEditorIdMeta =
+      const VerificationMeta('lastEditorId');
   @override
-  List<GeneratedColumn> get $columns => [phone, name];
+  late final GeneratedColumn<String?> lastEditorId = GeneratedColumn<String?>(
+      'last_editor_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES users (id)');
+  @override
+  List<GeneratedColumn> get $columns => [id, phone, name, lastEditorId];
   @override
   String get aliasedName => _alias ?? 'customers';
   @override
@@ -442,6 +585,11 @@ class $CustomersTable extends Customers
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
     if (data.containsKey('phone')) {
       context.handle(
           _phoneMeta, phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta));
@@ -454,11 +602,19 @@ class $CustomersTable extends Customers
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('last_editor_id')) {
+      context.handle(
+          _lastEditorIdMeta,
+          lastEditorId.isAcceptableOrUnknown(
+              data['last_editor_id']!, _lastEditorIdMeta));
+    } else if (isInserting) {
+      context.missing(_lastEditorIdMeta);
+    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {phone};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Customer map(Map<String, dynamic> data, {String? tablePrefix}) {
     return Customer.fromData(data,
@@ -467,7 +623,7 @@ class $CustomersTable extends Customers
 
   @override
   $CustomersTable createAlias(String alias) {
-    return $CustomersTable(_db, alias);
+    return $CustomersTable(attachedDatabase, alias);
   }
 }
 
@@ -476,12 +632,14 @@ class Session extends DataClass implements Insertable<Session> {
   final String lang;
   final String theme;
   final String staffId;
+  final double taxRate;
   final DateTime loggedInDate;
   Session(
       {required this.id,
       required this.lang,
       required this.theme,
       required this.staffId,
+      required this.taxRate,
       required this.loggedInDate});
   factory Session.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -494,6 +652,8 @@ class Session extends DataClass implements Insertable<Session> {
           .mapFromDatabaseResponse(data['${effectivePrefix}theme'])!,
       staffId: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}staff_id'])!,
+      taxRate: const RealType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}tax_rate'])!,
       loggedInDate: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}logged_in_date'])!,
     );
@@ -505,6 +665,7 @@ class Session extends DataClass implements Insertable<Session> {
     map['lang'] = Variable<String>(lang);
     map['theme'] = Variable<String>(theme);
     map['staff_id'] = Variable<String>(staffId);
+    map['tax_rate'] = Variable<double>(taxRate);
     map['logged_in_date'] = Variable<DateTime>(loggedInDate);
     return map;
   }
@@ -515,6 +676,7 @@ class Session extends DataClass implements Insertable<Session> {
       lang: Value(lang),
       theme: Value(theme),
       staffId: Value(staffId),
+      taxRate: Value(taxRate),
       loggedInDate: Value(loggedInDate),
     );
   }
@@ -527,6 +689,7 @@ class Session extends DataClass implements Insertable<Session> {
       lang: serializer.fromJson<String>(json['lang']),
       theme: serializer.fromJson<String>(json['theme']),
       staffId: serializer.fromJson<String>(json['staffId']),
+      taxRate: serializer.fromJson<double>(json['taxRate']),
       loggedInDate: serializer.fromJson<DateTime>(json['loggedInDate']),
     );
   }
@@ -538,6 +701,7 @@ class Session extends DataClass implements Insertable<Session> {
       'lang': serializer.toJson<String>(lang),
       'theme': serializer.toJson<String>(theme),
       'staffId': serializer.toJson<String>(staffId),
+      'taxRate': serializer.toJson<double>(taxRate),
       'loggedInDate': serializer.toJson<DateTime>(loggedInDate),
     };
   }
@@ -547,12 +711,14 @@ class Session extends DataClass implements Insertable<Session> {
           String? lang,
           String? theme,
           String? staffId,
+          double? taxRate,
           DateTime? loggedInDate}) =>
       Session(
         id: id ?? this.id,
         lang: lang ?? this.lang,
         theme: theme ?? this.theme,
         staffId: staffId ?? this.staffId,
+        taxRate: taxRate ?? this.taxRate,
         loggedInDate: loggedInDate ?? this.loggedInDate,
       );
   @override
@@ -562,13 +728,15 @@ class Session extends DataClass implements Insertable<Session> {
           ..write('lang: $lang, ')
           ..write('theme: $theme, ')
           ..write('staffId: $staffId, ')
+          ..write('taxRate: $taxRate, ')
           ..write('loggedInDate: $loggedInDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, lang, theme, staffId, loggedInDate);
+  int get hashCode =>
+      Object.hash(id, lang, theme, staffId, taxRate, loggedInDate);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -577,6 +745,7 @@ class Session extends DataClass implements Insertable<Session> {
           other.lang == this.lang &&
           other.theme == this.theme &&
           other.staffId == this.staffId &&
+          other.taxRate == this.taxRate &&
           other.loggedInDate == this.loggedInDate);
 }
 
@@ -585,12 +754,14 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<String> lang;
   final Value<String> theme;
   final Value<String> staffId;
+  final Value<double> taxRate;
   final Value<DateTime> loggedInDate;
   const SessionsCompanion({
     this.id = const Value.absent(),
     this.lang = const Value.absent(),
     this.theme = const Value.absent(),
     this.staffId = const Value.absent(),
+    this.taxRate = const Value.absent(),
     this.loggedInDate = const Value.absent(),
   });
   SessionsCompanion.insert({
@@ -598,6 +769,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.lang = const Value.absent(),
     this.theme = const Value.absent(),
     this.staffId = const Value.absent(),
+    this.taxRate = const Value.absent(),
     this.loggedInDate = const Value.absent(),
   });
   static Insertable<Session> custom({
@@ -605,6 +777,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Expression<String>? lang,
     Expression<String>? theme,
     Expression<String>? staffId,
+    Expression<double>? taxRate,
     Expression<DateTime>? loggedInDate,
   }) {
     return RawValuesInsertable({
@@ -612,6 +785,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       if (lang != null) 'lang': lang,
       if (theme != null) 'theme': theme,
       if (staffId != null) 'staff_id': staffId,
+      if (taxRate != null) 'tax_rate': taxRate,
       if (loggedInDate != null) 'logged_in_date': loggedInDate,
     });
   }
@@ -621,12 +795,14 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       Value<String>? lang,
       Value<String>? theme,
       Value<String>? staffId,
+      Value<double>? taxRate,
       Value<DateTime>? loggedInDate}) {
     return SessionsCompanion(
       id: id ?? this.id,
       lang: lang ?? this.lang,
       theme: theme ?? this.theme,
       staffId: staffId ?? this.staffId,
+      taxRate: taxRate ?? this.taxRate,
       loggedInDate: loggedInDate ?? this.loggedInDate,
     );
   }
@@ -646,6 +822,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     if (staffId.present) {
       map['staff_id'] = Variable<String>(staffId.value);
     }
+    if (taxRate.present) {
+      map['tax_rate'] = Variable<double>(taxRate.value);
+    }
     if (loggedInDate.present) {
       map['logged_in_date'] = Variable<DateTime>(loggedInDate.value);
     }
@@ -659,6 +838,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
           ..write('lang: $lang, ')
           ..write('theme: $theme, ')
           ..write('staffId: $staffId, ')
+          ..write('taxRate: $taxRate, ')
           ..write('loggedInDate: $loggedInDate')
           ..write(')'))
         .toString();
@@ -666,9 +846,10 @@ class SessionsCompanion extends UpdateCompanion<Session> {
 }
 
 class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $SessionsTable(this._db, [this._alias]);
+  $SessionsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
@@ -697,6 +878,13 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
       type: const StringType(),
       requiredDuringInsert: false,
       defaultValue: const Constant(""));
+  final VerificationMeta _taxRateMeta = const VerificationMeta('taxRate');
+  @override
+  late final GeneratedColumn<double?> taxRate = GeneratedColumn<double?>(
+      'tax_rate', aliasedName, false,
+      type: const RealType(),
+      requiredDuringInsert: false,
+      defaultValue: const Constant(10));
   final VerificationMeta _loggedInDateMeta =
       const VerificationMeta('loggedInDate');
   @override
@@ -707,7 +895,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
           defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, lang, theme, staffId, loggedInDate];
+      [id, lang, theme, staffId, taxRate, loggedInDate];
   @override
   String get aliasedName => _alias ?? 'sessions';
   @override
@@ -732,6 +920,10 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
       context.handle(_staffIdMeta,
           staffId.isAcceptableOrUnknown(data['staff_id']!, _staffIdMeta));
     }
+    if (data.containsKey('tax_rate')) {
+      context.handle(_taxRateMeta,
+          taxRate.isAcceptableOrUnknown(data['tax_rate']!, _taxRateMeta));
+    }
     if (data.containsKey('logged_in_date')) {
       context.handle(
           _loggedInDateMeta,
@@ -751,7 +943,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
 
   @override
   $SessionsTable createAlias(String alias) {
-    return $SessionsTable(_db, alias);
+    return $SessionsTable(attachedDatabase, alias);
   }
 }
 
@@ -981,9 +1173,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
 }
 
 class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ProductsTable(this._db, [this._alias]);
+  $ProductsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
@@ -1076,7 +1269,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
 
   @override
   $ProductsTable createAlias(String alias) {
-    return $ProductsTable(_db, alias);
+    return $ProductsTable(attachedDatabase, alias);
   }
 }
 
@@ -1253,9 +1446,10 @@ class ProductAddonsCompanion extends UpdateCompanion<ProductAddon> {
 
 class $ProductAddonsTable extends ProductAddons
     with TableInfo<$ProductAddonsTable, ProductAddon> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ProductAddonsTable(this._db, [this._alias]);
+  $ProductAddonsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
@@ -1328,7 +1522,7 @@ class $ProductAddonsTable extends ProductAddons
 
   @override
   $ProductAddonsTable createAlias(String alias) {
-    return $ProductAddonsTable(_db, alias);
+    return $ProductAddonsTable(attachedDatabase, alias);
   }
 }
 
@@ -1452,9 +1646,10 @@ class NewOrderCachesCompanion extends UpdateCompanion<NewOrderCache> {
 
 class $NewOrderCachesTable extends NewOrderCaches
     with TableInfo<$NewOrderCachesTable, NewOrderCache> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $NewOrderCachesTable(this._db, [this._alias]);
+  $NewOrderCachesTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
@@ -1502,7 +1697,7 @@ class $NewOrderCachesTable extends NewOrderCaches
 
   @override
   $NewOrderCachesTable createAlias(String alias) {
-    return $NewOrderCachesTable(_db, alias);
+    return $NewOrderCachesTable(attachedDatabase, alias);
   }
 }
 
@@ -1631,9 +1826,10 @@ class NewOrderCacheAddonsCompanion extends UpdateCompanion<NewOrderCacheAddon> {
 
 class $NewOrderCacheAddonsTable extends NewOrderCacheAddons
     with TableInfo<$NewOrderCacheAddonsTable, NewOrderCacheAddon> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $NewOrderCacheAddonsTable(this._db, [this._alias]);
+  $NewOrderCacheAddonsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _newOrderIdMeta = const VerificationMeta('newOrderId');
   @override
   late final GeneratedColumn<String?> newOrderId = GeneratedColumn<String?>(
@@ -1686,7 +1882,185 @@ class $NewOrderCacheAddonsTable extends NewOrderCacheAddons
 
   @override
   $NewOrderCacheAddonsTable createAlias(String alias) {
-    return $NewOrderCacheAddonsTable(_db, alias);
+    return $NewOrderCacheAddonsTable(attachedDatabase, alias);
+  }
+}
+
+class CustomerCache extends DataClass implements Insertable<CustomerCache> {
+  final int id;
+  final String customerId;
+  CustomerCache({required this.id, required this.customerId});
+  factory CustomerCache.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return CustomerCache(
+      id: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      customerId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}customer_id'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['customer_id'] = Variable<String>(customerId);
+    return map;
+  }
+
+  CustomerCachesCompanion toCompanion(bool nullToAbsent) {
+    return CustomerCachesCompanion(
+      id: Value(id),
+      customerId: Value(customerId),
+    );
+  }
+
+  factory CustomerCache.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CustomerCache(
+      id: serializer.fromJson<int>(json['id']),
+      customerId: serializer.fromJson<String>(json['customerId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'customerId': serializer.toJson<String>(customerId),
+    };
+  }
+
+  CustomerCache copyWith({int? id, String? customerId}) => CustomerCache(
+        id: id ?? this.id,
+        customerId: customerId ?? this.customerId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CustomerCache(')
+          ..write('id: $id, ')
+          ..write('customerId: $customerId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, customerId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CustomerCache &&
+          other.id == this.id &&
+          other.customerId == this.customerId);
+}
+
+class CustomerCachesCompanion extends UpdateCompanion<CustomerCache> {
+  final Value<int> id;
+  final Value<String> customerId;
+  const CustomerCachesCompanion({
+    this.id = const Value.absent(),
+    this.customerId = const Value.absent(),
+  });
+  CustomerCachesCompanion.insert({
+    this.id = const Value.absent(),
+    required String customerId,
+  }) : customerId = Value(customerId);
+  static Insertable<CustomerCache> custom({
+    Expression<int>? id,
+    Expression<String>? customerId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (customerId != null) 'customer_id': customerId,
+    });
+  }
+
+  CustomerCachesCompanion copyWith(
+      {Value<int>? id, Value<String>? customerId}) {
+    return CustomerCachesCompanion(
+      id: id ?? this.id,
+      customerId: customerId ?? this.customerId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (customerId.present) {
+      map['customer_id'] = Variable<String>(customerId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomerCachesCompanion(')
+          ..write('id: $id, ')
+          ..write('customerId: $customerId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CustomerCachesTable extends CustomerCaches
+    with TableInfo<$CustomerCachesTable, CustomerCache> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CustomerCachesTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+      'id', aliasedName, false,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _customerIdMeta = const VerificationMeta('customerId');
+  @override
+  late final GeneratedColumn<String?> customerId = GeneratedColumn<String?>(
+      'customer_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'UNIQUE');
+  @override
+  List<GeneratedColumn> get $columns => [id, customerId];
+  @override
+  String get aliasedName => _alias ?? 'customer_caches';
+  @override
+  String get actualTableName => 'customer_caches';
+  @override
+  VerificationContext validateIntegrity(Insertable<CustomerCache> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('customer_id')) {
+      context.handle(
+          _customerIdMeta,
+          customerId.isAcceptableOrUnknown(
+              data['customer_id']!, _customerIdMeta));
+    } else if (isInserting) {
+      context.missing(_customerIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CustomerCache map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return CustomerCache.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $CustomerCachesTable createAlias(String alias) {
+    return $CustomerCachesTable(attachedDatabase, alias);
   }
 }
 
@@ -1700,6 +2074,7 @@ abstract class _$DriftDB extends GeneratedDatabase {
   late final $NewOrderCachesTable newOrderCaches = $NewOrderCachesTable(this);
   late final $NewOrderCacheAddonsTable newOrderCacheAddons =
       $NewOrderCacheAddonsTable(this);
+  late final $CustomerCachesTable customerCaches = $CustomerCachesTable(this);
   late final UserDao userDao = UserDao(this as DriftDB);
   late final CustomerDao customerDao = CustomerDao(this as DriftDB);
   late final SessionDao sessionDao = SessionDao(this as DriftDB);
@@ -1716,6 +2091,7 @@ abstract class _$DriftDB extends GeneratedDatabase {
         products,
         productAddons,
         newOrderCaches,
-        newOrderCacheAddons
+        newOrderCacheAddons,
+        customerCaches
       ];
 }

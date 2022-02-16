@@ -180,14 +180,12 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                     focusNode: FocusNode(),
                     controller: titleCtr,
                     validator: notEmptyText,
-                    decoration:
-                        inputDecoration(context: context, label: "title"),
+                    decoration: inputDecoration(context, "title"),
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
                     controller: priceCtr,
-                    decoration:
-                        inputDecoration(context: context, label: "price"),
+                    decoration: inputDecoration(context, "price"),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -297,7 +295,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
         child: Row(
           children: [
             RectButton(
-              size: const Size(40, 45),
+              size: const Size(50, 45),
               child: const Icon(Icons.delete_outline_rounded),
               onPressed: () => handleDelete(context.read<ProductEditorBloc>()),
             ),
@@ -332,7 +330,8 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                 width: double.infinity,
               ),
         RectButton(
-          size: const Size(70, 40),
+          size: Size.zero,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
           onPressed: () async {
             final pickedFile = await _picker.pickImage(
               source: ImageSource.gallery,
@@ -384,14 +383,12 @@ class CreateAddonForm extends StatelessWidget {
                     focusNode: FocusNode(),
                     controller: titleCtr,
                     validator: notEmptyText,
-                    decoration:
-                        inputDecoration(context: context, label: "title"),
+                    decoration: inputDecoration(context, "title"),
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
                     controller: priceCtr,
-                    decoration:
-                        inputDecoration(context: context, label: "price"),
+                    decoration: inputDecoration(context, "price"),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,

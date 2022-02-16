@@ -8,7 +8,6 @@ import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_decoration.dart';
-import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/helpers/utils.dart';
 
 class ProductDetails extends StatefulWidget {
@@ -50,8 +49,6 @@ class _ProductDetailsState extends State<ProductDetails> {
 
   void handleSubmit() {
     if (product == null) return;
-    logger.i(product);
-    logger.i(selectedAddons);
     context
         .read<NewOrderBloc>()
         .add(ModifyProductEvent(product!, selectedAddons, amount));
@@ -98,24 +95,26 @@ class _ProductDetailsState extends State<ProductDetails> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [_buildContents(), const Spacer(), _buildActions()],
+          children: [_buildContents(), _buildActions()],
         ),
       ),
     );
   }
 
   Widget _buildContents() {
-    return SingleChildScrollView(
-      child: Column(children: [
-        _buildImage(),
-        const SizedBox(height: 15),
-        _buildDetailElement(
-          label: "Price",
-          content: Text(customPriceFormat(price) + "/" + unit),
-        ),
-        const SizedBox(height: 15),
-        _addons(),
-      ]),
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Column(children: [
+          _buildImage(),
+          const SizedBox(height: 15),
+          _buildDetailElement(
+            label: "Price",
+            content: Text(customPriceFormat(price) + "/" + unit),
+          ),
+          const SizedBox(height: 15),
+          _addons(),
+        ]),
+      ),
     );
   }
 
@@ -192,8 +191,8 @@ class _ProductDetailsState extends State<ProductDetails> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 RectButton(
-                  size: const Size(0, 40),
-                  child: const Icon(Icons.arrow_back_ios_rounded),
+                  size: const Size(35, 40),
+                  child: const Icon(Icons.arrow_back_ios_rounded, size: 20),
                   onPressed: () => modifyAmount(amount - 1),
                 ),
                 InkWell(
@@ -221,8 +220,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                   ),
                 ),
                 RectButton(
-                  size: const Size(0, 40),
-                  child: const Icon(Icons.arrow_forward_ios_rounded),
+                  size: const Size(35, 40),
+                  child: const Icon(Icons.arrow_forward_ios_rounded, size: 20),
                   onPressed: () => modifyAmount(amount + 1),
                 ),
               ],
@@ -232,7 +231,7 @@ class _ProductDetailsState extends State<ProductDetails> {
               onPressed: handleSubmit,
               size: const Size.fromHeight(50),
               child: Text(
-                totalPrice == 0
+                amount <= 0
                     ? "Remove Order"
                     : "Add to Order - " +
                         decimalPriceFormatter.format(totalPrice),
@@ -276,7 +275,7 @@ class AdjustAmountForm extends StatelessWidget {
         child: TextFormField(
           controller: amountCtr,
           keyboardType: TextInputType.number,
-          decoration: inputDecoration(context: context, label: "amount"),
+          decoration: inputDecoration(context, "amount"),
           autofocus: true,
           inputFormatters: [
             // no - whitespace and operator

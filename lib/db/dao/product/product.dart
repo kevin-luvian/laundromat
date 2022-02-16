@@ -1,14 +1,18 @@
 import 'dart:async';
 
 import 'package:drift/drift.dart';
+import 'package:laundry/db/aggregates/product_order_details.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/db/tables/product_addons.dart';
 import 'package:laundry/db/tables/products.dart';
 
-@DriftAccessor(tables: [Products])
+@DriftAccessor(tables: [Products, ProductAddons])
 class ProductDao extends DatabaseAccessor<DriftDB> {
   ProductDao(DriftDB db) : super(db);
 
   $ProductsTable get products => attachedDatabase.products;
+
+  $ProductAddonsTable get productAddons => attachedDatabase.productAddons;
 
   Future<void> create(Product product) => into(products).insert(product);
 
@@ -52,5 +56,32 @@ class ProductDao extends DatabaseAccessor<DriftDB> {
       ..addColumns([products.unit])
       ..orderBy([OrderingTerm(expression: products.unit)]);
     return query.map((row) => row.read(products.unit) ?? "").watch();
+  }
+
+  Future<ProductOrderDetail> findProductOrderDetail(
+      String productId, List<String> addonsIds, double amount) async {
+    final query =
+        (select(products)..where((tbl) => tbl.id.equals(productId))).join([
+      leftOuterJoin(productAddons, productAddons.id.isIn(addonsIds)),
+    ]);
+
+    final rows = await query.get();
+    return _rowsToProductOrderDetail(rows, amount);
+  }
+
+  ProductOrderDetail _rowsToProductOrderDetail(
+      List<TypedResult> rows, double amount) {
+    late Product product;
+    final List<ProductAddon> addons = [];
+    for (int i = 0; i < rows.length; i++) {
+      if (i == 0) {
+        product = rows[i].readTable(products);
+      }
+      final addon = rows[i].readTableOrNull(productAddons);
+      if (addon != null) {
+        addons.add(addon);
+      }
+    }
+    return ProductOrderDetail(product, addons, amount);
   }
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/auth/bloc.dart';
-import 'package:laundry/blocs/auth/event.dart';
 import 'package:laundry/blocs/auth/state.dart';
 import 'package:laundry/common/page_loader.dart';
 import 'package:laundry/layouts/auth_admin.dart';
+import 'package:laundry/layouts/auth_staff.dart';
+import 'package:laundry/layouts/auth_super_admin.dart';
 import 'package:laundry/pages/login/login.dart';
+
+import 'l10n/access_locale.dart';
 
 class ScreenController extends StatelessWidget {
   const ScreenController({Key? key}) : super(key: key);
@@ -23,18 +25,13 @@ class ScreenController extends StatelessWidget {
                 final authState = _state as Authenticated;
                 if (authState.isAdmin) {
                   return const AuthAdminLayout();
+                } else if (authState.isSuperAdmin) {
+                  return const AuthSuperAdminLayout();
                 } else {
-                  return Row(children: [
-                    Text(
-                        "user ${authState.user.name} is authenticated as staff"),
-                    TextButton(
-                        onPressed: () => context.read<AuthBloc>().add(Logout()),
-                        child: const Text("logout")),
-                  ]);
+                  return const AuthStaffLayout();
                 }
               case Authenticating:
-                return PageLoader(
-                    text: AppLocalizations.of(context)?.authenticating ?? "");
+                return PageLoader(text: l10n(context)?.authenticating ?? "");
               default:
                 return const LoginPage();
             }

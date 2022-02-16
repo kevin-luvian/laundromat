@@ -8,8 +8,8 @@ import 'package:laundry/common/right_drawer.dart';
 import 'package:laundry/cubits/right_drawer.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
-import 'package:laundry/pages/productsManager/widgets/create_update_product_form.dart';
-import 'package:laundry/pages/productsManager/widgets/product_left_navigator.dart';
+import 'package:laundry/pages/products_manager/widgets/create_update_product_form.dart';
+import 'package:laundry/pages/products_manager/widgets/product_left_navigator.dart';
 
 class ProductsManagerPage extends StatelessWidget {
   const ProductsManagerPage({Key? key}) : super(key: key);

@@ -21,6 +21,7 @@ const tables = [
   ProductAddons,
   NewOrderCaches,
   NewOrderCacheAddons,
+  CustomerCaches,
 ];
 const daos = [
   UserDao,

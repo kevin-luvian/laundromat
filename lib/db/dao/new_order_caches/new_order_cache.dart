@@ -1,14 +1,23 @@
 import 'package:drift/drift.dart';
+import 'package:laundry/db/aggregates/product_order_details.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/db/tables/customer.dart';
 import 'package:laundry/db/tables/new_order_caches.dart';
 import 'package:laundry/db/tables/product_addons.dart';
 import 'package:laundry/db/tables/products.dart';
-import 'package:laundry/helpers/utils.dart';
 
 part 'new_order_cache.g.dart';
 
-@DriftAccessor(
-    tables: [NewOrderCaches, NewOrderCacheAddons, Products, ProductAddons])
+const _customerCacheId = 10;
+
+@DriftAccessor(tables: [
+  NewOrderCaches,
+  NewOrderCacheAddons,
+  CustomerCaches,
+  Customers,
+  Products,
+  ProductAddons
+])
 class NewOrderCacheDao extends DatabaseAccessor<DriftDB>
     with _$NewOrderCacheDaoMixin {
   NewOrderCacheDao(DriftDB db) : super(db);
@@ -37,6 +46,40 @@ class NewOrderCacheDao extends DatabaseAccessor<DriftDB>
   Future<void> deleteAll() async {
     await delete(newOrderCaches).go();
     await delete(newOrderCacheAddons).go();
+    await delete(customerCaches).go();
+  }
+
+  Future<CustomerCache?> getCustomerCache() =>
+      (select(customerCaches)..where((tbl) => tbl.id.equals(_customerCacheId)))
+          .getSingleOrNull();
+
+  Future<Customer?> get currentCustomer async {
+    final query = (select(customerCaches)
+          ..where((tbl) => tbl.id.equals(_customerCacheId)))
+        .join([
+      innerJoin(customers, customers.id.equalsExp(customerCaches.customerId)),
+    ]);
+    final row = await query.getSingleOrNull();
+    if (row == null) return null;
+    return row.readTableOrNull(customers);
+  }
+
+  Future<void> changeCustomer(String customerId) async {
+    final isCustomerExist = (await getCustomerCache()) != null;
+    if (isCustomerExist) {
+      await (update(customerCaches)
+            ..where((o) => o.id.equals(_customerCacheId)))
+          .write(CustomerCachesCompanion(customerId: Value(customerId)));
+    } else {
+      await into(customerCaches).insert(CustomerCache(
+        id: _customerCacheId,
+        customerId: customerId,
+      ));
+    }
+  }
+
+  Future<void> removeCustomer() async {
+    await delete(customerCaches).go();
   }
 
   Future<NewOrderCache?> findById(String id) =>
@@ -55,7 +98,15 @@ class NewOrderCacheDao extends DatabaseAccessor<DriftDB>
     return rows.map((row) => row.readTable(productAddons)).toList();
   }
 
-  Stream<List<OrderDetail>> streamOrderDetails() {
+  Stream<int> streamOrdersLength() {
+    final counts = countAll();
+    final query = select(newOrderCaches).addColumns([counts]).map((row) {
+      return row.read(counts);
+    });
+    return query.watchSingle();
+  }
+
+  Stream<List<ProductOrderDetail>> streamOrderDetails() {
     final query = select(newOrderCaches).join([
       innerJoin(products, products.id.equalsExp(newOrderCaches.id)),
       leftOuterJoin(
@@ -73,7 +124,10 @@ class NewOrderCacheDao extends DatabaseAccessor<DriftDB>
     return query.watch().map(rowsToOrderDetail);
   }
 
-  Future<List<OrderDetail>> allOrderDetails() async {
+  Future<List<String>> allOrderIds() =>
+      select(newOrderCaches).map((order) => order.id).get();
+
+  Future<List<ProductOrderDetail>> allOrderDetails() async {
     final query = select(newOrderCaches).join([
       innerJoin(products, products.id.equalsExp(newOrderCaches.id)),
       leftOuterJoin(
@@ -91,8 +145,8 @@ class NewOrderCacheDao extends DatabaseAccessor<DriftDB>
     return rowsToOrderDetail(await query.get());
   }
 
-  List<OrderDetail> rowsToOrderDetail(List<TypedResult> rows) {
-    final groupedData = <String, OrderDetail>{};
+  List<ProductOrderDetail> rowsToOrderDetail(List<TypedResult> rows) {
+    final groupedData = <String, ProductOrderDetail>{};
     for (final row in rows) {
       final newOrder = row.readTable(newOrderCaches);
       final product = row.readTable(products);
@@ -100,37 +154,12 @@ class NewOrderCacheDao extends DatabaseAccessor<DriftDB>
 
       final oDetail = groupedData.putIfAbsent(
         product.id,
-        () => OrderDetail(product, [], newOrder.amount),
+        () => ProductOrderDetail(product, [], newOrder.amount),
       );
       if (addon != null) oDetail.addons.add(addon);
     }
-    final List<OrderDetail> orderDetails = [];
+    final List<ProductOrderDetail> orderDetails = [];
     groupedData.forEach((_, data) => orderDetails.add(data));
     return orderDetails;
-  }
-}
-
-class OrderDetail {
-  OrderDetail(this.product, this.addons, this.amount);
-
-  final Product product;
-  final List<ProductAddon> addons;
-  final double amount;
-
-  int get totalPrice {
-    double total = product.price.toDouble();
-    if (addons.isNotEmpty) {
-      final addonsPrices = addons.map((a) => a.price).reduce((t, p) => t + p);
-      total += addonsPrices.toDouble();
-    }
-    total *= amount;
-    return total.toInt();
-  }
-
-  String get amountStr => doubleToString(amount);
-
-  @override
-  toString() {
-    return '''amount: $amount, product: ${product.toString()}, addons: ${addons.toString()}''';
   }
 }

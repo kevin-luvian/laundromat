@@ -1,105 +1,125 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:laundry/blocs/navigation/bloc.dart';
 import 'package:laundry/common/button_navigation.dart';
-import 'package:laundry/pages/newOrder/new_order_page.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/hooks/use_bluetooth_connection.dart';
+import 'package:laundry/hooks/use_nav_animation.dart';
+import 'package:laundry/l10n/access_locale.dart';
+import 'package:laundry/pages/new_order/new_order_page.dart';
+import 'package:laundry/pages/orders_histories/orders_histories.dart';
 import 'package:laundry/pages/settings/settings_page.dart';
 import 'package:laundry/providers/nav_button_provider.dart';
+import 'package:laundry/running_assets/asset_access.dart';
+import 'package:laundry/styles/theme.dart';
 import 'package:provider/provider.dart';
 
-class AuthStaffLayout extends StatefulWidget {
+class AuthStaffLayout extends StatefulHookWidget {
   const AuthStaffLayout({Key? key}) : super(key: key);
 
   @override
-  State<AuthStaffLayout> createState() => _AuthStaffLayoutState();
+  State<AuthStaffLayout> createState() => _AuthSuperAdminLayoutState();
 }
 
-class _AuthStaffLayoutState extends State<AuthStaffLayout>
-    with TickerProviderStateMixin {
-  late TabController _controller;
-  late AnimationController _animation;
-
+class _AuthSuperAdminLayoutState extends State<AuthStaffLayout> {
   final List<Widget> _tabs = [
     const NewOrderPage(),
-    const Center(child: Text('Do you like trains?')),
+    const OrdersHistories(),
     const SettingsPage(),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _animation = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-    _animation.forward();
+  List<ButtonNavigation> buttonNavigationList() => [
+        ButtonNavigation(
+            index: 0,
+            icon: Icons.receipt_long,
+            desc: l10n(context)?.new_order ?? "New Order"),
+        ButtonNavigation(
+            index: 1,
+            icon: Icons.menu_book_outlined,
+            desc: l10n(context)?.orders ?? "Orders"),
+        ButtonNavigation(
+            index: 2,
+            icon: Icons.settings_outlined,
+            desc: l10n(context)?.settings ?? "Settings"),
+      ];
 
-    _controller = TabController(length: _tabs.length, vsync: this);
-    _controller.addListener(() {
-      if (_controller.indexIsChanging) {
-        setState(() {
-          _animation.forward(from: 0.5);
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _animation.dispose();
-    super.dispose();
-  }
-
-  Widget _tabBarView() {
-    return FadeTransition(
-      opacity: _animation,
-      child: _tabs[_controller.index],
-    );
-  }
+  Widget _tabBarView({
+    required AnimationController animation,
+    required int tabIndex,
+  }) =>
+      FadeTransition(opacity: animation, child: _tabs.elementAt(tabIndex));
 
   @override
-  Widget build(BuildContext context) {
+  build(context) {
+    final navAnim = useNavAnimation(_tabs.length);
+    final _conn = useBlueConnection(bluetoothBloc);
     return Scaffold(
       body: Row(
         children: [
-          Container(
-            width: 80,
-            decoration:
-                BoxDecoration(color: Theme.of(context).colorScheme.primary),
-            constraints: const BoxConstraints(minWidth: 20),
-            child: ChangeNotifierProvider(
-              create: (context) => NavButtonProvider(),
-              child: _buildBtnNav(context),
+          _buildLeftBar(
+              (i) => setState(() {
+                    navAnim.controller.animateTo(i);
+                  }),
+              _conn.value),
+          Expanded(
+            child: _tabBarView(
+              animation: navAnim.animation,
+              tabIndex: navAnim.controller.index,
             ),
           ),
-          Expanded(child: _tabBarView()),
         ],
       ),
     );
   }
 
-  Widget _buildBtnNav(BuildContext context) {
+  Widget _buildLeftBar(void Function(int) onClick, bool _conn) {
+    final color = colorScheme(context).primary;
+    return Container(
+      height: double.infinity,
+      width: 80,
+      decoration: BoxDecoration(color: color),
+      child: ChangeNotifierProvider(
+        create: (context) => NavButtonProvider(),
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: screenSize(context).height,
+            child: Column(
+              children: [
+                _buildBtnNav(onClick),
+                const Spacer(),
+                bluetoothConnectionBox(_conn),
+                const SizedBox(height: 15),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container bluetoothConnectionBox(bool _conn) {
+    final color = _conn ? Colors.lightGreenAccent : GlobalColor.dim;
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.all(Radius.circular(7)),
+      ),
+    );
+  }
+
+  Widget _buildBtnNav(void Function(int) onClick) {
     return BlocProvider(
       create: (_) => NavigationBloc()..add(NavigationChangeEvent(index: 0)),
       child: BlocListener<NavigationBloc, int>(
-        listener: (_, idx) => _controller.animateTo(idx),
+        listener: (_, idx) => setState(() {
+          onClick(idx);
+        }),
         child: Column(
-          children: [
-            ButtonNavigation(
-                index: 0,
-                icon: Icons.receipt_long,
-                desc: AppLocalizations.of(context)?.new_order ?? "New Orders"),
-            ButtonNavigation(
-                index: 1,
-                icon: Icons.menu_book_outlined,
-                desc: AppLocalizations.of(context)?.orders ?? "Orders"),
-            ButtonNavigation(
-                index: 2,
-                icon: Icons.settings_outlined,
-                desc: AppLocalizations.of(context)?.settings ?? "Settings"),
-          ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: buttonNavigationList(),
         ),
       ),
     );

@@ -32,6 +32,10 @@ class Authenticated extends AuthState {
     return user.role == roleStaff;
   }
 
+  bool get isSuperAdmin {
+    return user.role == roleSuperAdmin;
+  }
+
   @override
   List<Object?> get props => [user];
 }

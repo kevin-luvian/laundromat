@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
+import 'package:laundry/db/dao/user/user.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/tables/sessions.dart';
+import 'package:laundry/db/tables/users.dart';
 
 part 'session.g.dart';
 
@@ -14,6 +16,7 @@ final defaultSession = Session(
   theme: ThemeChoice.crimson.name,
   loggedInDate: DateTime(0),
   staffId: '',
+  taxRate: 10,
 );
 
 @DriftAccessor(tables: [Sessions])
@@ -34,5 +37,24 @@ class SessionDao extends DatabaseAccessor<DriftDB> with _$SessionDaoMixin {
   Future<void> mutate(SessionsCompanion s) async {
     final session = await find();
     await (update(sessions)..where((s) => s.id.equals(session.id))).write(s);
+  }
+
+  Future<String> get currentUserId async => (await find()).staffId;
+
+  Future<User?> get currentUser async {
+    final id = (await find()).staffId;
+    return UserDao(db).findUser(id);
+  }
+
+  Future<List<String>> get selectableRoles async {
+    final role = (await currentUser)?.role ?? roleStaff;
+    switch (role) {
+      case roleSuperAdmin:
+        return allRoles;
+      case roleAdmin:
+        return adminSelectableRoles;
+      default:
+        return [];
+    }
   }
 }

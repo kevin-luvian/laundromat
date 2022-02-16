@@ -22,10 +22,16 @@ class _PrinterSettingState extends State<PrinterSetting> {
 
   @override
   void initState() {
-    bluetoothBloc.currentConnection
-        .then((val) => setState(() => _connected = val));
     setDevices();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    bluetoothBloc.currentConnection.then((val) {
+      setState(() => _connected = val);
+    });
+    super.didChangeDependencies();
   }
 
   @override

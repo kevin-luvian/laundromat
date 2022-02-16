@@ -37,7 +37,7 @@ class ProductCommand {
     var streamId = makeStreamId(productEventType);
     await generateEvent(
       streamId,
-      streamTag: ProductCreated.tag,
+      streamTag: ProductCreated.staticTag,
       serializer: ProductCreatedSerializer(),
       version: 1,
       data: ProductCreated(
@@ -77,8 +77,8 @@ class ProductCommand {
     await generateEvent(
       streamId,
       streamTag: ProductDeleted.tag,
-      serializer: ProductDeletedSerializer(),
-      data: ProductDeleted(),
+      serializer: EmptySerializer(),
+      data: null,
     );
   }
 }

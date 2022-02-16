@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
-import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkout_drawer.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkout_header.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkout_order_item.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkout_payment.dart';
-import 'package:laundry/pages/newOrder/widgets/checkout/checkout_payment_action.dart';
+import 'package:laundry/db/aggregates/product_order_details.dart';
+import 'package:laundry/pages/new_order/widgets/checkout/checkout_drawer.dart';
+import 'package:laundry/pages/new_order/widgets/checkout/checkout_header.dart';
+import 'package:laundry/pages/new_order/widgets/checkout/checkout_order_item.dart';
+import 'package:laundry/pages/new_order/widgets/checkout/checkout_payment.dart';
+import 'package:laundry/pages/new_order/widgets/checkout/checkout_payment_action.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
 class Checkout extends StatelessWidget {
@@ -17,7 +17,7 @@ class Checkout extends StatelessWidget {
   final EdgeInsets padding;
 
   @override
-  Widget build(context) {
+  build(context) {
     return Container(
       child: SizedBox(
         width: width,
@@ -52,7 +52,7 @@ class Checkout extends StatelessWidget {
   Widget _buildItems() {
     return StreamBuilder(
       stream: newOrderCacheDao.streamOrderDetails(),
-      builder: (_ctx, AsyncSnapshot<List<OrderDetail>> snapshot) {
+      builder: (_ctx, AsyncSnapshot<List<ProductOrderDetail>> snapshot) {
         if (!snapshot.hasData) return const Spacer();
         final orderDetails = snapshot.data!;
         return Expanded(

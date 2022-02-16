@@ -19,6 +19,9 @@ class EventDao extends DatabaseAccessor<EventDB> with _$EventDaoMixin {
         .get();
   }
 
+  static OrderingTerm dateOrdering($EventsTable e) =>
+      OrderingTerm(expression: e.date, mode: OrderingMode.desc);
+
   Future<List<Event>> allEvents() =>
       (select(events)..orderBy([(e) => OrderingTerm(expression: e.id)])).get();
 
@@ -26,35 +29,61 @@ class EventDao extends DatabaseAccessor<EventDB> with _$EventDaoMixin {
         ..where((e) => e.streamType.equals(streamType))
         ..orderBy([
           (e) => OrderingTerm(expression: e.id),
-          (e) => OrderingTerm(expression: e.date, mode: OrderingMode.desc),
+          dateOrdering,
           (e) => OrderingTerm(expression: e.version),
         ]))
       .get();
 
-  Future<List<List<Event>>> findEventsByType2(String streamType) async {
-    final allEvents = await (select(events)
-          ..where((e) => e.streamType.equals(streamType))
-          ..orderBy([
-            (e) => OrderingTerm(expression: e.id),
-            (e) => OrderingTerm(expression: e.date, mode: OrderingMode.desc),
-            (e) => OrderingTerm(expression: e.streamId),
-            (e) => OrderingTerm(expression: e.version),
-          ]))
-        .get();
+  Future<List<String>> distinctIdByType(String streamType) {
+    final query = selectOnly(events, distinct: true)
+      ..addColumns([events.streamId])
+      ..orderBy(
+          [OrderingTerm(expression: events.date, mode: OrderingMode.desc)])
+      ..where(events.streamType.equals(streamType));
+    return query.map((row) => row.read(events.streamId) ?? "").get();
+  }
 
-    // allEvents.sortBy((e) => e.streamId);
-    final List<List<Event>> eventsLists = [];
-    for (final event in allEvents) {
-      if (eventsLists.isEmpty ||
-          event.streamId != eventsLists.last.first.streamId) {
-        eventsLists.add([event]);
-      } else {
-        eventsLists.last.add(event);
-      }
+  Stream<Map<String, List<Event>>> streamByType(String streamType) {
+    final query = select(events)
+      ..where((tbl) => tbl.streamType.equals(streamType))
+      ..orderBy([
+        (e) => OrderingTerm(expression: e.version),
+        dateOrdering,
+      ]);
+    return query.watch().map(groupEventsById);
+  }
+
+  Future<List<Event>> findAllByIdConstrainedByDate(
+      String streamId, DateTime date) {
+    final query = select(events)
+      ..where((tbl) => tbl.streamId.equals(streamId))
+      ..where((tbl) => tbl.date.isSmallerOrEqual(Variable(date)))
+      ..orderBy([
+        (e) => OrderingTerm(expression: e.version),
+        dateOrdering,
+      ]);
+    return query.get();
+  }
+
+  Future<List<Event>> findAllByIdsConstrainedByDate(
+      List<String> streamIds, DateTime date) {
+    final query = select(events)
+      ..where((tbl) => tbl.streamId.isIn(streamIds))
+      ..where((tbl) => tbl.date.isSmallerOrEqual(Variable(date)))
+      ..orderBy([
+        (e) => OrderingTerm(expression: e.version),
+        dateOrdering,
+      ]);
+    return query.get();
+  }
+
+  Map<String, List<Event>> groupEventsById(List<Event> events) {
+    final groupedData = <String, List<Event>>{};
+    for (final event in events) {
+      final eList = groupedData.putIfAbsent(event.streamId, () => []);
+      eList.add(event);
     }
-
-    // return groupBy(allEventTypes, (Event obj) => obj.streamId);
-    return eventsLists;
+    return groupedData;
   }
 
   Future<int> lastVersion(String streamId) async {

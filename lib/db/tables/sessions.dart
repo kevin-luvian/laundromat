@@ -9,6 +9,8 @@ class Sessions extends Table {
 
   TextColumn get staffId => text().withDefault(const Constant(""))();
 
+  RealColumn get taxRate => real().withDefault(const Constant(10))();
+
   DateTimeColumn get loggedInDate =>
       dateTime().withDefault(currentDateAndTime)();
 }

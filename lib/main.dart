@@ -18,6 +18,7 @@ import 'package:laundry/helpers/db_connection.dart';
 import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/l10n/supported_locale.dart';
+import 'package:laundry/running_assets/db_access.dart';
 import 'package:laundry/screen_controller.dart';
 import 'package:laundry/styles/ocean_theme.dart';
 import 'package:laundry/styles/theme.dart';
@@ -103,10 +104,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _globalStates({required Widget child, required BuildContext context}) {
-    final _db = GetIt.I.get<DriftDB>();
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (_) => AuthBloc(_db)..add(CheckAuth())),
+        BlocProvider<AuthBloc>(
+            create: (_) => AuthBloc(driftDB, eventDB)..add(CheckAuth())),
       ],
       child: child,
     );

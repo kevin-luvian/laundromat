@@ -1,15 +1,29 @@
 import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:laundry/common/rect_button.dart';
+import 'package:laundry/db/tables/users.dart';
 import 'package:laundry/event_source/commands/full_command.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/hooks/use_user_role_checker.dart';
+import 'package:laundry/pages/settings/widgets/setting_card.dart';
 import 'package:laundry/running_assets/db_access.dart';
 
-class DriftViewer extends StatelessWidget {
-  const DriftViewer({Key? key}) : super(key: key);
+const driftViewerCard = RoleSettingCard(
+  title: "View And Access Drift DB",
+  child: DriftViewer(),
+  allowedRoles: [roleSuperAdmin],
+);
+
+class DriftViewer extends HookWidget {
+  const DriftViewer() : super(key: null);
 
   @override
   Widget build(BuildContext context) {
+    final role = useUserRoleChecker();
+    if (!role.isSuperAdmin) {
+      return Container();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

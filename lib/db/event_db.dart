@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:laundry/db/dao/event/event.dart';
+import 'package:laundry/db/seeder.dart';
 import 'package:laundry/db/tables/events.dart';
-import 'package:laundry/event_source/commands/user_command.dart';
 
 part 'event_db.g.dart';
 
@@ -22,14 +22,7 @@ class EventDB extends _$EventDB {
   @override
   MigrationStrategy get migration => MigrationStrategy(
         beforeOpen: (details) async {
-          if (details.wasCreated) {
-            UserCommand(this).create(
-              name: "admin",
-              password: "password",
-              role: "admin",
-              pin: 1234,
-            );
-          }
+          if (details.wasCreated) await Seeder(this).seed();
         },
       );
 }

@@ -78,7 +78,7 @@ class _ProductsViewSelectorState extends State<ProductsViewSelector> {
         size: const Size(0, 50),
         color: _selectedCategory != category ? GlobalColor.dim : null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Text(category),
         ),
         onPressed: () {

@@ -257,9 +257,10 @@ class EventsCompanion extends UpdateCompanion<Event> {
 }
 
 class $EventsTable extends Events with TableInfo<$EventsTable, Event> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $EventsTable(this._db, [this._alias]);
+  $EventsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
@@ -359,7 +360,7 @@ class $EventsTable extends Events with TableInfo<$EventsTable, Event> {
 
   @override
   $EventsTable createAlias(String alias) {
-    return $EventsTable(_db, alias);
+    return $EventsTable(attachedDatabase, alias);
   }
 
   static TypeConverter<Map<String, dynamic>, String> $converter0 =

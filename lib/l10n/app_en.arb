@@ -8,5 +8,20 @@
   "logout": "Logout",
   "change_to_different_account": "change to different account",
   "authenticating": "authenticating",
-  "loading": "loading"
+  "loading": "loading",
+  "active_user": "active user",
+  "deleted_user": "deleted user",
+  "inactive_user": "inactive user",
+  "january": "january",
+  "february": "february",
+  "march": "march",
+  "april": "april",
+  "may": "may",
+  "june": "june",
+  "july": "july",
+  "august": "august",
+  "september": "september",
+  "october": "october",
+  "november": "november",
+  "december": "december"
 }

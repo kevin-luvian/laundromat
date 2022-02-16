@@ -34,33 +34,34 @@ class CheckoutOrderItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  const SizedBox(width: 3),
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title),
-                      const SizedBox(height: 2),
-                      for (final addon in addons) Text("- " + addon),
-                    ],
-                  ),
-                ],
+              Flexible(
+                fit: FlexFit.tight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title),
+                    const SizedBox(height: 2),
+                    for (final addon in addons) Text("- " + addon),
+                  ],
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text("Rp. " + formatPrice(totalPrice)),
-                  const SizedBox(height: 2),
-                  Text(
-                    "$amountStr $unit",
-                    style: const TextStyle(
-                      color: Color.fromRGBO(109, 109, 109, 1),
-                      fontSize: 12,
+              Flexible(
+                flex: 1,
+                fit: FlexFit.tight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text("Rp. " + formatPrice(totalPrice)),
+                    const SizedBox(height: 2),
+                    Text(
+                      "$amountStr $unit",
+                      style: const TextStyle(
+                        color: Color.fromRGBO(109, 109, 109, 1),
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
