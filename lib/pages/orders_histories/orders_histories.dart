@@ -16,7 +16,8 @@ class OrdersHistories extends StatelessWidget {
         BlocProvider<OrdersFilterCubit>(create: (_) => OrdersFilterCubit()),
         BlocProvider<OrdersCubit>(
           create: (_ctx) =>
-              OrdersCubit(eventDB, _ctx.read<OrdersFilterCubit>())..setup(),
+              OrdersCubit(eventDB, driftDB, _ctx.read<OrdersFilterCubit>())
+                ..setup(),
         ),
       ],
       child: child,

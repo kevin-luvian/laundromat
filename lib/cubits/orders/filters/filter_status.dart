@@ -21,6 +21,7 @@ class FilterStatus extends Equatable implements Filter {
   valid(order) {
     final isCheckedOut = order.checkoutDate != null;
     final isRemoved = order.removedDate != null;
+    if (!deleted && isRemoved) return false;
     return (sent && isCheckedOut) ||
         (waiting && !isCheckedOut) ||
         (deleted && isRemoved);
