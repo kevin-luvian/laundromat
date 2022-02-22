@@ -1,11 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-ScrollController useScrollListener({void Function()? onMaxScroll}) =>
-    use(_ScrollControllerHook(onMaxScroll: onMaxScroll ?? () {}));
+ScrollController useScrollListener({
+  void Function()? onMaxScroll,
+}) =>
+    use(_ScrollControllerHook(onMaxScroll ?? () {}));
 
 class _ScrollControllerHook extends Hook<ScrollController> {
-  const _ScrollControllerHook({required this.onMaxScroll});
+  const _ScrollControllerHook(this.onMaxScroll);
 
   final void Function() onMaxScroll;
 
@@ -20,7 +22,6 @@ class _ScrollControllerHookState
   @override
   void initHook() {
     super.initHook();
-    hook.onMaxScroll();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent * 0.9) {

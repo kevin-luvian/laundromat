@@ -4,6 +4,7 @@ import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laundry/db/aggregates/order_details.dart';
 import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/logger.dart';
@@ -36,20 +37,31 @@ class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
       try {
         final mDevice = device;
         if (mDevice != null) {
+          final orderId = await ordersDao.generateOrderId(DateTime.now());
           final orders = await _nocDao.allOrderDetails();
           final staff = await sessionDao.currentUser;
           final customer = await _nocDao.currentCustomer;
-          await printOrders(
-            bluetooth,
-            mDevice,
-            orders: orders,
-            staff: staff!,
-            customer: customer,
+          await print(
+            OrderDetail(
+              streamId: '',
+              orderId: orderId,
+              orders: orders,
+              user: staff!,
+              createDate: DateTime.now(),
+              customer: customer,
+              removedDate: null,
+            ),
           );
         }
-      } catch (err) {
-        logger.e(err);
-      }
+      } catch (_) {}
+    });
+    on<PrintHistoryEvent>((event, _) async {
+      try {
+        final mDevice = device;
+        if (mDevice != null) {
+          await print(event.detail);
+        }
+      } catch (_) {}
     });
     on<_ConnectionChangedEvent>(
       (event, emit) => emit(BluetoothConnectionState(event.conn)),
@@ -71,6 +83,25 @@ class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
         device = null;
       }
     });
+  }
+
+  Future<void> print(OrderDetail detail) async {
+    try {
+      final mDevice = device;
+      if (mDevice != null) {
+        await printOrders(
+          bluetooth,
+          mDevice,
+          orderId: detail.orderId,
+          orders: detail.orders,
+          staff: detail.user,
+          customer: detail.customer,
+          date: detail.createDate,
+        );
+      }
+    } catch (err) {
+      logger.e(err);
+    }
   }
 
   Future<List<BluetoothDevice>> get devices async {
@@ -112,6 +143,12 @@ class BluetoothBloc extends Bloc<BluetoothEvent, BluetoothState> {
 abstract class BluetoothEvent {}
 
 class PrintEvent extends BluetoothEvent {}
+
+class PrintHistoryEvent extends BluetoothEvent {
+  final OrderDetail detail;
+
+  PrintHistoryEvent(this.detail);
+}
 
 class _ConnectionChangedEvent extends BluetoothEvent {
   final bool conn;

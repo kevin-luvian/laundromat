@@ -6,18 +6,25 @@ import 'package:laundry/event_source/events/order_event.dart';
 class OrderCommand extends Command {
   OrderCommand(EventDB db) : super(db, orderEventType);
 
-  Future<String?> create(
-      String userId, String? customerId, List<OrderItem> items) async {
+  Future<String?> create(String orderId, String userId, String? customerId,
+      List<OrderItem> items) async {
     assert(items.isNotEmpty);
 
     var streamId = generateId();
     await generateEvent(
       streamId: streamId,
       version: 1,
-      data: OrderCreated(userId: userId, customerId: customerId, items: items),
+      data: OrderCreated(
+          orderId: orderId,
+          userId: userId,
+          customerId: customerId,
+          items: items),
     );
     return streamId;
   }
+
+  Future<void> restore(String streamId, String userId) =>
+      generateEvent(streamId: streamId, data: OrderRestored(userId));
 
   Future<void> remove(String streamId, String userId) =>
       generateEvent(streamId: streamId, data: OrderRemoved(userId));
@@ -37,7 +44,11 @@ class OrderCommand extends Command {
       streamId: streamId,
       version: 1,
       date: date,
-      data: OrderCreated(userId: userId, customerId: customerId, items: items),
+      data: OrderCreated(
+          orderId: "Order123",
+          userId: userId,
+          customerId: customerId,
+          items: items),
     );
     return streamId;
   }

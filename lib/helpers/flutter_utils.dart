@@ -47,6 +47,17 @@ String dateToStringLocale(DateTime date, AppLocalizations? locale) {
   return "${date.day} ${monthToString(date.month, locale)} ${date.year}";
 }
 
+String dateToStringLocaleFull(DateTime date, AppLocalizations? locale) {
+  final hourStr = date.hour.toString().padLeft(2, "0");
+  final minuteStr = date.minute.toString().padLeft(2, "0");
+  final monthStr = capitalizeFirstLetter(monthToString(date.month, locale));
+  return "${date.day} $monthStr ${date.year} $hourStr:$minuteStr";
+}
+
+String capitalizeFirstLetter(String text) {
+  return text[0].toUpperCase() + text.substring(1).toLowerCase();
+}
+
 String monthToString(int month, AppLocalizations? locale) {
   switch (month) {
     case DateTime.january:

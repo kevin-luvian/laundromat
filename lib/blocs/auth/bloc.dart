@@ -30,8 +30,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await logoutStaff();
           emit(UnAuthenticated());
         } else {
-          emit(Authenticated(user));
+          emit(AuthenticatingPin(user.pin));
         }
+      }
+    });
+
+    on<RePIN>((evt, emit) async {
+      emit(Authenticating());
+      final user = await _sessionDao.currentUser;
+      if (user == null) {
+        emit(UnAuthenticated());
+      } else if (user.pin == evt.pin) {
+        emit(Authenticated(user));
+      } else {
+        emit(AuthenticatingPinFailed(user.pin));
       }
     });
 

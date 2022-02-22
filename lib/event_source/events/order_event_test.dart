@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 void main() {
   test('create event OrderCreated successfully', () async {
     final evt = OrderCreated(
+      orderId: "Ord1",
       userId: "userId",
       customerId: "customerId",
       items: [

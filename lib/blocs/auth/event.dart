@@ -10,3 +10,9 @@ class Login extends AuthEvent {
 
   Login(this.name, this.password);
 }
+
+class RePIN extends AuthEvent {
+  final String pin;
+
+  RePIN(this.pin) : assert(pin.length == 4);
+}

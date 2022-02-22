@@ -4,25 +4,34 @@ import 'dart:typed_data';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:laundry/db/aggregates/product_order_details.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/helpers/logger.dart';
+import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/print_handlers/pdf_header.dart';
 import 'package:laundry/print_handlers/pdf_orders.dart';
 import 'package:laundry/print_handlers/pdf_to_image.dart';
 import 'package:laundry/print_handlers/setting/prints.dart';
-import 'package:laundry/print_handlers/setting/styles.dart';
 import 'package:laundry/print_handlers/wrapper/senyum_wrapper.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> printOrders(
   BlueThermalPrinter bluetooth,
   BluetoothDevice device, {
+  required String orderId,
   required List<ProductOrderDetail> orders,
   required User staff,
+  required DateTime date,
   Customer? customer,
 }) async {
   final content = SenyumPageWrapper(children: [
-    buildPDFHeader(staff, customer),
+    buildPDFHeader(
+      orderId: orderId,
+      staff: staff,
+      date: date,
+      customer: customer,
+    ),
     buildOrdersWidget(orders),
   ]);
+  await waitMilliseconds(50);
   final bytes = await pdfWidgetToImage(content);
   if (bytes != null) {
     await reconnect(bluetooth, device);
@@ -31,13 +40,18 @@ Future<void> printOrders(
 }
 
 Future<File?> buildOrdersAsFile({
+  required String orderId,
   required List<ProductOrderDetail> orders,
   required User staff,
   Customer? customer,
 }) async {
   final content = SenyumPageWrapper(children: [
-    buildPDFHeader(staff, customer),
-    Breaker(),
+    buildPDFHeader(
+      orderId: orderId,
+      staff: staff,
+      customer: customer,
+      date: DateTime.now(),
+    ),
     buildOrdersWidget(orders),
   ]);
   final bytes = await pdfWidgetToImage(content);

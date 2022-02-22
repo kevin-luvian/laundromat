@@ -3,6 +3,7 @@ import 'package:laundry/helpers/utils.dart';
 
 class PlainOrderDetail {
   final String streamId;
+  final String orderId;
   final String userId;
   final String? customerId;
   final List<OrderItem> items;
@@ -13,6 +14,7 @@ class PlainOrderDetail {
 
   PlainOrderDetail({
     required this.streamId,
+    required this.orderId,
     required this.userId,
     required this.lastEditorId,
     required this.createDate,

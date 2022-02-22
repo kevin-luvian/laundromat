@@ -33,7 +33,7 @@ Future<void> printImageBytes(
 Future<Uint8List?> pdfWidgetToImage(Widget content) async {
   final pdf = Document();
   pdf.addPage(Page(
-    pageTheme: await _pageTheme80mm(),
+    pageTheme: _pageTheme80mm(),
     build: (_) => content,
   ));
 
@@ -51,7 +51,7 @@ Future<Uint8List?> pdfWidgetToImage(Widget content) async {
   return image;
 }
 
-Future<PageTheme> _pageTheme80mm() async {
+PageTheme _pageTheme80mm() {
   return const PageTheme(
     pageFormat: PdfPageFormat(140 * mm, double.infinity),
     margin: EdgeInsets.zero,

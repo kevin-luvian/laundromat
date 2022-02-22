@@ -22,6 +22,8 @@ class OrderDetailsProjector {
         return _onCreate(event);
       case OrderRemoved.staticTag:
         return _onRemoved(event, order!);
+      case OrderRestored.staticTag:
+        return _onRestored(event, order!);
       case OrderSent.staticTag:
         return _onSent(event, order!);
       case OrderSentCancelled.staticTag:
@@ -33,12 +35,20 @@ class OrderDetailsProjector {
     final data = OrderCreatedSerializer().fromJson(event.data);
     return PlainOrderDetail(
       streamId: event.streamId,
+      orderId: data.orderId,
       createDate: event.date,
       lastEditorId: data.userId,
       userId: data.userId,
       customerId: data.customerId,
       items: data.items,
     );
+  }
+
+  static PlainOrderDetail _onRestored(Event event, PlainOrderDetail detail) {
+    final data = OrderRestoredSerializer().fromJson(event.data);
+    detail.removedDate = null;
+    detail.lastEditorId = data.restoredBy;
+    return detail;
   }
 
   static PlainOrderDetail _onRemoved(Event event, PlainOrderDetail detail) {

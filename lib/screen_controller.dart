@@ -7,6 +7,7 @@ import 'package:laundry/layouts/auth_admin.dart';
 import 'package:laundry/layouts/auth_staff.dart';
 import 'package:laundry/layouts/auth_super_admin.dart';
 import 'package:laundry/pages/login/login.dart';
+import 'package:laundry/pages/pin_input/pin_input.dart';
 
 import 'l10n/access_locale.dart';
 
@@ -32,6 +33,9 @@ class ScreenController extends StatelessWidget {
                 }
               case Authenticating:
                 return PageLoader(text: l10n(context)?.authenticating ?? "");
+              case AuthenticatingPin:
+              case AuthenticatingPinFailed:
+                return PinInputPage((_state as AuthenticatingPin).pin);
               default:
                 return const LoginPage();
             }

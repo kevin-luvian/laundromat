@@ -101,11 +101,13 @@ void main() {
   test('get all orders', () async {
     final data = await setupData();
 
-    final order1 = await _orderCommand.create(data.staffId, data.customerId, [
+    final order1 =
+        await _orderCommand.create("", data.staffId, data.customerId, [
       OrderItem(10, data.productId, []),
     ]);
 
-    final order2 = await _orderCommand.create(data.staffId, data.customerId, [
+    final order2 =
+        await _orderCommand.create("", data.staffId, data.customerId, [
       OrderItem(10, data.productId, [data.addonId]),
     ]);
 

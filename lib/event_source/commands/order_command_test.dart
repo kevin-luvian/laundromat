@@ -3,7 +3,6 @@ import 'package:laundry/db/aggregates/plain_order_details.dart';
 import 'package:laundry/db/dao/event/event.dart';
 import 'package:laundry/db/event_db.dart';
 import 'package:laundry/event_source/commands/order_command.dart';
-import 'package:laundry/event_source/events/order_event.dart';
 import 'package:laundry/helpers/logger.dart';
 import 'package:test/test.dart';
 
@@ -26,12 +25,12 @@ void main() {
   });
 
   test('create order successfully', () async {
-    await orderCommand.create("abc", "def", []);
+    await orderCommand.create("ord", "abc", "def", []);
 
     List<Event> events = await eventDao.allEvents();
     expect(events.length, 1);
 
-    await orderCommand.create("abc", "def", [
+    await orderCommand.create("asdas", "abc", "def", [
       OrderItem(10, "abc", ["lkl"]),
       OrderItem(5, "def", ["lkl"]),
     ]);

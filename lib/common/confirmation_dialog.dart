@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/utils.dart';
 
 class ConfirmationDialog extends StatelessWidget {
@@ -15,7 +16,9 @@ class ConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Please Confirm'),
-      content: Text(content),
+      content: Container(
+          constraints: BoxConstraints(minWidth: screenSize(context).width / 2),
+          child: Text(content)),
       actions: [
         TextButton(
             onPressed: () async {

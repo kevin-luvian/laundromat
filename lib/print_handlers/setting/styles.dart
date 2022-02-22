@@ -27,9 +27,13 @@ class TextWidget {
 class Breaker extends StatelessWidget {
   @override
   build(context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-      child: Center(child: Divider(color: TextColor.black, thickness: 3)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: 15),
+        Divider(color: TextColor.black, thickness: 3),
+        SizedBox(height: 15),
+      ],
     );
   }
 }

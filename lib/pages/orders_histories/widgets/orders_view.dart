@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:laundry/cubits/orders/orders_cubit.dart';
-import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/hooks/use_scroll_controller.dart';
-
-import 'order_view.dart';
+import 'package:laundry/pages/orders_histories/widgets/order_view_flat.dart';
 
 class OrdersView extends HookWidget {
   const OrdersView() : super(key: null);
@@ -18,7 +16,6 @@ class OrdersView extends HookWidget {
 
     final controller = useScrollListener(onMaxScroll: () async {
       if (orders?.noMoreData ?? false) return;
-      await waitMilliseconds(200);
       cubit.loadMore(10);
     });
 
@@ -30,14 +27,14 @@ class OrdersView extends HookWidget {
         shrinkWrap: true,
         controller: controller,
         itemCount: orders.length + 1,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         itemBuilder: (_ctx, i) {
           if (i >= orders.length) {
             return orders.noMoreData ? _noMoreData() : _loadingView();
           }
-          return OrderView.fromOrderDetail(orders.elementAt(i));
+          return OrderViewFlat.fromOrderDetail(orders.elementAt(i));
         },
-        separatorBuilder: (_ctx, i) => const SizedBox(height: 3),
+        separatorBuilder: (_ctx, i) =>
+            const SizedBox(height: 2, child: Divider()),
       ),
     );
   }

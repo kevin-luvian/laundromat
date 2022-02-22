@@ -1,5 +1,5 @@
 name: laundry
-description: A new Flutter project.
+description: Laundry management & POS application.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -57,6 +57,7 @@ dependencies:
   blue_thermal_printer: ^1.2.0
   pdf: ^3.7.1
   printing: ^5.7.2
+  pinput: ^1.2.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -74,6 +75,14 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  flutter_launcher_icons: ^0.9.2
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/images/icon.png"
+  image_path_android: "assets/images/icon.png"
+  image_path: "assets/images/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -94,6 +103,9 @@ flutter:
   # https://flutter.dev/assets-and-images/#from-packages
 
   fonts:
+    - family:  MyIcons
+      fonts:
+        - asset: assets/fonts/MyIcons.ttf
     - family: MontserratAlternates
       fonts:
         - asset: assets/fonts/MontserratAlternates-SemiBold.ttf

@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:intl/intl.dart';
 import 'package:laundry/db/aggregates/order_details.dart';
 import 'package:laundry/db/aggregates/plain_order_details.dart';
 import 'package:laundry/db/aggregates/product_order_details.dart';
@@ -22,8 +23,49 @@ class OrdersDao extends DatabaseAccessor<EventDB> {
 
   $EventsTable get events => attachedDatabase.events;
 
+  Future<List<Event>> findEventsByType(String streamType) => (select(events)
+        ..where((e) => e.streamType.equals(streamType))
+        ..orderBy([
+          (e) => OrderingTerm(expression: e.id),
+          (e) => OrderingTerm(expression: e.version),
+        ]))
+      .get();
+
   Future<List<String>> findAllOrdersIds() =>
       _eventDao.distinctIdByType(orderEventType);
+
+  Future<String> generateOrderId(DateTime date) async {
+    final toDateOrderLength =
+        (await ordersIdInDateQuery(date).get()).length + 1;
+    return "ORDER-" +
+        DateFormat("dd-MM-yyyy").format(date) +
+        "-$toDateOrderLength";
+  }
+
+  Stream<int> streamTodayOrdersLength() =>
+      ordersIdInDateQuery(DateTime.now()).watch().map((e) => e.length);
+
+  Future<int> todayOrdersLength() async =>
+      (await ordersIdInDateQuery(DateTime.now()).get()).length;
+
+  Selectable<String> ordersIdInDateQuery(DateTime date) {
+    final lower = DateTime(date.year, date.month, date.day, 0);
+    final higher = DateTime(date.year, date.month, date.day, 24);
+    final query = selectOnly(events, distinct: true)
+      ..addColumns([events.streamId])
+      ..orderBy(
+          [OrderingTerm(expression: events.date, mode: OrderingMode.desc)])
+      ..where(events.streamType.equals(orderEventType))
+      ..where(events.date.isBetweenValues(lower, higher));
+    return query.map((row) => row.read(events.streamId) ?? "");
+  }
+
+  Future<OrderDetail?> findById(String id) async {
+    final events = await _eventDao.findAllById(id);
+    final data = OrderDetailsProjector.projectStatic(events);
+    if (data == null) return null;
+    return getOrderDetail(data);
+  }
 
   Stream<Future<List<OrderDetail>>> streamAllOrders() {
     final stream = _eventDao.streamByType(orderEventType);
@@ -53,6 +95,7 @@ class OrdersDao extends DatabaseAccessor<EventDB> {
     );
     return OrderDetail(
       streamId: detail.streamId,
+      orderId: detail.orderId,
       user: data.user,
       customer: data.customer,
       orders: data.products,

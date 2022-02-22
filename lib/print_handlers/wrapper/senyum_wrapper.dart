@@ -34,18 +34,30 @@ class SenyumPageWrapper extends StatelessWidget {
   }
 
   Widget senyumHeader() {
-    return Center(child: TextWidget.big("SENYUM"));
+    return Center(
+      child: Column(children: [
+        TextWidget.big("LAUNDRY SENYUM"),
+        SizedBox(height: 30),
+        TextWidget.normal("Jl. Perhubungan I No 03"),
+        TextWidget.normal("Rawamangun Jati. 15228."),
+        SizedBox(height: 20),
+      ]),
+    );
   }
 
   Widget senyumFooter() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Text(
-          "Terima kasih sudah berbelanja pada jasa laundry senyum.",
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 23),
-        ),
+        child: Column(children: [
+          TextWidget.normal(
+              "Terima kasih sudah berbelanja pada jasa laundry senyum.",
+              align: TextAlign.center),
+          SizedBox(height: 40),
+          TextWidget.normal(
+              "Kami tidak bertanggung jawab untuk barang yang ditinggalkan lebih dari 30 hari.",
+              align: TextAlign.justify),
+        ]),
       ),
     );
   }

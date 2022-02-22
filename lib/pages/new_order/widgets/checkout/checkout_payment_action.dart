@@ -27,10 +27,16 @@ class _CheckoutPaymentActionState extends State<CheckoutPaymentAction> {
 
   @override
   void initState() {
-    super.initState();
     _listener = newOrderCacheDao
         .streamOrdersLength()
         .listen((length) => setState(() => ordersLength = length));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _listener.cancel();
+    super.dispose();
   }
 
   @override
@@ -54,33 +60,18 @@ class _CheckoutPaymentActionState extends State<CheckoutPaymentAction> {
   List<Widget> _buildButtonActions(BuildContext context) {
     return [
       _buildActionSubset(
-        icon: Icons.delete,
-        color: Colors.redAccent,
-        onPressed: () => showDialog<void>(
-          context: context,
-          builder: (_) => ConfirmationDialog(
-            content: "Remove current orders?",
-            onContinue: () =>
-                context.read<NewOrderBloc>().add(ClearCachesEvent()),
-          ),
-        ),
-      ),
-      _buildActionSubset(
-        icon: CupertinoIcons.profile_circled,
-        color: Colors.orangeAccent,
-        onPressed: () {},
-      ),
-      _buildActionSubset(
         icon: Icons.print_outlined,
         color: Colors.blueAccent,
         onPressed: () async {
-          // bluetoothBloc.add(PrintEvent());
-
           final orders = await newOrderCacheDao.allOrderDetails();
           final staff = await sessionDao.currentUser;
           final customer = await newOrderCacheDao.currentCustomer;
+          final orderId = await ordersDao.generateOrderId(DateTime.now());
           final file = await buildOrdersAsFile(
-              orders: orders, staff: staff!, customer: customer);
+              orderId: orderId,
+              orders: orders,
+              staff: staff!,
+              customer: customer);
           if (file == null) return;
           var decodedImage = await decodeImageFromList(file.readAsBytesSync());
           await showDialog<void>(
@@ -107,15 +98,38 @@ class _CheckoutPaymentActionState extends State<CheckoutPaymentAction> {
   }
 
   Widget _buildActionCheckout(BuildContext context) {
-    return RectButton(
-      disabled: ordersLength <= 0,
-      onPressed: () =>
-          showCheckoutDialog(context, context.read<NewOrderBloc>()),
-      size: const Size.fromHeight(45),
-      child: Text(
-        l10n(context)?.checkout ?? "",
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
+    return Row(
+      children: [
+        RectButton(
+          disabled: ordersLength <= 0,
+          onPressed: () {
+            showDialog<void>(
+              context: context,
+              builder: (_) => ConfirmationDialog(
+                content: "Remove current orders?",
+                onContinue: () =>
+                    context.read<NewOrderBloc>().add(ClearCachesEvent()),
+              ),
+            );
+          },
+          color: Colors.redAccent,
+          size: const Size(50, 50),
+          child: const Icon(Icons.delete),
+        ),
+        const SizedBox(width: 5),
+        Flexible(
+          child: RectButton(
+            disabled: ordersLength <= 0,
+            onPressed: () =>
+                showCheckoutDialog(context, context.read<NewOrderBloc>()),
+            size: const Size.fromHeight(50),
+            child: Text(
+              l10n(context)?.checkout ?? "",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

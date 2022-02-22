@@ -7,6 +7,7 @@ import 'package:laundry/db/dao/session/session.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
 import 'package:laundry/event_source/commands/order_command.dart';
+import 'package:laundry/helpers/logger.dart';
 import 'package:laundry/helpers/utils.dart';
 
 import 'filters/declare.dart';
@@ -55,10 +56,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     filters = _ordersFilterCubit.state.filters;
     _listeners = [
       _ordersDao.streamAllOrders().listen((data) => data.then((orders) async {
-            // logger.i("Streamed");
-            emit(OrdersState.initial());
             _orders = orders;
-            await waitMilliseconds(500);
             reEmit();
           })),
       _ordersFilterCubit.stream.listen((data) {
@@ -69,10 +67,25 @@ class OrdersCubit extends Cubit<OrdersState> {
     ];
   }
 
+  Future<void> send(String streamId) async {
+    final userId = await _sessionDao.currentUserId;
+    await _orderCommand.sent(streamId, userId);
+  }
+
+  Future<void> cancelSend(String streamId) async {
+    final userId = await _sessionDao.currentUserId;
+    await _orderCommand.sentCancelled(streamId, userId);
+  }
+
   Future<void> remove(String streamId) async {
     final userId = await _sessionDao.currentUserId;
     await _orderCommand.remove(streamId, userId);
-    reEmit();
+  }
+
+  Future<void> restore(String streamId) async {
+    logger.i("Restored");
+    final userId = await _sessionDao.currentUserId;
+    await _orderCommand.restore(streamId, userId);
   }
 
   void loadMore(int toAdd) {

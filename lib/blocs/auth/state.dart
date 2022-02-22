@@ -9,6 +9,24 @@ class UnAuthenticated extends AuthState {
   List<Object?> get props => [];
 }
 
+class AuthenticatingPin extends AuthState {
+  final String pin;
+
+  AuthenticatingPin(this.pin);
+
+  @override
+  List<Object?> get props => [pin];
+}
+
+class AuthenticatingPinFailed extends AuthState {
+  final String pin;
+
+  AuthenticatingPinFailed(this.pin);
+
+  @override
+  List<Object?> get props => [pin];
+}
+
 class Authenticating extends AuthState {
   @override
   List<Object?> get props => [];

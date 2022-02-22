@@ -53,6 +53,16 @@ class EventDao extends DatabaseAccessor<EventDB> with _$EventDaoMixin {
     return query.watch().map(groupEventsById);
   }
 
+  Future<List<Event>> findAllById(String streamId) {
+    final query = select(events)
+      ..where((tbl) => tbl.streamId.equals(streamId))
+      ..orderBy([
+        (e) => OrderingTerm(expression: e.version),
+        dateOrdering,
+      ]);
+    return query.get();
+  }
+
   Future<List<Event>> findAllByIdConstrainedByDate(
       String streamId, DateTime date) {
     final query = select(events)
