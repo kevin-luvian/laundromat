@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/blocs/newOrder/new_order_bloc.dart';
 import 'package:laundry/common/confirmation_dialog.dart';
 import 'package:laundry/common/rect_button.dart';
+import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/db/tables/users.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/new_order/widgets/checkout_dialog/checkout_dialog.dart';
@@ -47,13 +48,31 @@ class _CheckoutPaymentActionState extends State<CheckoutPaymentAction> {
       child: Column(
         children: [
           _buildActionCheckout(context),
-          const SizedBox(height: 7),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: _buildButtonActions(context),
-          )
+          debugWidget(),
         ],
       ),
+    );
+  }
+
+  Widget debugWidget() {
+    return FutureBuilder<User?>(
+      future: sessionDao.currentUser,
+      builder: (_ctx, snapshot) {
+        final user = snapshot.data;
+        final isSuperAdmin = user?.role == roleSuperAdmin;
+        if (isSuperAdmin) {
+          return Column(
+            children: [
+              const SizedBox(height: 7),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: _buildButtonActions(context),
+              )
+            ],
+          );
+        }
+        return Container();
+      },
     );
   }
 

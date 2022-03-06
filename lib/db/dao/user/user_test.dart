@@ -20,8 +20,8 @@ void main() {
   });
 
   test('stream active users', () async {
-    final aStream = userDao.activeUsers();
-    final iStream = userDao.inactiveUsers();
+    final aStream = await userDao.activeUsers();
+    final iStream = await userDao.inactiveUsers();
 
     expect(aStream.map((user) => user.length), emitsInOrder(<int>[0, 1]));
     expect(iStream.map((user) => user.length), emitsInOrder(<int>[0]));

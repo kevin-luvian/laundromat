@@ -15,6 +15,7 @@ import 'package:laundry/helpers/input_decoration.dart';
 import 'package:laundry/helpers/input_formatter/currency.dart';
 import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/helpers/validators.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
 class CreateUpdateProductForm extends StatefulWidget {
@@ -171,21 +172,21 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                     builder: (_ctx, AsyncSnapshot<List<String>> snapshot) =>
                         TextAutoComplete(
                             controller: categoryCtr,
-                            label: "category",
+                            label: l10n(context)?.category ?? "",
                             options: snapshot.hasData ? snapshot.data! : [],
-                            validator: notEmptyText),
+                            validator: (s) => notEmptyText(context, s)),
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
                     focusNode: FocusNode(),
                     controller: titleCtr,
-                    validator: notEmptyText,
-                    decoration: inputDecoration(context, "title"),
+                    validator: (s) => notEmptyText(context, s),
+                    decoration: inputDecoration(context, l10n(context)?.title),
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
                     controller: priceCtr,
-                    decoration: inputDecoration(context, "price"),
+                    decoration: inputDecoration(context, l10n(context)?.price),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -200,7 +201,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
                             controller: unitCtr,
                             label: "unit",
                             options: snapshot.hasData ? snapshot.data! : [],
-                            validator: notEmptyText),
+                            validator: (s) => notEmptyText(context, s)),
                   ),
                   _buildAddonsInput(),
                   KeyboardVisibilityBuilder(
@@ -229,7 +230,7 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Addons",
+              capitalizeLetter(l10n(context)?.addons),
               style: TextStyle(
                 color: color,
                 fontWeight: FontWeight.bold,
@@ -305,7 +306,8 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
               flex: 1,
               child: RectButton(
                 onPressed: () => submitState(context.read<ProductEditorBloc>()),
-                child: const Text("Save", style: TextStyle(fontSize: 17)),
+                child: Text(capitalizeLetter(l10n(context)?.save),
+                    style: const TextStyle(fontSize: 17)),
               ),
             ),
           ],
@@ -342,9 +344,9 @@ class _CreateProductFormState extends State<CreateUpdateProductForm> {
             }
           },
           color: Colors.blueAccent,
-          child: const Text(
-            "pick image from gallery",
-            style: TextStyle(fontSize: 14),
+          child: Text(
+            l10n(context)?.pick_image_from_gallery ?? "",
+            style: const TextStyle(fontSize: 14),
           ),
         ),
       ],
@@ -363,12 +365,9 @@ class CreateAddonForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(
-        'Create New Addon',
-        style: TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.bold,
-        ),
+      title: Text(
+        capitalizeLetter(l10n(context)?.create_new_addon),
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
       ),
       content: Form(
         key: _formKey,
@@ -382,13 +381,13 @@ class CreateAddonForm extends StatelessWidget {
                   TextFormField(
                     focusNode: FocusNode(),
                     controller: titleCtr,
-                    validator: notEmptyText,
-                    decoration: inputDecoration(context, "title"),
+                    validator: (s) => notEmptyText(context, s),
+                    decoration: inputDecoration(context, l10n(context)?.title),
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
                     controller: priceCtr,
-                    decoration: inputDecoration(context, "price"),
+                    decoration: inputDecoration(context, l10n(context)?.price),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,

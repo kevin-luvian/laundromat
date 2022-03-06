@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:laundry/common/inputs/date_input.dart';
 import 'package:laundry/cubits/orders/orders_filter_cubit.dart';
 import 'package:laundry/hooks/use_single_lock.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/orders_histories/widgets/filters/declare.dart';
 
 final filterDateWidgetIcon =
@@ -45,9 +46,9 @@ class FilterDateWidget extends HookWidget {
               firstDate.value = date;
             },
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 15),
-            child: Text("until"),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            child: Text("${l10n(context)?.until}"),
           ),
           DateInput(
             date: lastDate.value,

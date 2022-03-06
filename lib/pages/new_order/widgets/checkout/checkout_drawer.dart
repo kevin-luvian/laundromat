@@ -73,6 +73,9 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
     return Column(
       children: [
         Container(
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.zero,
+          height: show ? 40 : 55,
           decoration: const BoxDecoration(
             border: Border(
               top: BorderSide(color: Colors.black12),
@@ -83,7 +86,7 @@ class _CheckoutDrawerState extends State<CheckoutDrawer>
             style: TextButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.surface,
               primary: Theme.of(context).colorScheme.onSurface,
-              minimumSize: Size.fromHeight(show ? 35 : 40),
+              minimumSize: Size.infinite,
               shape:
                   const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             ),

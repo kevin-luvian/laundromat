@@ -54,8 +54,14 @@ String dateToStringLocaleFull(DateTime date, AppLocalizations? locale) {
   return "${date.day} $monthStr ${date.year} $hourStr:$minuteStr";
 }
 
-String capitalizeFirstLetter(String text) {
+String capitalizeFirstLetter(String? text) {
+  if (text == null) return "";
   return text[0].toUpperCase() + text.substring(1).toLowerCase();
+}
+
+String capitalizeLetter(String? text) {
+  if (text == null) return "";
+  return text.split(" ").map(capitalizeFirstLetter).join(" ");
 }
 
 String monthToString(int month, AppLocalizations? locale) {

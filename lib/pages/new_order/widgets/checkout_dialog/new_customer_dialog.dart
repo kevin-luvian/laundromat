@@ -5,6 +5,7 @@ import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_decoration.dart';
 import 'package:laundry/helpers/validators.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/running_assets/db_access.dart';
 
 void showNewCustomerDialog(BuildContext context) {
@@ -43,8 +44,10 @@ class _NewCustomerDialogState extends State<NewCustomerDialog> {
   }
 
   String? phoneValidation(String? val) {
-    if (val == null || val.isEmpty) return 'please enter some text';
-    if (val.length < 8) return "phone digit is too short";
+    if (val == null || val.isEmpty) {
+      return l10n(context)?.please_enter_some_text;
+    }
+    if (val.length <= 1) return l10n(context)?.phone_digit_is_too_short;
   }
 
   @override
@@ -97,7 +100,7 @@ class _NewCustomerDialogState extends State<NewCustomerDialog> {
             children: [
               TextFormField(
                 controller: nameCtr,
-                validator: notEmptyText,
+                validator: (s) => notEmptyText(context, s),
                 keyboardType: TextInputType.name,
                 decoration: inputDecoration(context, "name"),
               ),

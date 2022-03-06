@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/logger.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
 class CheckoutHeader extends StatelessWidget {
@@ -29,7 +32,6 @@ class CheckoutHeader extends StatelessWidget {
               builder: (_ctx, snapshot) {
                 int index = 1;
                 if (snapshot.hasData) {
-                  logger.i(snapshot.data);
                   index = snapshot.data! + 1;
                 }
                 return Text(
@@ -41,12 +43,22 @@ class CheckoutHeader extends StatelessWidget {
                 );
               },
             ),
-            Text(
-              "opened 07:00 pm",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontSize: 10,
-              ),
+            StreamBuilder<Session?>(
+              stream: sessionDao.streamSession(),
+              builder: (_ctx, snapshot) {
+                String dateStr = "";
+                if (snapshot.data != null) {
+                  final date = snapshot.data!.loggedInDate;
+                  dateStr = DateFormat("HH:mm aa").format(date);
+                }
+                return Text(
+                  "${l10n(context)?.opened} $dateStr",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 10,
+                  ),
+                );
+              },
             ),
           ],
         ),

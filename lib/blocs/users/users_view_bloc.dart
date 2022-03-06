@@ -6,15 +6,17 @@ import 'package:laundry/db/drift_db.dart';
 
 class UsersViewBloc extends Bloc<UsersViewEvent, UsersViewState> {
   final UserDao _dao;
+  final SessionDao _sessionDao;
 
   UsersViewBloc(DriftDB db)
       : _dao = UserDao(db),
+        _sessionDao = SessionDao(db),
         super(InitialUsersState()) {
     on<FindActiveUserEvent>((_, emit) async {
-      emit(StreamUsersState(_dao.activeUsers()));
+      emit(StreamUsersState(await _dao.activeUsers()));
     });
     on<FindInactiveUserEvent>(
-      (_, emit) => emit(StreamUsersState(_dao.inactiveUsers())),
+      (_, emit) async => emit(StreamUsersState(await _dao.inactiveUsers())),
     );
     on<FindDeletedUserEvent>((_, emit) {});
   }

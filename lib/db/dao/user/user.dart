@@ -1,7 +1,9 @@
 import 'package:crypt/crypt.dart';
 import 'package:drift/drift.dart';
+import 'package:laundry/db/dao/session/session.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/tables/users.dart';
+import 'package:laundry/running_assets/dao_access.dart';
 
 @DriftAccessor(tables: [Users])
 class UserDao extends DatabaseAccessor<DriftDB> {
@@ -51,16 +53,20 @@ class UserDao extends DatabaseAccessor<DriftDB> {
         .go();
   }
 
-  Stream<List<User>> activeUsers() {
+  Future<Stream<List<User>>> activeUsers() async {
+    final roles = await SessionDao(db).selectableRoles;
     final query = select(users)
       ..where((user) => user.active.equals(true))
+      ..where((user) => user.role.isIn(roles))
       ..orderBy([(e) => OrderingTerm(expression: e.name)]);
     return query.watch();
   }
 
-  Stream<List<User>> inactiveUsers() {
+  Future<Stream<List<User>>> inactiveUsers() async {
+    final roles = await SessionDao(db).selectableRoles;
     final query = select(users)
       ..where((user) => user.active.equals(false))
+      ..where((user) => user.role.isIn(roles))
       ..orderBy([(e) => OrderingTerm(expression: e.name)]);
     return query.watch();
   }

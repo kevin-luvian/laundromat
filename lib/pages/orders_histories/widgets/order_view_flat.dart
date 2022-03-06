@@ -47,7 +47,8 @@ class OrderViewFlat extends HookWidget {
     context.read<OrderDrawerCubit>().open(streamId);
   }
 
-  Widget _slideAble({
+  Widget _slideAble(
+    BuildContext context, {
     required Widget child,
     required void Function() handleSend,
     required void Function() handleCancelSend,
@@ -86,7 +87,7 @@ class OrderViewFlat extends HookWidget {
             backgroundColor: Colors.redAccent,
             foregroundColor: Colors.white,
             icon: Icons.delete,
-            label: 'Delete',
+            label: capitalizeFirstLetter(l10n(context)?.delete),
           ),
         ],
       ),
@@ -100,7 +101,9 @@ class OrderViewFlat extends HookWidget {
             foregroundColor: Colors.white,
             icon: isSent ? MyIcons.cancel_sent : MyIcons.sent,
             backgroundColor: isSent ? Colors.redAccent : Colors.orangeAccent,
-            label: isSent ? "Cancel" : "Send",
+            label: isSent
+                ? capitalizeFirstLetter(l10n(context)?.cancel)
+                : capitalizeFirstLetter(l10n(context)?.send),
           ),
         ],
       ),
@@ -164,6 +167,7 @@ class OrderViewFlat extends HookWidget {
   @override
   build(context) {
     return _slideAble(
+      context,
       child: _container(context),
       handleSend: () => context.read<OrdersCubit>().send(streamId),
       handleCancelSend: () => context.read<OrdersCubit>().cancelSend(streamId),

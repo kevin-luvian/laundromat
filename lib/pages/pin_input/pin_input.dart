@@ -27,6 +27,8 @@ class _PinInputState extends State<PinInputPage> {
     }
   }
 
+  void handleLogout() => context.read<AuthBloc>().add(Logout());
+
   @override
   Widget build(BuildContext context) {
     return onlySelectedBorderPinPut();
@@ -107,9 +109,7 @@ class _PinInputState extends State<PinInputPage> {
         SizedBox(
           height: changeAccHeight,
           child: GestureDetector(
-            onTap: () {
-              logger.i("Tapped");
-            },
+            onTap: handleLogout,
             child: Text(
               "change account",
               style: TextStyle(

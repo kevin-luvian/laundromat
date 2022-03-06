@@ -9,7 +9,7 @@ NavAnimationState useNavAnimation(int length) {
   useEffect(() {
     animation.forward();
     controller.addListener(() {
-      animation.forward(from: 0.5);
+      animation.forward(from: 0.0);
     });
   }, []);
 

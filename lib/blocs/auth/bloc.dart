@@ -7,7 +7,6 @@ import 'package:laundry/db/dao/user/user.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
 import 'package:laundry/event_source/commands/user_command.dart';
-import 'package:laundry/helpers/utils.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserCommand _userCommand;
@@ -24,11 +23,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final session = await _sessionDao.find();
       if (session.staffId.isEmpty) {
         emit(UnAuthenticated());
+      } else if (DateTime.now().difference(session.loggedInDate).inHours >=
+          24) {
+        logout(emit);
       } else {
         final user = await _userDao.findUser(session.staffId);
         if (user == null) {
-          await logoutStaff();
-          emit(UnAuthenticated());
+          logout(emit);
         } else {
           emit(AuthenticatingPin(user.pin));
         }
@@ -41,6 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user == null) {
         emit(UnAuthenticated());
       } else if (user.pin == evt.pin) {
+        await _userCommand.login(user.id);
         emit(Authenticated(user));
       } else {
         emit(AuthenticatingPinFailed(user.pin));
@@ -54,20 +56,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthenticationFailed());
       } else {
         await _userCommand.login(user.id);
-        await _sessionDao.mutate(SessionsCompanion(staffId: Value(user.id)));
+        await _sessionDao.mutate(SessionsCompanion(
+            staffId: Value(user.id), loggedInDate: Value(DateTime.now())));
         emit(Authenticated(user));
       }
     });
 
-    on<Logout>((_, emit) async {
-      emit(Authenticating());
-      logoutStaff();
-      await waitMilliseconds(500);
-      emit(UnAuthenticated());
-    });
+    on<Logout>((_, emit) => logout(emit));
   }
 
-  Future<void> logoutStaff() async {
+  Future<void> logout(Emitter<AuthState> emit) async {
     await _sessionDao.mutate(const SessionsCompanion(staffId: Value("")));
+    emit(UnAuthenticated());
   }
 }

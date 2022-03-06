@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/db/drift_db.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_decoration.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/new_order/widgets/checkout_dialog/new_customer_dialog.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 import 'package:laundry/styles/theme.dart';
@@ -121,14 +123,14 @@ class _CustomerSelectPageState extends State<CustomerSelectPage> {
           child: TextFormField(
             controller: nameCtr,
             keyboardType: TextInputType.name,
-            decoration: inputDecoration(context, "name"),
+            decoration: inputDecoration(context, l10n(context)?.name),
           ),
         ),
         const SizedBox(width: 15),
         Expanded(
           child: TextFormField(
             controller: phoneCtr,
-            decoration: inputDecoration(context, "phone"),
+            decoration: inputDecoration(context, l10n(context)?.phone),
             keyboardType: TextInputType.phone,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           ),
@@ -145,10 +147,10 @@ class _CustomerSelectPageState extends State<CustomerSelectPage> {
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
           onPressed: () => showNewCustomerDialog(context),
           size: const Size(0, 35),
-          child: Row(children: const [
-            Icon(Icons.add),
-            SizedBox(width: 5),
-            Text("Add Customer"),
+          child: Row(children: [
+            const Icon(Icons.add),
+            const SizedBox(width: 5),
+            Text(capitalizeLetter(l10n(context)?.add_customer)),
           ]),
         ),
       ],

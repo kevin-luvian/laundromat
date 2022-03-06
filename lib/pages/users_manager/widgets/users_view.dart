@@ -5,6 +5,7 @@ import 'package:laundry/blocs/users/users_view_bloc.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/tables/users.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/l10n/access_locale.dart';
 
 const _cardRadius = 12.0;
 const _cardPaddingVert = 12.0;
@@ -56,17 +57,22 @@ class UsersView extends StatelessWidget {
         accent = Colors.yellowAccent;
         break;
     }
+    final ago = l10n(context)?.ago;
     final lastLoginDiff = user.lastLogin?.difference(DateTime.now()).abs();
     String lastLoginStr = "-";
     if (lastLoginDiff != null) {
       if (lastLoginDiff.inDays > 0) {
-        lastLoginStr = lastLoginDiff.inDays.toString() + " days ago";
+        lastLoginStr =
+            lastLoginDiff.inDays.toString() + " ${l10n(context)?.days} $ago";
       } else if (lastLoginDiff.inHours > 0) {
-        lastLoginStr = lastLoginDiff.inHours.toString() + " hours ago";
+        lastLoginStr =
+            lastLoginDiff.inHours.toString() + " ${l10n(context)?.hours} $ago";
       } else if (lastLoginDiff.inMinutes > 0) {
-        lastLoginStr = lastLoginDiff.inMinutes.toString() + " minutes ago";
+        lastLoginStr = lastLoginDiff.inMinutes.toString() +
+            " ${l10n(context)?.minutes} $ago";
       } else {
-        lastLoginStr = lastLoginDiff.inSeconds.toString() + " seconds ago";
+        lastLoginStr = lastLoginDiff.inSeconds.toString() +
+            " ${l10n(context)?.seconds} $ago";
       }
     }
 
@@ -122,7 +128,7 @@ class UsersView extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(
                     0, _cardPaddingVert, 30, _cardPaddingVert),
                 child: Text(
-                  "last login: $lastLoginStr",
+                  "${l10n(context)?.last_login}: $lastLoginStr",
                   style: TextStyle(color: colorScheme(context).onSurface),
                 ),
               ),

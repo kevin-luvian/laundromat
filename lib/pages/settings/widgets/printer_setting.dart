@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/blocs/bluetooth/bluetooth_bloc.dart';
 import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/running_assets/asset_access.dart';
 import 'package:laundry/styles/theme.dart';
 
@@ -148,15 +149,17 @@ class _PrinterSettingState extends State<PrinterSetting> {
       color: _pressed ? GlobalColor.dim : null,
       onPressed: _connected ? disconnectBluetooth : connectBluetooth,
       size: const Size(150, 47),
-      child: Text(_connected ? "disconnect" : "connect"),
+      child: Text(_connected
+          ? l10n(context)?.disconnect ?? ""
+          : l10n(context)?.connect ?? ""),
     );
   }
 
   List<DropdownMenuItem<BluetoothDevice>> _getDeviceItems() {
     List<DropdownMenuItem<BluetoothDevice>> items = [];
     if (_devices.isEmpty) {
-      items.add(const DropdownMenuItem(
-        child: Text('NONE'),
+      items.add(DropdownMenuItem(
+        child: Text(capitalizeFirstLetter(l10n(context)?.none)),
         value: null,
       ));
     } else {

@@ -11,6 +11,7 @@ import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_decoration.dart';
 import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/helpers/validators.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
 class UpdateUserForm extends StatefulWidget {
@@ -130,13 +131,14 @@ class _UpdateUserFormState extends State<UpdateUserForm> {
               children: [
                 const SizedBox(height: 15),
                 TextFormField(
-                  decoration: inputDecoration(context, "name"),
+                  decoration: inputDecoration(context, l10n(context)?.name),
                   controller: nameCtr,
-                  validator: notEmptyText,
+                  validator: (s) => notEmptyText(context, s),
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
-                  decoration: inputDecoration(context, "new password"),
+                  decoration:
+                      inputDecoration(context, l10n(context)?.new_password),
                   controller: passwordCtr,
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(12),
@@ -146,7 +148,7 @@ class _UpdateUserFormState extends State<UpdateUserForm> {
                 ),
                 const SizedBox(height: 15),
                 DropdownButtonFormField<String>(
-                  decoration: inputDecoration(context, "role"),
+                  decoration: inputDecoration(context, l10n(context)?.role),
                   value: selectedRole,
                   items: selectableRoles
                       .map((role) => DropdownMenuItem(
@@ -203,7 +205,7 @@ class _UpdateUserFormState extends State<UpdateUserForm> {
         ),
         const SizedBox(width: 10),
         Text(
-          isActive ? "active" : "inactive",
+          isActive ? "${l10n(context)?.active}" : "${l10n(context)?.inactive}",
           style: const TextStyle(fontSize: 15),
         ),
       ],
@@ -215,18 +217,21 @@ class _UpdateUserFormState extends State<UpdateUserForm> {
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Row(
         children: [
-          RectButton(
-            size: const Size(50, 45),
-            child: const Icon(Icons.delete_outline_rounded),
-            onPressed: () {},
-          ),
+          if (!isEditSelf)
+            RectButton(
+              disabled: true,
+              size: const Size(50, 45),
+              child: const Icon(Icons.delete_outline_rounded),
+              onPressed: () {},
+            ),
           const SizedBox(width: 10),
           Flexible(
             fit: FlexFit.tight,
             flex: 1,
             child: RectButton(
               onPressed: () => submitState(context.read<UserEditorBloc>()),
-              child: const Text("Save", style: TextStyle(fontSize: 17)),
+              child: Text(capitalizeFirstLetter(l10n(context)?.save),
+                  style: const TextStyle(fontSize: 17)),
             ),
           ),
         ],
@@ -235,9 +240,11 @@ class _UpdateUserFormState extends State<UpdateUserForm> {
   }
 
   String? pinValidator(String? value) {
-    if (value == null || value.isEmpty) return 'please enter some text';
+    if (value == null || value.isEmpty) {
+      return l10n(context)?.please_enter_some_text;
+    }
     if (value.length < 4) {
-      return 'pin must be a 4 digit number';
+      return l10n(context)?.pin_must_be_a_4_digit_number;
     }
     return null;
   }

@@ -75,12 +75,7 @@ class _AuthSuperAdminLayoutState extends State<AuthSuperAdminLayout> {
                     navAnim.controller.animateTo(i);
                   }),
               _conn.value),
-          Expanded(
-            child: _tabBarView(
-              animation: navAnim.animation,
-              tabIndex: navAnim.controller.index,
-            ),
-          ),
+          Expanded(child: _tabs.elementAt(navAnim.controller.index)),
         ],
       ),
     );

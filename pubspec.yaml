@@ -46,6 +46,9 @@ dependencies:
   path_provider: ^2.0.0
   path: ^1.8.0
   image_picker: ^0.8.4+4
+  csv: ^5.0.1
+  file_picker: ^4.5.0
+  permission_handler: ^9.2.0
 
   flutter_slidable: ^1.2.0
   flutter_hooks: ^0.18.2+1

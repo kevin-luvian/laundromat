@@ -37,9 +37,9 @@ class _UserLeftDrawerState extends State<UserLeftDrawer> {
   void didChangeDependencies() {
     setState(() {
       selectors = [
-        UserSelector(l10n(context)?.deleted_user ?? "deleted users", () {
-          context.read<UsersViewBloc>().add(FindDeletedUserEvent());
-        }),
+        // UserSelector(l10n(context)?.deleted_user ?? "deleted users", () {
+        //   context.read<UsersViewBloc>().add(FindDeletedUserEvent());
+        // }),
         UserSelector(l10n(context)?.inactive_user ?? "inactive users", () {
           context.read<UsersViewBloc>().add(FindInactiveUserEvent());
         }),
@@ -78,7 +78,7 @@ class _UserLeftDrawerState extends State<UserLeftDrawer> {
         padding:
             EdgeInsets.fromLTRB(_padding.left, _padding.top, _padding.right, 7),
         child: Text(
-          "Users",
+          capitalizeFirstLetter(l10n(context)?.users),
           style: TextStyle(
             color: colorScheme(context).primary,
             fontWeight: FontWeight.w900,

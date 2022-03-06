@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-InputDecoration inputDecoration(BuildContext context, String label) =>
+InputDecoration inputDecoration(BuildContext context, String? label) =>
     InputDecoration(
       labelText: label,
       isDense: true,

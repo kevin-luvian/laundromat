@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:laundry/helpers/utils.dart';
+import 'package:laundry/l10n/access_locale.dart';
 
-String? notEmptyText(String? value) {
+String? notEmptyText(BuildContext context, String? value) {
   if (cnord(value?.isEmpty, false)) {
-    return 'please enter some text';
+    return l10n(context)?.please_enter_some_text;
   }
   return null;
 }

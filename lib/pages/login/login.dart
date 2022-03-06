@@ -5,7 +5,9 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/blocs/auth/event.dart';
 import 'package:laundry/blocs/auth/state.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_formatter/no_whitespaces.dart';
+import 'package:laundry/l10n/access_locale.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -22,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    nameCtr.text = "admin";
-    passwordCtr.text = "password";
+    nameCtr.text = "";
+    passwordCtr.text = "";
     super.initState();
   }
 
@@ -44,22 +46,9 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            authFailed
-                ? Column(
-                    children: const [
-                      Text(
-                        "name or password is invalid",
-                        style: TextStyle(fontSize: 17),
-                      ),
-                      SizedBox(height: 10),
-                    ],
-                  )
-                : Container(),
             TextField(
               controller: nameCtr,
-              decoration: const InputDecoration(
-                labelText: 'name',
-              ),
+              decoration: InputDecoration(labelText: l10n(context)?.name),
               inputFormatters: _noWhiteSpacesInput,
             ),
             const SizedBox(height: 10),
@@ -80,6 +69,20 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+            authFailed
+                ? Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(
+                        "${l10n(context)?.name_or_password_is_invalid}",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colorScheme(context).primary,
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(),
             const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
@@ -91,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                       .read<AuthBloc>()
                       .add(Login(nameCtr.text, passwordCtr.text));
                 },
-                child: const Text("login", style: TextStyle(fontSize: 17)),
+                child: const Text("Login", style: TextStyle(fontSize: 17)),
               ),
             ),
           ],

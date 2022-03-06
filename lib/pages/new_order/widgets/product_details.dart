@@ -9,6 +9,7 @@ import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_decoration.dart';
 import 'package:laundry/helpers/utils.dart';
+import 'package:laundry/l10n/access_locale.dart';
 
 class ProductDetails extends StatefulWidget {
   const ProductDetails({Key? key}) : super(key: key);
@@ -108,7 +109,7 @@ class _ProductDetailsState extends State<ProductDetails> {
           _buildImage(),
           const SizedBox(height: 15),
           _buildDetailElement(
-            label: "Price",
+            label: capitalizeFirstLetter(l10n(context)?.price),
             content: Text(customPriceFormat(price) + "/" + unit),
           ),
           const SizedBox(height: 15),
@@ -126,7 +127,7 @@ class _ProductDetailsState extends State<ProductDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Addons",
+            capitalizeFirstLetter(l10n(context)?.addons),
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
@@ -232,9 +233,8 @@ class _ProductDetailsState extends State<ProductDetails> {
               size: const Size.fromHeight(50),
               child: Text(
                 amount <= 0
-                    ? "Remove Order"
-                    : "Add to Order - " +
-                        decimalPriceFormatter.format(totalPrice),
+                    ? "${l10n(context)?.remove_order}"
+                    : "${l10n(context)?.add_to_order} - ${decimalPriceFormatter.format(totalPrice)}",
                 style:
                     const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),

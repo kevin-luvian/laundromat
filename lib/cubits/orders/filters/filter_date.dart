@@ -5,7 +5,11 @@ class FilterDate extends Equatable implements Filter {
   FilterDate(this.firstDate, this.lastDate)
       : assert(FilterDate.check(firstDate, lastDate));
 
-  factory FilterDate.empty() => FilterDate(null, DateTime.now());
+  factory FilterDate.empty() {
+    DateTime date = DateTime.now();
+    date = DateTime(date.year, date.month, date.day);
+    return FilterDate(null, date);
+  }
 
   final DateTime? firstDate;
   final DateTime? lastDate;

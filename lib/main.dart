@@ -26,6 +26,12 @@ import 'package:laundry/styles/theme.dart';
 import 'blocs/bluetooth/bluetooth_bloc.dart';
 
 Future<bool> _registerGetIt() async {
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
   GetIt.I.registerSingleton(DriftDB(await openReadDBConnection2())..open());
   logger.i("Drift DB connected");
 
@@ -59,11 +65,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
     return _materialApp(
       child: FutureBuilder(
         future: _register,

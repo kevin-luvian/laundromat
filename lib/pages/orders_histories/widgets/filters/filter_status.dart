@@ -5,6 +5,7 @@ import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/cubits/orders/orders_filter_cubit.dart';
 import 'package:laundry/hooks/use_bool.dart';
 import 'package:laundry/hooks/use_single_lock.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/orders_histories/widgets/filters/declare.dart';
 import 'package:laundry/styles/theme.dart';
 
@@ -37,15 +38,18 @@ class FilterStatusWidget extends HookWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
-          _button(text: "sent", active: sent.value, onPressed: sent.toggle),
+          _button(
+              text: "${l10n(context)?.sent}",
+              active: sent.value,
+              onPressed: sent.toggle),
           const SizedBox(height: 10),
           _button(
-              text: "waiting",
+              text: "${l10n(context)?.waiting}",
               active: waiting.value,
               onPressed: waiting.toggle),
           const SizedBox(height: 10),
           _button(
-              text: "deleted",
+              text: "${l10n(context)?.deleted}",
               active: deleted.value,
               onPressed: deleted.toggle),
         ],

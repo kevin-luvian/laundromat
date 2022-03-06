@@ -63,6 +63,7 @@ class OrderActions extends HookWidget {
               child: const Icon(Icons.print_outlined)),
           _spacer,
           RectButton(
+              disabled: true,
               onPressed: () {},
               size: const Size(50, 50),
               color: const Color.fromRGBO(78, 203, 92, 1),

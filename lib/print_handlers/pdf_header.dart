@@ -6,11 +6,10 @@ import 'package:pdf/widgets.dart';
 Widget buildPDFHeader({
   required String orderId,
   required User staff,
-  required DateTime date,
-  required Customer? customer,
+  required String date,
+  required String cname,
+  required String cphone,
 }) {
-  // final dateStr = "${date.hour}:${date.minute}";
-  final dateStr = DateFormat("HH:mm aa").format(date);
   return Container(
     color: TextColor.white,
     child: Column(
@@ -18,12 +17,14 @@ Widget buildPDFHeader({
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextWidget.normal("Kasir   : ${staff.name}"),
-        if (customer != null) TextWidget.normal("Nama  : ${customer.name}"),
-        if (customer != null) TextWidget.normal("Nomor : ${customer.phone}"),
+        SizedBox(height: 1),
+        TextWidget.normal(cname),
+        SizedBox(height: 1),
+        TextWidget.normal(cphone),
         SizedBox(height: 7),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           TextWidget.normal(orderId),
-          TextWidget.normal(dateStr),
+          TextWidget.normal(date),
         ]),
         Breaker(),
       ],

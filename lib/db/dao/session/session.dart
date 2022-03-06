@@ -23,6 +23,11 @@ final defaultSession = Session(
 class SessionDao extends DatabaseAccessor<DriftDB> with _$SessionDaoMixin {
   SessionDao(DriftDB db) : super(db);
 
+  Stream<Session?> streamSession() {
+    return (select(sessions)..where((s) => s.id.equals(_sessionId)))
+        .watchSingleOrNull();
+  }
+
   Future<Session> find() async {
     final session = await (select(sessions)
           ..where((s) => s.id.equals(_sessionId)))

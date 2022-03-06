@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:laundry/blocs/auth/bloc.dart';
 import 'package:laundry/blocs/auth/event.dart';
 import 'package:laundry/blocs/auth/state.dart';
+import 'package:laundry/l10n/access_locale.dart';
 
 class LogoutSetting extends StatelessWidget {
   const LogoutSetting({Key? key}) : super(key: key);
@@ -23,8 +24,7 @@ class LogoutSetting extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(7)),
             ),
           ),
-          child: Text(
-              AppLocalizations.of(context)?.change_to_different_account ?? ""),
+          child: Text(l10n(context)?.change_account ?? ""),
         );
       }
       return Container();

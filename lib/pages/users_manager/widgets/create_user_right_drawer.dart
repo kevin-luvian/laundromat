@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -10,6 +9,7 @@ import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/input_decoration.dart';
 import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/helpers/validators.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/running_assets/dao_access.dart';
 
 class CreateUserForm extends StatefulWidget {
@@ -82,15 +82,15 @@ class _CreateUserFormState extends State<CreateUserForm> {
               children: [
                 const SizedBox(height: 15),
                 TextFormField(
-                  decoration: inputDecoration(context, "name"),
+                  decoration: inputDecoration(context, l10n(context)?.name),
                   controller: nameCtr,
-                  validator: notEmptyText,
+                  validator: (s) => notEmptyText(context, s),
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
                   decoration: inputDecoration(context, "password"),
                   controller: passwordCtr,
-                  validator: notEmptyText,
+                  validator: (s) => notEmptyText(context, s),
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(12),
                     FilteringTextInputFormatter.deny(RegExp("\\s"),
@@ -99,7 +99,7 @@ class _CreateUserFormState extends State<CreateUserForm> {
                 ),
                 const SizedBox(height: 15),
                 DropdownButtonFormField<String>(
-                  decoration: inputDecoration(context, "role"),
+                  decoration: inputDecoration(context, l10n(context)?.role),
                   value: selectedRole,
                   items: selectableRoles
                       .map((role) => DropdownMenuItem(
@@ -153,7 +153,8 @@ class _CreateUserFormState extends State<CreateUserForm> {
             flex: 1,
             child: RectButton(
               onPressed: () => submitState(context.read<UserEditorBloc>()),
-              child: const Text("Save", style: TextStyle(fontSize: 17)),
+              child: Text(capitalizeFirstLetter(l10n(context)?.save),
+                  style: const TextStyle(fontSize: 17)),
             ),
           ),
         ],
@@ -162,9 +163,11 @@ class _CreateUserFormState extends State<CreateUserForm> {
   }
 
   String? pinValidator(String? value) {
-    if (value == null || value.isEmpty) return 'please enter some text';
+    if (value == null || value.isEmpty) {
+      return "${l10n(context)?.please_enter_some_text}";
+    }
     if (value.length < 4) {
-      return 'pin must be a 4 digit number';
+      return "${l10n(context)?.pin_must_be_a_4_digit_number}";
     }
     return null;
   }

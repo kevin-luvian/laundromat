@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/settings/widgets/drift_viewer.dart';
 import 'package:laundry/pages/settings/widgets/language_setting.dart';
@@ -18,7 +19,9 @@ class SettingsPage extends StatelessWidget {
         title: l10n(context)?.select_language ?? "Select Language",
         child: const LanguageSetting(),
       ),
-      const SettingCard(title: "Theme", child: ThemeSetting()),
+      SettingCard(
+          title: capitalizeFirstLetter(l10n(context)?.theme),
+          child: const ThemeSetting()),
       const SettingCard(title: "Logout", child: LogoutSetting()),
       driftViewerCard,
     ];

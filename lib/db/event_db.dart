@@ -22,7 +22,10 @@ class EventDB extends _$EventDB {
   @override
   MigrationStrategy get migration => MigrationStrategy(
         beforeOpen: (details) async {
-          if (details.wasCreated) await Seeder(this).seed();
+          if (details.wasCreated) {
+            await Seeder(this).mainSeed();
+            // await Seeder(this).seed();
+          }
         },
       );
 }

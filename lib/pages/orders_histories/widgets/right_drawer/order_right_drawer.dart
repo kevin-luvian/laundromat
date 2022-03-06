@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:laundry/blocs/bluetooth/bluetooth_bloc.dart';
-import 'package:laundry/common/rect_button.dart';
 import 'package:laundry/common/right_drawer.dart';
 import 'package:laundry/cubits/orders/order_drawer_cubit.dart';
 import 'package:laundry/db/aggregates/order_details.dart';
 import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/helpers/utils.dart';
-import 'package:laundry/hooks/use_bluetooth_connection.dart';
 import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/orders_histories/widgets/right_drawer/order_actions.dart';
 import 'package:laundry/pages/orders_histories/widgets/right_drawer/receipt_item.dart';
-import 'package:laundry/running_assets/asset_access.dart';
 import 'package:laundry/running_assets/dao_access.dart';
-import 'package:laundry/styles/theme.dart';
 
 class OrderDetailRightDrawerContent extends RightDrawerContent {
-  const OrderDetailRightDrawerContent(BuildContext context)
-      : super(label: "Order Detail", child: const OrderDetailRightDrawer());
+  OrderDetailRightDrawerContent(BuildContext context)
+      : super(
+            label: capitalizeLetter(l10n(context)?.order_detail),
+            child: const OrderDetailRightDrawer());
 }
 
 class OrderDetailRightDrawer extends StatefulWidget {
@@ -90,9 +86,11 @@ class _OrderDetailRightDrawerState extends State<OrderDetailRightDrawer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _lrText(textBold("Received"), Text(receivedDateStr)),
+          _lrText(textBold(capitalizeFirstLetter(l10n(context)?.received)),
+              Text(receivedDateStr)),
           spacer(),
-          _lrText(textBold("Sent"), Text(sentDateStr)),
+          _lrText(textBold(capitalizeFirstLetter(l10n(context)?.sent)),
+              Text(sentDateStr)),
         ],
       ),
     );
@@ -107,9 +105,11 @@ class _OrderDetailRightDrawerState extends State<OrderDetailRightDrawer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _lrText(textBold("Name"), Text(customerName)),
+          _lrText(textBold(capitalizeFirstLetter(l10n(context)?.name)),
+              Text(customerName)),
           spacer(),
-          _lrText(textBold("Phone"), Text(customerPhone)),
+          _lrText(textBold(capitalizeFirstLetter(l10n(context)?.phone)),
+              Text(customerPhone)),
         ],
       ),
     );

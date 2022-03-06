@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:laundry/cubits/orders/orders_cubit.dart';
 import 'package:laundry/hooks/use_scroll_controller.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/orders_histories/widgets/order_view_flat.dart';
 
 class OrdersView extends HookWidget {
@@ -29,7 +30,7 @@ class OrdersView extends HookWidget {
         itemCount: orders.length + 1,
         itemBuilder: (_ctx, i) {
           if (i >= orders.length) {
-            return orders.noMoreData ? _noMoreData() : _loadingView();
+            return orders.noMoreData ? _noMoreData(context) : _loadingView();
           }
           return OrderViewFlat.fromOrderDetail(orders.elementAt(i));
         },
@@ -48,11 +49,11 @@ class OrdersView extends HookWidget {
     );
   }
 
-  Widget _noMoreData() {
-    return const Center(
+  Widget _noMoreData(BuildContext context) {
+    return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 15),
-        child: Text("no more data"),
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        child: Text(l10n(context)?.no_more_data ?? ""),
       ),
     );
   }

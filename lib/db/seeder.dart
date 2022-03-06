@@ -12,6 +12,16 @@ class Seeder {
 
   const Seeder(this.edb);
 
+  Future<void> mainSeed() async {
+    final userCommand = UserCommand(edb);
+    await userCommand.create(
+      name: "admin",
+      password: "password",
+      role: roleSuperAdmin,
+      pin: "0000",
+    );
+  }
+
   Future<void> seed() async {
     final userCommand = UserCommand(edb);
     final userId = await userCommand.create(

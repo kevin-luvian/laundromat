@@ -8,6 +8,8 @@ import 'package:laundry/common/right_drawer.dart';
 import 'package:laundry/cubits/right_drawer.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
+import 'package:laundry/helpers/flutter_utils.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pages/products_manager/widgets/create_update_product_form.dart';
 import 'package:laundry/pages/products_manager/widgets/product_left_navigator.dart';
 
@@ -62,8 +64,8 @@ class ProductsManagerPage extends StatelessWidget {
     return BlocBuilder<RightDrawerCubit, RightDrawerState>(
       builder: (_, _state) {
         final label = _state.index == createProductIndex
-            ? "Create Product"
-            : "Update Product";
+            ? capitalizeLetter(l10n(context)?.create_product)
+            : capitalizeLetter(l10n(context)?.update_product);
         return RightDrawer(
           content: RightDrawerContent(
             label: label,

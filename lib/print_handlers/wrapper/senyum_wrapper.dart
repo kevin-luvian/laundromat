@@ -36,10 +36,10 @@ class SenyumPageWrapper extends StatelessWidget {
   Widget senyumHeader() {
     return Center(
       child: Column(children: [
-        TextWidget.big("LAUNDRY SENYUM"),
+        TextWidget.big("KISS LAUNDRY"),
         SizedBox(height: 30),
-        TextWidget.normal("Jl. Perhubungan I No 03"),
-        TextWidget.normal("Rawamangun Jati. 15228."),
+        TextWidget.normal("Jl. Layur No 07"),
+        TextWidget.normal("Rawamangun Jati. 13220."),
         SizedBox(height: 20),
       ]),
     );
@@ -50,11 +50,10 @@ class SenyumPageWrapper extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(children: [
-          TextWidget.normal(
-              "Terima kasih sudah berbelanja pada jasa laundry senyum.",
+          TextWidget.normal("Terima kasih sudah menggunakan jasa kiss laundry.",
               align: TextAlign.center),
-          SizedBox(height: 40),
-          TextWidget.normal(
+          SizedBox(height: 50),
+          TextWidget.sub(
               "Kami tidak bertanggung jawab untuk barang yang ditinggalkan lebih dari 30 hari.",
               align: TextAlign.justify),
         ]),

@@ -50,7 +50,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     listener = newOrderCacheDao.streamOrderDetails().listen((data) {
       setState(() {
         orders = data;
-        if(orders.isNotEmpty) {
+        if (orders.isNotEmpty) {
           subTotalPrice = orders.map((o) => o.totalPrice).reduce(sumInt);
         }
       });
@@ -152,12 +152,12 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
   }
 
   Widget _paymentInfo() {
-    final taxes = subTotalPrice * taxRate;
-    final totalPrice = subTotalPrice + taxes;
+    // final taxes = subTotalPrice * taxRate;
+    final totalPrice = subTotalPrice;
     return Column(
       children: [
-        _leftRightInfo("Subtotal:", customPriceFormat(subTotalPrice)),
-        _leftRightInfo("Tax:", customPriceFormat(taxes)),
+        // _leftRightInfo("Subtotal:", customPriceFormat(subTotalPrice)),
+        // _leftRightInfo("Tax:", customPriceFormat(taxes)),
         _leftRightInfo("Total:", customPriceFormat(totalPrice)),
       ],
     );

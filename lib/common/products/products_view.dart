@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laundry/blocs/products/products_view_bloc.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/helpers/utils.dart';
+import 'package:laundry/l10n/access_locale.dart';
 import 'package:universal_io/io.dart';
 
 const cardPerRow = 3;
@@ -31,6 +32,7 @@ class _ProductsViewState extends State<ProductsView> {
 
   @override
   Widget build(BuildContext context) {
+    final emptyText = l10n(context)?.please_select_a_category ?? "";
     return BlocBuilder<ProductsBloc, ProductsState>(
       key: _key,
       builder: (_, _state) {
@@ -60,11 +62,11 @@ class _ProductsViewState extends State<ProductsView> {
                   ),
                 );
               }
-              return const Center(child: Text("please select a category"));
+              return Center(child: Text(emptyText));
             },
           );
         }
-        return const Center(child: Text("please select a category"));
+        return Center(child: Text(emptyText));
       },
     );
   }

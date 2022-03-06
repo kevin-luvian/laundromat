@@ -3,10 +3,13 @@ import 'dart:ui' as ui;
 
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:laundry/helpers/logger.dart';
+import 'package:laundry/helpers/utils.dart';
 import 'package:laundry/print_handlers/setting/prints.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:printing/printing.dart' as pr;
+import 'package:universal_io/io.dart';
 
 const PdfColor white = PdfColor.fromInt(0xffffffff);
 const double mm = 72.0 / 25.4;
@@ -22,11 +25,15 @@ Future<void> printImageBytes(
   BluetoothDevice device,
   Uint8List bytes,
 ) async {
+  final tempDir = (await getExternalCacheDirectories())?.first;
+  final filePath = tempDir!.path + '/file_01.png';
+  await File(filePath).writeAsBytes(bytes, flush: true);
+  await waitMilliseconds(200);
+
   if (await reconnect(bluetooth, device)) {
-    await bluetooth.printImageBytes(bytes.buffer.asUint8List(
-      bytes.offsetInBytes,
-      bytes.lengthInBytes,
-    ));
+    // bluetooth.printImage(pathImage);
+    logger.i(filePath);
+    await bluetooth.printImage(filePath);
   }
 }
 
@@ -42,7 +49,8 @@ Future<Uint8List?> pdfWidgetToImage(Widget content) async {
     await for (final pg in pr.Printing.raster(await pdf.save(), dpi: 70)) {
       final img = await pg.toImage();
       final imgData = await img.toByteData(format: ui.ImageByteFormat.png);
-      image = imgData!.buffer.asUint8List();
+      image = imgData!.buffer
+          .asUint8List(imgData.offsetInBytes, imgData.lengthInBytes);
     }
   } catch (err) {
     logger.e(err);

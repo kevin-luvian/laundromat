@@ -11,6 +11,8 @@ class EventDao extends DatabaseAccessor<EventDB> with _$EventDaoMixin {
   Future<Event> createEvent(EventsCompanion event) =>
       into(events).insertReturning(event);
 
+  Future<void> truncate() => delete(events).go();
+
   /// read all event based on stream id, ordered by the version number.
   Future<List<Event>> findEventStream(String streamId) {
     return (select(events)
@@ -34,6 +36,11 @@ class EventDao extends DatabaseAccessor<EventDB> with _$EventDaoMixin {
         ]))
       .get();
 
+  Future<void> replaceEvents(List<Event> data) => transaction(() async {
+        await delete(events).go();
+        await batch((batch) => batch.insertAll(events, data));
+      });
+
   Future<List<String>> distinctIdByType(String streamType) {
     final query = selectOnly(events, distinct: true)
       ..addColumns([events.streamId])
@@ -52,6 +59,13 @@ class EventDao extends DatabaseAccessor<EventDB> with _$EventDaoMixin {
       ]);
     return query.watch().map(groupEventsById);
   }
+
+  Future<List<Event>> findAll() => (select(events)
+        ..orderBy([
+          (e) => OrderingTerm(expression: e.version),
+          dateOrdering,
+        ]))
+      .get();
 
   Future<List<Event>> findAllById(String streamId) {
     final query = select(events)

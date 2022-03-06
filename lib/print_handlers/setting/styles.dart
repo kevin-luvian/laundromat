@@ -20,8 +20,8 @@ class TextWidget {
     return Text(text, textAlign: align, style: const TextStyle(fontSize: 23));
   }
 
-  static Text sub(String text) =>
-      Text(text, style: const TextStyle(fontSize: 20));
+  static Text sub(String text, {TextAlign? align}) =>
+      Text(text, textAlign: align, style: const TextStyle(fontSize: 20));
 }
 
 class Breaker extends StatelessWidget {

@@ -32,9 +32,9 @@ class _CheckoutPaymentState extends State<CheckoutPayment> {
   }
 
   // TODO: change tax rate
-  int get taxes => (subtotal * (10 / 100)).toInt();
+  // int get taxes => (subtotal * (10 / 100)).toInt();
 
-  int get total => subtotal + taxes;
+  // int get total => subtotal + taxes;
 
   @override
   void dispose() {
@@ -54,9 +54,9 @@ class _CheckoutPaymentState extends State<CheckoutPayment> {
       ),
       child: Column(
         children: [
-          _buildInfoSubset("Subtotal", subtotal, textColor, 12, null),
-          _buildInfoSubset("Taxes", taxes, textColor, 12, null),
-          _buildInfoSubset("Total", total, textColor, 15, FontWeight.bold),
+          // _buildInfoSubset("Subtotal", subtotal, textColor, 12, null),
+          // _buildInfoSubset("Taxes", taxes, textColor, 12, null),
+          _buildInfoSubset("Total", subtotal, textColor, 15, FontWeight.bold),
         ],
       ),
     );
@@ -71,20 +71,25 @@ class _CheckoutPaymentState extends State<CheckoutPayment> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            field,
-            style: TextStyle(
-              fontSize: fontSize == null ? null : fontSize + 1,
-              fontWeight: fontWeight,
-              color: fontColor,
+          Flexible(
+            child: Text(
+              field,
+              style: TextStyle(
+                fontSize: fontSize == null ? null : fontSize + 1,
+                fontWeight: fontWeight,
+                color: fontColor,
+              ),
             ),
           ),
-          Text(
-            "Rp. " + currency,
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.w700,
-              color: fontColor,
+          Flexible(
+            flex: 2,
+            child: Text(
+              "Rp. " + currency,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: fontColor,
+              ),
             ),
           ),
         ],
