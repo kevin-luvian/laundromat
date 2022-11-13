@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:laundry/common/inputs/date_input.dart';
-import 'package:laundry/cubits/orders/orders_filter_cubit.dart';
+import 'package:laundry/cubits/customers/customers_filter_cubit.dart';
 import 'package:laundry/hooks/use_single_lock.dart';
 import 'package:laundry/l10n/access_locale.dart';
 import 'package:laundry/pkg/filters/declare.dart';
@@ -20,14 +20,15 @@ class FilterDateWidget extends HookWidget {
     final lastDate = useState<DateTime?>(null);
 
     useEffect(() {
-      final bloc = context.read<OrdersFilterCubit>();
+      final bloc = context.read<CustomersFilterCubit>();
       firstDate.value = bloc.firstDate;
       lastDate.value = bloc.lastDate;
+      return null;
     }, []);
 
     useEffect(() {
       lock.run(() {
-        final bloc = context.read<OrdersFilterCubit>();
+        final bloc = context.read<CustomersFilterCubit>();
         bloc.modifyDate(firstDate.value, lastDate.value);
       });
       return null;

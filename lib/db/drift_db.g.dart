@@ -6,7 +6,7 @@ part of 'drift_db.dart';
 // MoorGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
+// ignore_for_file: type=lint
 class User extends DataClass implements Insertable<User> {
   final String id;
   final String name;
@@ -376,11 +376,13 @@ class Customer extends DataClass implements Insertable<Customer> {
   final String id;
   final String phone;
   final String name;
+  final int status;
   final String lastEditorId;
   Customer(
       {required this.id,
       required this.phone,
       required this.name,
+      required this.status,
       required this.lastEditorId});
   factory Customer.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -391,6 +393,8 @@ class Customer extends DataClass implements Insertable<Customer> {
           .mapFromDatabaseResponse(data['${effectivePrefix}phone'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      status: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}status'])!,
       lastEditorId: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}last_editor_id'])!,
     );
@@ -401,6 +405,7 @@ class Customer extends DataClass implements Insertable<Customer> {
     map['id'] = Variable<String>(id);
     map['phone'] = Variable<String>(phone);
     map['name'] = Variable<String>(name);
+    map['status'] = Variable<int>(status);
     map['last_editor_id'] = Variable<String>(lastEditorId);
     return map;
   }
@@ -410,6 +415,7 @@ class Customer extends DataClass implements Insertable<Customer> {
       id: Value(id),
       phone: Value(phone),
       name: Value(name),
+      status: Value(status),
       lastEditorId: Value(lastEditorId),
     );
   }
@@ -421,6 +427,7 @@ class Customer extends DataClass implements Insertable<Customer> {
       id: serializer.fromJson<String>(json['id']),
       phone: serializer.fromJson<String>(json['phone']),
       name: serializer.fromJson<String>(json['name']),
+      status: serializer.fromJson<int>(json['status']),
       lastEditorId: serializer.fromJson<String>(json['lastEditorId']),
     );
   }
@@ -431,16 +438,22 @@ class Customer extends DataClass implements Insertable<Customer> {
       'id': serializer.toJson<String>(id),
       'phone': serializer.toJson<String>(phone),
       'name': serializer.toJson<String>(name),
+      'status': serializer.toJson<int>(status),
       'lastEditorId': serializer.toJson<String>(lastEditorId),
     };
   }
 
   Customer copyWith(
-          {String? id, String? phone, String? name, String? lastEditorId}) =>
+          {String? id,
+          String? phone,
+          String? name,
+          int? status,
+          String? lastEditorId}) =>
       Customer(
         id: id ?? this.id,
         phone: phone ?? this.phone,
         name: name ?? this.name,
+        status: status ?? this.status,
         lastEditorId: lastEditorId ?? this.lastEditorId,
       );
   @override
@@ -449,13 +462,14 @@ class Customer extends DataClass implements Insertable<Customer> {
           ..write('id: $id, ')
           ..write('phone: $phone, ')
           ..write('name: $name, ')
+          ..write('status: $status, ')
           ..write('lastEditorId: $lastEditorId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, phone, name, lastEditorId);
+  int get hashCode => Object.hash(id, phone, name, status, lastEditorId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -463,6 +477,7 @@ class Customer extends DataClass implements Insertable<Customer> {
           other.id == this.id &&
           other.phone == this.phone &&
           other.name == this.name &&
+          other.status == this.status &&
           other.lastEditorId == this.lastEditorId);
 }
 
@@ -470,32 +485,38 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
   final Value<String> id;
   final Value<String> phone;
   final Value<String> name;
+  final Value<int> status;
   final Value<String> lastEditorId;
   const CustomersCompanion({
     this.id = const Value.absent(),
     this.phone = const Value.absent(),
     this.name = const Value.absent(),
+    this.status = const Value.absent(),
     this.lastEditorId = const Value.absent(),
   });
   CustomersCompanion.insert({
     required String id,
     required String phone,
     required String name,
+    required int status,
     required String lastEditorId,
   })  : id = Value(id),
         phone = Value(phone),
         name = Value(name),
+        status = Value(status),
         lastEditorId = Value(lastEditorId);
   static Insertable<Customer> custom({
     Expression<String>? id,
     Expression<String>? phone,
     Expression<String>? name,
+    Expression<int>? status,
     Expression<String>? lastEditorId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (phone != null) 'phone': phone,
       if (name != null) 'name': name,
+      if (status != null) 'status': status,
       if (lastEditorId != null) 'last_editor_id': lastEditorId,
     });
   }
@@ -504,11 +525,13 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
       {Value<String>? id,
       Value<String>? phone,
       Value<String>? name,
+      Value<int>? status,
       Value<String>? lastEditorId}) {
     return CustomersCompanion(
       id: id ?? this.id,
       phone: phone ?? this.phone,
       name: name ?? this.name,
+      status: status ?? this.status,
       lastEditorId: lastEditorId ?? this.lastEditorId,
     );
   }
@@ -525,6 +548,9 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
     if (lastEditorId.present) {
       map['last_editor_id'] = Variable<String>(lastEditorId.value);
     }
@@ -537,6 +563,7 @@ class CustomersCompanion extends UpdateCompanion<Customer> {
           ..write('id: $id, ')
           ..write('phone: $phone, ')
           ..write('name: $name, ')
+          ..write('status: $status, ')
           ..write('lastEditorId: $lastEditorId')
           ..write(')'))
         .toString();
@@ -566,6 +593,11 @@ class $CustomersTable extends Customers
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int?> status = GeneratedColumn<int?>(
+      'status', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _lastEditorIdMeta =
       const VerificationMeta('lastEditorId');
   @override
@@ -575,7 +607,7 @@ class $CustomersTable extends Customers
       requiredDuringInsert: true,
       defaultConstraints: 'REFERENCES users (id)');
   @override
-  List<GeneratedColumn> get $columns => [id, phone, name, lastEditorId];
+  List<GeneratedColumn> get $columns => [id, phone, name, status, lastEditorId];
   @override
   String get aliasedName => _alias ?? 'customers';
   @override
@@ -601,6 +633,12 @@ class $CustomersTable extends Customers
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    } else if (isInserting) {
+      context.missing(_statusMeta);
     }
     if (data.containsKey('last_editor_id')) {
       context.handle(

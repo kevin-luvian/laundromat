@@ -3,7 +3,6 @@ import 'package:drift/drift.dart';
 import 'package:laundry/db/dao/session/session.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/tables/users.dart';
-import 'package:laundry/running_assets/dao_access.dart';
 
 @DriftAccessor(tables: [Users])
 class UserDao extends DatabaseAccessor<DriftDB> {

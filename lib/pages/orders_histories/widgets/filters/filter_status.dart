@@ -6,8 +6,8 @@ import 'package:laundry/cubits/orders/orders_filter_cubit.dart';
 import 'package:laundry/hooks/use_bool.dart';
 import 'package:laundry/hooks/use_single_lock.dart';
 import 'package:laundry/l10n/access_locale.dart';
-import 'package:laundry/pages/orders_histories/widgets/filters/declare.dart';
 import 'package:laundry/styles/theme.dart';
+import 'package:laundry/pkg/filters/declare.dart';
 
 final filterStatusWidgetIcon =
     FilterWidgetIcon(Icons.info_outline_rounded, false);

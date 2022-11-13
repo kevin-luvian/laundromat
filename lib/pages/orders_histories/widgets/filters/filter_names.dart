@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:laundry/cubits/orders/orders_filter_cubit.dart';
 import 'package:laundry/helpers/input_decoration.dart';
 import 'package:laundry/hooks/use_customer_name_filter.dart';
-import 'package:laundry/pages/orders_histories/widgets/filters/declare.dart';
+import 'package:laundry/pkg/filters/declare.dart';
 
 final filterNamesWidgetIcon =
     FilterWidgetIcon(Icons.perm_identity_rounded, false);

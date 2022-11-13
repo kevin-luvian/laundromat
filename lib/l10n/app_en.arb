@@ -75,5 +75,6 @@
   "days": "days",
   "ago": "ago",
   "name_or_password_is_invalid": "name or password is invalid",
-  "none": "none"
+  "none": "none",
+  "customers": "customers"
 }

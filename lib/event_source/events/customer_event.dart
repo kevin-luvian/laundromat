@@ -33,6 +33,32 @@ class CustomerUpdated implements EventData<CustomerUpdated> {
   get serializer => CustomerUpdatedSerializer();
 }
 
+class CustomerDeactivated implements EventData<CustomerDeactivated> {
+  final String deactivatedBy;
+
+  CustomerDeactivated({required this.deactivatedBy});
+
+  @override
+  get tag => staticTag;
+  static const String staticTag = "CustomerDeactivated";
+
+  @override
+  get serializer => CustomerDeactivatedSerializer();
+}
+
+class CustomerReactivated implements EventData<CustomerReactivated> {
+  final String reactivatedBy;
+
+  CustomerReactivated({required this.reactivatedBy});
+
+  @override
+  get tag => staticTag;
+  static const String staticTag = "CustomerReactivated";
+
+  @override
+  get serializer => CustomerReactivatedSerializer();
+}
+
 /// SERIALIZERS ==============================================================
 
 class CustomerCreatedSerializer implements Serializer<CustomerCreated> {
@@ -65,4 +91,28 @@ class CustomerUpdatedSerializer implements Serializer<CustomerUpdated> {
         "phone": t.phone,
         "updatedBy": t.updatedBy,
       };
+}
+
+class CustomerDeactivatedSerializer implements Serializer<CustomerDeactivated> {
+  @override
+  fromJson(data) => CustomerDeactivated(
+    deactivatedBy: data["deactivatedBy"] as String,
+  );
+
+  @override
+  toJson(t) => <String, dynamic>{
+    "deactivatedBy": t.deactivatedBy,
+  };
+}
+
+class CustomerReactivatedSerializer implements Serializer<CustomerReactivated> {
+  @override
+  fromJson(data) => CustomerReactivated(
+    reactivatedBy: data["reactivatedBy"] as String,
+  );
+
+  @override
+  toJson(t) => <String, dynamic>{
+    "reactivatedBy": t.reactivatedBy,
+  };
 }

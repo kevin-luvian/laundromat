@@ -75,5 +75,6 @@
   "days": "hari",
   "ago": "lalu",
   "name_or_password_is_invalid": "nama atau password salah",
-  "none": "kosong"
+  "none": "kosong",
+  "customers": "pelanggan"
 }

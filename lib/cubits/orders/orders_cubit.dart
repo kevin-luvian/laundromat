@@ -8,7 +8,6 @@ import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
 import 'package:laundry/event_source/commands/order_command.dart';
 import 'package:laundry/helpers/logger.dart';
-import 'package:laundry/helpers/utils.dart';
 
 import 'filters/declare.dart';
 import 'orders_filter_cubit.dart';

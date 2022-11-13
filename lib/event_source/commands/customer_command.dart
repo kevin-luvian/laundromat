@@ -1,4 +1,4 @@
-import 'package:laundry/db/dao/customer.dart';
+import 'package:laundry/db/dao/customer/customer.dart';
 import 'package:laundry/db/event_db.dart';
 import 'package:laundry/event_source/commands/full_command.dart';
 import 'package:laundry/event_source/events/customer_event.dart';

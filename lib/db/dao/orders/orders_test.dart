@@ -1,6 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:laundry/db/aggregates/plain_order_details.dart';
-import 'package:laundry/db/dao/customer.dart';
+import 'package:laundry/db/dao/customer/customer.dart';
 import 'package:laundry/db/dao/event/event.dart';
 import 'package:laundry/db/dao/orders/orders.dart';
 import 'package:laundry/db/drift_db.dart';

@@ -7,6 +7,7 @@ import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/hooks/use_bluetooth_connection.dart';
 import 'package:laundry/hooks/use_nav_animation.dart';
 import 'package:laundry/l10n/access_locale.dart';
+import 'package:laundry/pages/customers_manager/customers_manager_page.dart';
 import 'package:laundry/pages/new_order/new_order_page.dart';
 import 'package:laundry/pages/orders_histories/orders_histories.dart';
 import 'package:laundry/pages/settings/settings_page.dart';
@@ -26,6 +27,7 @@ class _AuthSuperAdminLayoutState extends State<AuthStaffLayout> {
   final List<Widget> _tabs = [
     const NewOrderPage(),
     const OrdersHistories(),
+    const CustomersManagerPage(),
     const SettingsPage(),
   ];
 
@@ -40,6 +42,11 @@ class _AuthSuperAdminLayoutState extends State<AuthStaffLayout> {
             desc: l10n(context)?.orders ?? "Orders"),
         ButtonNavigation(
             index: 2,
+            icon: Icons.people_outline_rounded,
+            desc:
+                capitalizeFirstLetter(l10n(context)?.customers ?? "Customer")),
+        ButtonNavigation(
+            index: 3,
             icon: Icons.settings_outlined,
             desc: l10n(context)?.settings ?? "Settings"),
       ];

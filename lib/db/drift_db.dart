@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:laundry/db/dao/customer.dart';
+import 'package:laundry/db/dao/customer/customer.dart';
 import 'package:laundry/db/dao/new_order_caches/new_order_cache.dart';
 import 'package:laundry/db/dao/product/product.dart';
 import 'package:laundry/db/dao/session/session.dart';

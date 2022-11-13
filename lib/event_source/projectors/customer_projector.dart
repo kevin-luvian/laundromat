@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:laundry/db/dao/customer.dart';
+import 'package:laundry/db/dao/customer/customer.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';
+import 'package:laundry/db/tables/customer.dart';
 import 'package:laundry/event_source/events/customer_event.dart';
 import 'package:laundry/event_source/events/declare.dart';
 import 'package:laundry/event_source/projectors/declare.dart';
@@ -44,8 +45,8 @@ class CustomerProjector implements IProjector {
           customer = _onUpdate(event, customer!);
           break;
       }
-      return customer;
     }
+    return customer;
   }
 }
 
@@ -56,6 +57,7 @@ Customer _onCreate(Event event) {
     id: event.streamId,
     name: data.name,
     phone: data.phone,
+    status: STATUS_ACTIVE,
     lastEditorId: data.createdBy,
   );
 }
@@ -75,6 +77,7 @@ Customer _onUpdate(Event event, Customer customer) {
 
 Customer _modify(CustomersCompanion data, Customer customer) => Customer(
       id: customer.id,
+      status: customer.status,
       name: updateValue(data.name, customer.name),
       phone: updateValue(data.phone, customer.phone),
       lastEditorId: updateValue(data.lastEditorId, customer.lastEditorId),

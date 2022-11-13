@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laundry/db/dao/customer.dart';
+import 'package:laundry/db/dao/customer/customer.dart';
 import 'package:laundry/db/dao/session/session.dart';
 import 'package:laundry/db/drift_db.dart';
 import 'package:laundry/db/event_db.dart';

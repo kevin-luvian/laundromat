@@ -7,6 +7,7 @@ import 'package:laundry/helpers/flutter_utils.dart';
 import 'package:laundry/hooks/use_bluetooth_connection.dart';
 import 'package:laundry/hooks/use_nav_animation.dart';
 import 'package:laundry/l10n/access_locale.dart';
+import 'package:laundry/pages/customers_manager/customers_manager_page.dart';
 import 'package:laundry/pages/new_order/new_order_page.dart';
 import 'package:laundry/pages/orders_histories/orders_histories.dart';
 import 'package:laundry/pages/products_manager/products_manager_page.dart';
@@ -29,6 +30,7 @@ class _AuthAdminLayoutState extends State<AuthAdminLayout> {
     const NewOrderPage(),
     const OrdersHistories(),
     const ProductsManagerPage(),
+    const CustomersManagerPage(),
     const UsersManagerPage(),
     const SettingsPage(),
   ];
@@ -49,10 +51,14 @@ class _AuthAdminLayoutState extends State<AuthAdminLayout> {
             desc: capitalizeFirstLetter(l10n(context)?.products)),
         ButtonNavigation(
             index: 3,
+            icon: Icons.people_outline_rounded,
+            desc: capitalizeFirstLetter(l10n(context)?.customers)),
+        ButtonNavigation(
+            index: 4,
             icon: Icons.supervised_user_circle_rounded,
             desc: capitalizeFirstLetter(l10n(context)?.users)),
         ButtonNavigation(
-            index: 4,
+            index: 5,
             icon: Icons.settings_outlined,
             desc: capitalizeFirstLetter(l10n(context)?.settings ?? "Settings")),
       ];

@@ -17,4 +17,4 @@ samples, guidance on mobile development, and a full API reference.
 
 ### notes
 - get: flutter pub get
-- runner: flutter pub run build_runner build --delete-conflicting-outputs
+- runner: flutter pub run build_runner build --delete-conflicting-outputs // generate bloc 
